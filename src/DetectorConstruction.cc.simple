@@ -1,0 +1,562 @@
+//
+// ********************************************************************
+// * License and Disclaimer                                           *
+// *                                                                  *
+// * The  Geant4 software  is  copyright of the Copyright Holders  of *
+// * the Geant4 Collaboration.  It is provided  under  the terms  and *
+// * conditions of the Geant4 Software License,  included in the file *
+// * LICENSE and available at  http://cern.ch/geant4/license .  These *
+// * include a list of copyright holders.                             *
+// *                                                                  *
+// * Neither the authors of this software system, nor their employing *
+// * institutes,nor the agencies providing financial support for this *
+// * work  make  any representation or  warranty, express or implied, *
+// * regarding  this  software system or assume any liability for its *
+// * use.  Please see the license in the file  LICENSE  and URL above *
+// * for the full disclaimer and the limitation of liability.         *
+// *                                                                  *
+// * This  code  implementation is the result of  the  scientific and *
+// * technical work of the GEANT4 collaboration.                      *
+// * By using,  copying,  modifying or  distributing the software (or *
+// * any work based  on the software)  you  agree  to acknowledge its *
+// * use  in  resulting  scientific  publications,  and indicate your *
+// * acceptance of all terms of the Geant4 Software license.          *
+// ********************************************************************
+//
+/// \file DetectorConstruction.cc
+/// \brief Implementation of the DetectorConstruction class
+//
+// 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+#include "DetectorConstruction.hh"
+#include "ScintilatorSD.hh"
+
+#include "G4NistManager.hh"
+#include "G4Box.hh"
+#include "G4LogicalVolume.hh"
+#include "G4PVPlacement.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4SDManager.hh"
+
+#include "G4Torus.hh"
+#include "G4Box.hh"
+#include "G4Tubs.hh"
+#include "G4Cons.hh"
+#include "G4UnionSolid.hh"
+#include "G4SubtractionSolid.hh"
+#include "G4Polycone.hh"
+#include "G4LogicalVolume.hh"
+#include "G4PVPlacement.hh"
+#include "G4PVReplica.hh"
+#include "G4AutoDelete.hh"
+#include "G4AssemblyVolume.hh"
+
+#include "G4VisAttributes.hh"
+#include "G4Colour.hh"
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+DetectorConstruction::DetectorConstruction()
+ : G4VUserDetectorConstruction()
+{
+  fWorldSize = 100.*cm;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+DetectorConstruction::~DetectorConstruction()
+{}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+G4VPhysicalVolume* DetectorConstruction::Construct()
+{
+  //
+  // define a material
+  //   
+  G4Material* Air =
+  G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR"); 
+  
+  //-----Materials--------------------------------------------------------------------------
+  G4NistManager *nistManager = G4NistManager::Instance();
+  //Aluminium
+  fAlu = nistManager->FindOrBuildMaterial("G4_Al");
+  fVacuum = nistManager->FindOrBuildMaterial("G4_Galactic");
+
+  //the scintillator
+  fEJ309 = new G4Material("LS309",0.959*g/cm3,2);
+  G4Element *fCarbon = nistManager->FindOrBuildElement("C");
+  G4Element *fHydrogen = nistManager->FindOrBuildElement("H");
+  fEJ309->AddElement(fHydrogen,9.48*perCent);
+  fEJ309->AddElement(fCarbon,90.52*perCent);
+
+  fBoroSilicate = new G4Material("BoroSilicate",2.23*g/cm3,5);
+  fBoroSilicate->AddMaterial(nistManager->FindOrBuildMaterial("G4_Si"),39.209*perCent);
+  fBoroSilicate->AddMaterial(nistManager->FindOrBuildMaterial("G4_B"),2.918*perCent);
+  fBoroSilicate->AddMaterial(nistManager->FindOrBuildMaterial("G4_Na"),3.182*perCent);
+  fBoroSilicate->AddMaterial(nistManager->FindOrBuildMaterial("G4_Al"),1.288*perCent);
+  fBoroSilicate->AddMaterial(nistManager->FindOrBuildMaterial("G4_O"),53.403*perCent);
+  //     
+  // World
+  //
+  G4Box*  
+  solidWorld = new G4Box("World",                          //its name
+                   fWorldSize/2,fWorldSize/2,fWorldSize/2);//its size
+                   
+  G4LogicalVolume*                         
+  worldLV = new G4LogicalVolume(solidWorld,             //its solid
+                                   Air,                    //its material
+                                   "World");               //its name
+  worldLV->SetVisAttributes(G4VisAttributes::GetInvisible());
+
+  G4VPhysicalVolume*                                   
+  worldPV = new G4PVPlacement(0,                      //no rotation
+                                 G4ThreeVector(),        //at (0,0,0)
+                                 worldLV,             //its logical volume
+                                 "World",                //its name
+                                 0,                      //its mother  volume
+                                 false,                  //no boolean operation
+                                 0);                     //copy number
+  
+  ReadMCNPmatCard("rep17x17_MCNP_matls.inp");
+
+  G4Material *fCladingMat = G4NistManager::Instance()->FindOrBuildMaterial("G4_Zr"); //assuming pure Zirkonium
+
+  G4double PinRad = 5.*mm;
+  G4double FuelRad = 3.8*mm;
+  //G4double PinLength = 3670.*mm;
+  G4double PinLength = 50.*mm;
+
+  G4Tubs *CladdingRodS = new G4Tubs("CladdingRodS",0.,PinRad,PinLength/2.*mm,0.,360.*deg);
+  G4LogicalVolume *CladdingRodLV = new G4LogicalVolume(CladdingRodS,fCladingMat,"CladdingRodLV",0,0,0);
+
+  G4Tubs *FuelRodS = new G4Tubs("FuelRodS",0.,FuelRad,PinLength/2.*mm-1.2*mm,0.,360.*deg);
+  G4LogicalVolume *FuelRodLV = new G4LogicalVolume(FuelRodS,Air,"FuelRodLV",0,0,0); //materal not set yet
+
+  //place fuel in cladding
+  new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(0,0,0), // at (0,0,0)
+                        FuelRodLV,         // its logical volume
+                        "FuelRodPV",         // its name
+                        CladdingRodLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0);              // copy number
+                        
+
+  //place pin in world
+  new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(0,0,0), // at (0,0,0)
+                        CladdingRodLV,         // its logical volume
+                        "CladdingRodPV",         // its name
+                        worldLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0);               // copy number
+
+  //****************Detectors********************************************************
+
+  G4AssemblyVolume* neutronDetectors[8];
+
+  char DetName[32];
+  for(G4int i=0;i<8;i++) {
+    snprintf(DetName,32,"EJ309_",i+1);
+    neutronDetectors[i] = EJ309_5x5inch(i+1, DetName);
+  }
+
+  G4double distance = 200.;
+  G4double thetaND[8] = {0.,0.,0.,0.,0.,0.,0.,0.};
+  G4double phiND[8] = {0.,45.,90.,135.,180.,225.,270.,315.};
+  G4RotationMatrix *rotND[8];
+  G4ThreeVector posND[8];
+
+  for(G4int i=0;i<8;i++) {
+
+    thetaND[i] *= deg;
+    phiND[i] *= deg;
+    rotND[i] = new G4RotationMatrix();
+    rotND[i]->rotateY(-90.*degree);
+    rotND[i]->rotateZ(phiND[i]);
+    //rotND[i]->rotateY(-thetaND[i]);
+
+    posND[i] = G4ThreeVector(-distance*std::cos(phiND[i]),-distance*std::sin(phiND[i]),0.);
+
+    neutronDetectors[i]->MakeImprint(worldLV,posND[i],rotND[i]);
+  }
+
+
+  /*char DetName[32];
+
+  G4LogicalVolume *ND_LV[8];
+  for(G4int i=0;i<8;i++) {
+    snprintf(DetName,32,"ND%d_LV",i+1);
+    ND_LV[i] = Make5inchEJ309(i+1, DetName);
+  }
+
+  G4double distance = 200.;
+  G4double thetaND[8] = {0.,0.,0.,0.,0.,0.,0.,0.};
+  G4double phiND[8] = {0.,45.,90.,135.,180.,225.,270.,315.};
+  G4RotationMatrix *rotND[8];
+  G4ThreeVector posND[8];
+
+  G4VPhysicalVolume* ND_PV[8];
+  for(G4int i=0;i<8;i++) {
+
+    thetaND[i] *= deg;
+    phiND[i] *= deg;
+    rotND[i] = new G4RotationMatrix();
+    rotND[i]->rotateZ(-phiND[i]);
+    rotND[i]->rotateY(-90.*degree);
+    //rotND[i]->rotateY(-thetaND[i]);
+
+    posND[i] = G4ThreeVector(distance*std::cos(phiND[i]),distance*std::sin(phiND[i]),0.);
+
+    snprintf(DetName,32,"ND%d_PV",i+1);
+
+    ND_PV[i] = (G4VPhysicalVolume*) new G4PVPlacement(
+                        rotND[i],               // rotation
+                        posND[i], // at (0,0,0)
+                        ND_LV[i],         // its logical volume
+                        DetName,         // its name
+                        worldLV,               // its mother  volume
+                        false,           // no boolean operations
+                        i+1,               // copy number
+                        false); // checking overlaps 
+  }*/
+
+  //
+  //always return the physical World
+  //  
+  return worldPV;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void DetectorConstruction::ConstructSDandField()
+{
+  // Sensitive detectors
+
+  G4String ScintillatorSDname = "ScintillatorSD";
+  G4String ScintillatorHCname = "ScintillatorHC";
+  ScintilatorSD* sdEJ309 = new ScintilatorSD(ScintillatorSDname,ScintillatorHCname);
+  G4SDManager::GetSDMpointer()->AddNewDetector(sdEJ309);
+  SetSensitiveDetector("5x5-EJ-309-LV", sdEJ309, true);
+
+  G4double parsLinear[] = {1.0,0.0,0.,0.};
+  sdEJ309->SetLightFunc(11,0,parsLinear); //electrons
+  sdEJ309->SetLightFunc(-11,0,parsLinear); //positrons
+  sdEJ309->SetLightFunc(22,0,parsLinear); //photons
+  
+  G4double parsProtons[] = {0.74787,2.4077,0.29866,1.0}; //parameters according to Enqvist et al. (DOI: 10.1016/j.nima.2013.03.032)
+  sdEJ309->SetLightFunc(2212,1,parsProtons);
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void DetectorConstruction::ReadMCNPmatCard(const char *FileName)
+{
+  
+  std::vector<std::string> ZAIDs;
+  std::vector<int> ZZ;
+  std::vector<int> AA;
+  std::vector<double> WF;
+  double TotMass = 0.;
+
+  std::string str;
+
+  //read AME-2016
+  std::ifstream textfile("atomic-mass-eval-2016.txt");
+  getline(textfile,str);
+  getline(textfile,str);
+
+  std::vector<int> AME_Z;
+  std::vector<int> AME_A;
+  std::vector<double> AME_mass;
+  while(!textfile.eof()) {
+    int Z, N, A;
+    double mass;
+    textfile >> N >> Z >> A >> mass;
+    AME_Z.push_back(Z);
+    AME_A.push_back(A);
+    AME_mass.push_back(mass*1.e-06);
+  }
+  textfile.close();
+
+  //read MCNP material card
+  textfile.open(FileName);
+  
+  do {
+    getline(textfile,str);
+    if(str.find("Zone mass (grams):")!=std::string::npos) {
+      size_t pos = str.find("Zone mass (grams):");
+      std::string sTotMass = str.substr(pos+18,str.size()-(pos+18));
+      TotMass = atof(sTotMass.data());
+    }
+  } while(str[0]=='C');
+
+  std::stringstream ss(str);
+  std::string name;
+  std::string ZAID;
+  double WeightFrac;
+  ss >> name >> ZAID >> WeightFrac;
+  WeightFrac *= -1.;
+
+  std::string sMassNumber = ZAID.substr(ZAID.size()-3,ZAID.size());
+  std::string sAtomicNumber = ZAID.substr(0,ZAID.size()-3);
+
+  int MassNumber = atoi(sMassNumber.data());
+  int AtomicNumber = atoi(sAtomicNumber.data());
+
+  ZZ.push_back(AtomicNumber);
+  AA.push_back(MassNumber);
+  WF.push_back(WeightFrac);
+  ZAIDs.push_back(ZAID);
+
+  while(!textfile.eof()) {
+    getline(textfile,str);
+    if(str.find("nlib")!=std::string::npos) break;
+    std::stringstream ss1(str);
+    ss1 >> ZAID >> WeightFrac;
+    WeightFrac *= -1.;
+
+    sMassNumber = ZAID.substr(ZAID.size()-3,ZAID.size());
+    sAtomicNumber = ZAID.substr(0,ZAID.size()-3);
+
+    MassNumber = atoi(sMassNumber.data());
+    AtomicNumber = atoi(sAtomicNumber.data());
+
+    ZZ.push_back(AtomicNumber);
+    AA.push_back(MassNumber);
+    WF.push_back(WeightFrac);
+    ZAIDs.push_back(ZAID);
+  }
+
+  textfile.close();
+
+  std::vector<G4Element*> theElements;
+  std::vector<double> MassofElements;
+  std::vector<int> allreadyused;
+  for(unsigned int i=0;i<ZZ.size();i++) {
+    int Z = ZZ[i];
+    bool skip = false;
+    for(int j=0;j<allreadyused.size();j++) {
+      if(Z==allreadyused[j]) {
+        skip = true;
+        break;
+      }
+    }
+    if(skip) {
+      continue;
+    } else {
+      allreadyused.push_back(Z);
+    }
+
+    double atomic_mass = 0.;
+    for(unsigned int k=0;k<AME_Z.size();k++) {
+      if(ZZ[i]==AME_Z[k] && AA[i]==AME_A[k]) atomic_mass = AME_mass[k]*g/mole;
+    }
+    G4Isotope* Isotope = new G4Isotope(ZAIDs[i].data(),Z,AA[i],atomic_mass);
+
+    std::vector<double> moles;
+    double mass = WF[i]*TotMass;
+    moles.push_back(mass/atomic_mass);
+
+    double sum_of_mass = mass;
+
+    std::vector<G4Isotope*> Isotopes;
+    Isotopes.push_back(Isotope);
+    for(unsigned int j=0;j<ZZ.size();j++) {
+      if(i==j) continue;
+      if(ZZ[j]==Z) {
+        atomic_mass = 0.;
+        for(unsigned int k=0;k<AME_Z.size();k++) {
+          if(ZZ[j]==AME_Z[k] && AA[j]==AME_A[k]) atomic_mass = AME_mass[k]*g/mole;
+        }
+        Isotope = new G4Isotope(ZAIDs[j].data(),Z,AA[j],atomic_mass);
+        Isotopes.push_back(Isotope);
+
+        mass = WF[j]*TotMass;
+        moles.push_back(mass/atomic_mass);
+        sum_of_mass += mass;
+      }
+    }
+
+    double sum_of_moles = 0.;
+    for(unsigned int j=0;j<moles.size();j++) sum_of_moles += moles[j];
+
+    char ElName[32];
+    snprintf(ElName,32,"Element-%d",Z);
+    G4Element *Element = new G4Element(ElName,ElName,Isotopes.size());
+    for(unsigned int j=0;j<Isotopes.size();j++) {
+      Element->AddIsotope(Isotopes[j],moles[j]/sum_of_moles);
+    }
+    theElements.push_back(Element);
+    MassofElements.push_back(sum_of_mass);
+  } 
+
+  double FuelVolume = 17.*17.*366.78*pow(0.38,2.)*3.141592654; //total volume of fuel in the w17x17 (17 x 17 x rod-height x pi x ror-rad²)
+  double density = TotMass/FuelVolume*g/cm3;
+  fFuelMat = new G4Material("fuel",density,theElements.size());
+  for(unsigned int i=0;i<theElements.size();i++) {
+    fFuelMat->AddElement(theElements[i],MassofElements[i]/TotMass);
+  }
+
+}
+
+
+G4AssemblyVolume* DetectorConstruction::EJ309_5x5inch(G4int copyNbr, const char* name)
+{
+  G4AssemblyVolume *detectorAssembly = new G4AssemblyVolume();
+//-------------------Scintillator dimensions-------------------------------------------
+  G4double ScintRad = 127./2.*mm;
+  G4double ScintHeight = 127.*mm;
+  G4double ScintHouseWall = 1.52*mm;
+  G4double LightGuideRad = 5.5*cm;
+  G4double LightGuideHeight = 31.97*mm;
+
+    //Scintillator Housing
+  G4int Nzplanes = 14;
+  const G4double zPlane[14] = {0.,0.,120.9,120.9,159.,159.,165.35,165.35,175.35,175.35,236.35,278.4,386.4,386.4};
+  const G4double rInner[14] = {0.,0.,0.,0.,0.,0.,0.};
+  const G4double rOuter[14] = {0.,65.0,65.0,69.85,69.85,88.,88.,80.,80.,71.,71.,29.,29.,0.};
+  G4Polycone *DetHouseS = new G4Polycone("DetHouseS",0.,360.*deg,Nzplanes,zPlane,rInner,rOuter);
+    G4LogicalVolume *fLogicScintDetector = new G4LogicalVolume(DetHouseS, fAlu, "5inch-EJ309",0,0,0);
+
+    //Inside Scintillator Housing
+
+  G4int NzplanesIn = 8;
+  const G4double zPlaneIn[8] = {ScintHouseWall+ScintHeight,ScintHouseWall+ScintHeight,ScintHouseWall+ScintHeight+LightGuideHeight,ScintHouseWall+ScintHeight+LightGuideHeight,236.35,278.4,384.88,384.88};
+  const G4double rInnerIn[8] = {0.,0.,0.,0.,0.,0.,0.,0.};
+  const G4double rOuterIn[8] = {0.,ScintRad,ScintRad,71.-0.64,71.-0.64,29.-0.64,29.-0.64,0.};
+  G4Polycone *PMT5inchInS = new G4Polycone("5inchPMTIns",0.,360.*deg,NzplanesIn,zPlaneIn,rInnerIn,rOuterIn);
+  G4LogicalVolume* InsidePMT5inchLV = new G4LogicalVolume(PMT5inchInS, fVacuum, "InsidePMT",0,0,0);
+    new G4PVPlacement(0,              // no rotation
+                      G4ThreeVector(0,0,0), // at (x,y,z) relative to the house
+                      InsidePMT5inchLV,   // its logical volume
+                      "PMT",       // its name
+                      fLogicScintDetector,        // its mother volume
+                      false,          // no boolean operations
+                      copyNbr,              // copy number
+                      false); // checking overlaps
+  G4VisAttributes *emptyVisAtt = new G4VisAttributes(G4Colour(0.,0.,1.));
+  InsidePMT5inchLV->SetVisAttributes(emptyVisAtt);
+
+  char nameLV[32];
+  snprintf(nameLV,32,"%s_LV",name);
+  
+    G4Tubs *Scintillator5inchS = new G4Tubs("Scintillator5inch",0.,ScintRad,ScintHeight/2.,0.*deg,360.*deg);
+    G4LogicalVolume* ScintillatorLV = new G4LogicalVolume(Scintillator5inchS, fEJ309, "5x5-EJ-309-LV",0,0,0);
+    G4VPhysicalVolume* ScintillatorPV = new G4PVPlacement(0,              // no rotation
+                      G4ThreeVector(0,0,ScintHouseWall+ScintHeight/2.), // at (x,y,z) relative to the house
+                      ScintillatorLV,   // its logical volume
+                      name,       // its name
+                      fLogicScintDetector,        // its mother volume
+                      false,          // no boolean operations
+                      copyNbr,              // copy number
+                      false); // checking overlaps
+  G4VisAttributes *scintVisAtt = new G4VisAttributes(G4Colour(1.,0.,0.));
+  ScintillatorLV->SetVisAttributes(scintVisAtt);  
+
+    G4Tubs *LightGuide5inchS = new G4Tubs("LightGuide5inchS",0.,LightGuideRad,LightGuideHeight/2.,0.*deg,360.*deg);
+    G4LogicalVolume* fLogicLightGuide5inch = new G4LogicalVolume(LightGuide5inchS, fBoroSilicate, "LightGuide",0,0,0);
+    new G4PVPlacement(0,              // no rotation
+                      G4ThreeVector(0,0,LightGuideHeight/2.+ScintHouseWall+ScintHeight), // at (x,y,z) relative to the house
+                      fLogicLightGuide5inch,   // its logical volume
+                      "LightGuide",       // its name
+                      InsidePMT5inchLV,        // its mother volume
+                      false,          // no boolean operations
+                      copyNbr,              // copy number
+                      false); // checking overlaps
+  G4VisAttributes *lightguideVisAtt = new G4VisAttributes(G4Colour(0.,1.,0.));
+  fLogicLightGuide5inch->SetVisAttributes(lightguideVisAtt);
+
+  G4VisAttributes *VisAtt = new G4VisAttributes(G4Colour::Gray());
+  //VisAtt->SetForceWireframe(true);
+  fLogicScintDetector->SetVisAttributes(VisAtt);
+
+  G4RotationMatrix rot0;
+  G4ThreeVector pos0(0.,0.,0.);
+  detectorAssembly->AddPlacedVolume(fLogicScintDetector,pos0, &rot0);
+
+  return detectorAssembly;
+}
+
+G4LogicalVolume* DetectorConstruction::Make5inchEJ309(G4int copyNbr, const char* name)
+{
+//------------Scintillation Detector------------------------------------------------
+  /*
+    local coordinate system oriented along the z-axis with z=0 pointing towards the back of the detector,
+    inside the detector 7.55/2. cm from the entry window.
+  */
+
+//-------------------Scintillator dimensions-------------------------------------------
+  G4double ScintRad = 127./2.*mm;
+  G4double ScintHeight = 127.*mm;
+  G4double ScintHouseWall = 1.52*mm;
+  G4double LightGuideRad = 5.5*cm;
+  G4double LightGuideHeight = 31.97*mm;
+
+    //Scintillator Housing
+  G4int Nzplanes = 14;
+  const G4double zPlane[14] = {0.,0.,120.9,120.9,159.,159.,165.35,165.35,175.35,175.35,236.35,278.4,386.4,386.4};
+  const G4double rInner[14] = {0.,0.,0.,0.,0.,0.,0.};
+  const G4double rOuter[14] = {0.,65.0,65.0,69.85,69.85,88.,88.,80.,80.,71.,71.,29.,29.,0.};
+  G4Polycone *DetHouseS = new G4Polycone("DetHouseS",0.,360.*deg,Nzplanes,zPlane,rInner,rOuter);
+    G4LogicalVolume *fLogicScintDetector = new G4LogicalVolume(DetHouseS, fAlu, "5inch-EJ309",0,0,0);
+
+    //Inside Scintillator Housing
+
+  G4int NzplanesIn = 8;
+  const G4double zPlaneIn[8] = {ScintHouseWall+ScintHeight,ScintHouseWall+ScintHeight,ScintHouseWall+ScintHeight+LightGuideHeight,ScintHouseWall+ScintHeight+LightGuideHeight,236.35,278.4,384.88,384.88};
+  const G4double rInnerIn[8] = {0.,0.,0.,0.,0.,0.,0.,0.};
+  const G4double rOuterIn[8] = {0.,ScintRad,ScintRad,71.-0.64,71.-0.64,29.-0.64,29.-0.64,0.};
+  G4Polycone *PMT5inchInS = new G4Polycone("5inchPMTIns",0.,360.*deg,NzplanesIn,zPlaneIn,rInnerIn,rOuterIn);
+  G4LogicalVolume* InsidePMT5inchLV = new G4LogicalVolume(PMT5inchInS, fVacuum, "InsidePMT",0,0,0);
+    new G4PVPlacement(0,              // no rotation
+                      G4ThreeVector(0,0,0), // at (x,y,z) relative to the house
+                      InsidePMT5inchLV,   // its logical volume
+                      "PMT",       // its name
+                      fLogicScintDetector,        // its mother volume
+                      false,          // no boolean operations
+                      copyNbr,              // copy number
+                      false); // checking overlaps
+  G4VisAttributes *emptyVisAtt = new G4VisAttributes(G4Colour(0.,0.,1.));
+  InsidePMT5inchLV->SetVisAttributes(emptyVisAtt);
+
+  char nameLV[32];
+  snprintf(nameLV,32,"%s_LV",name);
+  G4cout << "logicl vol name = " << nameLV << G4endl;
+  
+    G4Tubs *Scintillator5inchS = new G4Tubs("Scintillator5inch",0.,ScintRad,ScintHeight/2.,0.*deg,360.*deg);
+    G4LogicalVolume* ScintillatorLV = new G4LogicalVolume(Scintillator5inchS, fEJ309, "5x5-EJ-309-LV",0,0,0);
+    G4VPhysicalVolume* ScintillatorPV = new G4PVPlacement(0,              // no rotation
+                      G4ThreeVector(0,0,ScintHouseWall+ScintHeight/2.), // at (x,y,z) relative to the house
+                      ScintillatorLV,   // its logical volume
+                      name,       // its name
+                      fLogicScintDetector,        // its mother volume
+                      false,          // no boolean operations
+                      copyNbr,              // copy number
+                      false); // checking overlaps
+  G4VisAttributes *scintVisAtt = new G4VisAttributes(G4Colour(1.,0.,0.));
+  ScintillatorLV->SetVisAttributes(scintVisAtt);  
+
+    G4Tubs *LightGuide5inchS = new G4Tubs("LightGuide5inchS",0.,LightGuideRad,LightGuideHeight/2.,0.*deg,360.*deg);
+    G4LogicalVolume* fLogicLightGuide5inch = new G4LogicalVolume(LightGuide5inchS, fBoroSilicate, "LightGuide",0,0,0);
+    new G4PVPlacement(0,              // no rotation
+                      G4ThreeVector(0,0,LightGuideHeight/2.+ScintHouseWall+ScintHeight), // at (x,y,z) relative to the house
+                      fLogicLightGuide5inch,   // its logical volume
+                      "LightGuide",       // its name
+                      InsidePMT5inchLV,        // its mother volume
+                      false,          // no boolean operations
+                      copyNbr,              // copy number
+                      false); // checking overlaps
+  G4VisAttributes *lightguideVisAtt = new G4VisAttributes(G4Colour(0.,1.,0.));
+  fLogicLightGuide5inch->SetVisAttributes(lightguideVisAtt);
+
+  G4VisAttributes *VisAtt = new G4VisAttributes(G4Colour::Gray());
+  //VisAtt->SetForceWireframe(true);
+  fLogicScintDetector->SetVisAttributes(VisAtt);
+  return fLogicScintDetector;
+}

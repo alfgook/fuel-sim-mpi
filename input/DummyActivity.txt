@@ -1,0 +1,8 @@
+=========================================================================================================================
+=   Nuclide concentrations in becquerels for case 'axial zone: 001, pin: 01-01' (#1)                                    =
+=   SKB-TR-10-13-PWR-5years                                                                                             =
+-------------------------------------------------------------------------------------------------------------------------
+  (relative cutoff; integral of concentrations over time >   1.00E-04 % of integral of all concentrations over time)
+.
+       ********d 
+  cm-244  1.0 1

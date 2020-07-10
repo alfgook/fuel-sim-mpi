@@ -1,0 +1,46 @@
+
+# Compile and link to produce geant4 executable
+# (choose one of the following)
+# ----------------------------------------------
+# a) use local version of fission library (from ../../lib/libFission.*)
+#    valid for Geant4.10.01
+   CXX=`which g++` CC=`which gcc` cmake ../fuel-sim -DUSE_FISSION_NEW:BOOL=ON -DGeant4_DIR=$G4LIB
+   make
+
+# b) same as above and activate FREYA
+#    valid for Geant4.10.01
+   CXX=`which g++` CC=`which gcc` cmake ../fuel-sim -DUSE_FISSION_NEW:BOOL=ON -DUSE_FREYA:BOOL=ON -DGeant4_DIR=$G4LIB
+   make
+
+# c) use old fission library built into geant
+#    valid for Geant4 version strictly greater than reference 4-10-00-ref-06
+#    run fails for Geant4 versions between 4.9.6 and 4.10.00
+   CXX=`which g++` CC=`which gcc` cmake ../. -DGeant4_DIR=$G4LIB
+   make
+
+# Optional flag DEBUG_ALPHA_N can be set to only simulate the (alpha,n) reaction, useful when setting
+# up the cross section biasing value, to turn it on
+
+	CXX=`which g++` CC=`which gcc` cmake ../fuel-sim -DUSE_FISSION_NEW:BOOL=ON -DUSE_FREYA:BOOL=ON -DGeant4_DIR=$G4LIB -DDEBUG_ALPHA_N:BOOL=ON
+	make
+
+# Add flag -DFISSION_DIR:PATH to locate the fission library
+
+	CXX=`which g++` CC=`which gcc` cmake ../ -DUSE_FISSION_NEW:BOOL=ON -DUSE_FREYA:BOOL=ON -DFISSION_DIR:PATH='/home/alf/programs/fission_v2.0.5'
+
+	CXX=`which g++` CC=`which gcc` cmake ../ -DUSE_FISSION_NEW:BOOL=ON -DUSE_FREYA:BOOL=ON -DFISSION_DIR:PATH='/Users/alfgook/geant4/fission_v2.0.5'
+
+# to turn it off 
+
+	cmake ../fuel-sim -DDEBUG_ALPHA_N:BOOL=OFF
+	make
+
+# or remove the CMakeCache.txt and start over
+
+	rm CMakeCache.txt
+	CXX=`which g++` CC=`which gcc` cmake ../fuel-sim -DUSE_FISSION_NEW:BOOL=ON -DUSE_FREYA:BOOL=ON -DGeant4_DIR=$G4LIB
+	make
+
+# for mpi build
+
+	CXX=`which g++` CC=`which gcc` cmake ../ -DUSE_FISSION_NEW:BOOL=ON -DUSE_FREYA:BOOL=ON -DFISSION_DIR:PATH='/home/alf/programs/fission_v2.0.5' -DG4mpi_DIR=/home/alf/programs/g4mpi/lib/G4mpi-10.6.1

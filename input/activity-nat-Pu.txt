@@ -1,0 +1,13 @@
+=========================================================================================================================
+=   Nuclide concentrations in becquerels, actinides for case 'axial zone: 001, pin: 01-01' (#1)                         =
+=   SKB-TR-10-13-PWR                                                                                                    =
+-------------------------------------------------------------------------------------------------------------------------
+  (relative cutoff; integral of concentrations over time >   1.00E-04 % of integral of all concentrations over time)
+.
+                xxxxxx 
+  pu-238  0.942846
+  pu-239  0.000631
+  pu-240  0.000446
+  pu-241  0.056076
+  pu-242  2.6707e-07
+------------

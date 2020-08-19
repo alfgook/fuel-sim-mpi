@@ -85,13 +85,11 @@ int main(int argc,char** argv) {
 
   // --------------------------------------------------------------------
   // MPI session
-  bool useNtuple = true;
-  bool mergeNtuple = true;
   // --------------------------------------------------------------------
   // At first, G4MPImanager/G4MPIsession should be created.
   G4int nofExtraWorkers = 0;
 //#ifndef G4MULTITHREADED
-  if ( mergeNtuple ) nofExtraWorkers = 1;
+//  if ( mergeNtuple ) nofExtraWorkers = 1;
 //#endif
   G4MPImanager* g4MPI = new G4MPImanager(argc, argv, nofExtraWorkers);
   g4MPI->SetVerbose(1);

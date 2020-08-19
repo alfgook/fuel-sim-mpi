@@ -39,6 +39,10 @@
 #include "G4ParticleDefinition.hh"
 #include "G4RunManager.hh"
 
+#if IS_MPI_COMPILED
+#include "G4MPImanager.hh"
+#endif
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 ParticleSourceFromFile::ParticleSourceFromFile(G4String FileName)
@@ -62,6 +66,11 @@ ParticleSourceFromFile::~ParticleSourceFromFile()
 void  ParticleSourceFromFile::OpenFile(G4String FileName)
 {
   eofReached = false;
+  #if IS_MPI_COMPILED
+  //G4cout << "THIS IS AN MPI SESSION" << G4endl;
+  G4int rank = G4MPImanager::GetManager()->GetRank();
+  FileName += "_r" + std::to_string(rank);
+  #endif
   // set up the ntuple reader
   G4AnalysisReader* analysisReader = G4AnalysisReader::Instance();
   analysisReader->SetFileName(FileName);

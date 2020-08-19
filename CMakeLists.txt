@@ -42,6 +42,7 @@ include(${Geant4_USE_FILE})
 
 #------------------------------------------------------------------------------
 add_definitions(-DTOOLS_USE_NATIVE_MPI) 
+add_definitions(-DIS_MPI_COMPILED) 
 
 #----------------------------------------------------------------------------
 # Locate sources and headers for this project
@@ -85,13 +86,20 @@ endforeach()
 # relies on these data being in the current working directory.
 #
 set(input_files
-    input/MetaStables.txt
-    input/SKB-TR-10-13-PWR_MCNP_matls.inp
     input/actinides.txt
-    input/atomic-mass-eval-2016.txt
-    input/elements.txt
-    input/DummyActivity.txt
     input/activities.txt
+    input/activity-nat-Pu.txt
+    input/atomic-mass-eval-2016.txt
+    input/DummyActivity.txt
+    input/elements.txt
+    input/MetaStables.txt
+    input/SKB-TR-10-13-PWR-5years-nuclide-vector.plt
+    input/SKB-TR-10-13-PWR-5years-nuclide-vector-truncated.plt
+    input/SKB-TR-10-13-PWR_gamma_spectrum.txt
+    input/SKB-TR-10-13-PWR_MCNP_matls.inp
+    input/SKB-TR-10-13-PWR_MCNP_matls_new.inp
+    input/SKB-TR-10-13-PWR_neutron_spectrum.txt
+    input/test_mat.plt
   )
 
 foreach(_script ${input_files})

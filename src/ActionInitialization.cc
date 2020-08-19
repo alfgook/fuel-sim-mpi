@@ -29,7 +29,8 @@
 
 #include "ActionInitialization.hh"
 #include "PrimaryGeneratorAction.hh"
-#include "RunAction.hh"
+//#include "RunAction.hh"
+#include "RunActionMPI.hh"
 #include "EventAction.hh"
 #include "SteppingAction.hh"
 #include "TrackingAction.hh"
@@ -53,7 +54,8 @@ ActionInitialization::~ActionInitialization()
 
 void ActionInitialization::BuildForMaster() const
 {
-  RunAction* runAction = new RunAction();
+  //RunAction* runAction = new RunAction();
+  RunActionMPI* runAction = new RunActionMPI();
   SetUserAction(runAction);
 }
 
@@ -61,12 +63,14 @@ void ActionInitialization::BuildForMaster() const
 
 void ActionInitialization::Build() const
 {
+
   //complex primary that decays all the nuclides based on thier activities
   PrimaryGeneratorAction* primary = new PrimaryGeneratorAction(fActivityFile); primary->SetNumberOfWorkers(nThreads);
 
   SetUserAction(primary);
     
-  RunAction* runAction = new RunAction();
+  //RunAction* runAction = new RunAction();
+  RunActionMPI* runAction = new RunActionMPI();
   SetUserAction(runAction);
   
   EventAction* eventAction = new EventAction();

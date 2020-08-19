@@ -83,6 +83,45 @@ namespace {
 
 int main(int argc,char** argv) {
 
+  int argcMacro = 0;
+  G4String macro;
+  G4String materialFile;
+  G4String activityFile;
+  G4String onOffBiasing = "on";
+#ifdef G4MULTITHREADED
+  G4int nThreads = 1;
+#endif
+  for ( G4int i=1; i<argc; i=i+2 ) {
+      if      ( G4String(argv[i]) == "-m" ) {
+        macro = argv[i+1];
+        argcMacro = i+1;
+      }
+      else if ( G4String(argv[i]) == "-af" ) activityFile = argv[i+1];
+      else if ( G4String(argv[i]) == "-mf" ) materialFile = argv[i+1];
+      else if ( G4String(argv[i]) == "-biasing" ) onOffBiasing = argv[i+1];
+#ifdef G4MULTITHREADED
+      else if ( G4String(argv[i]) == "-t" ) {
+          nThreads = G4UIcommand::ConvertToInt(argv[i+1]);
+      }
+#endif
+      else {
+          PrintUsage();
+          return 1;
+      }
+  }
+
+  G4cout << "macro = " << macro << G4endl;
+  G4cout << "biasing = " << onOffBiasing << G4endl;
+  G4cout << "materialFile = " << materialFile << G4endl;
+  G4cout << "activityFile = " << activityFile << G4endl;
+
+  int argcMPI = 1;
+  if(argcMacro) ++argcMPI;
+  char **argvMPI = new char*[argcMPI];
+  argvMPI[0] = argv[0];
+  if (argcMacro) argvMPI[1] = argv[argcMacro];
+
+
   // --------------------------------------------------------------------
   // MPI session
   // --------------------------------------------------------------------
@@ -91,7 +130,7 @@ int main(int argc,char** argv) {
 //#ifndef G4MULTITHREADED
 //  if ( mergeNtuple ) nofExtraWorkers = 1;
 //#endif
-  G4MPImanager* g4MPI = new G4MPImanager(argc, argv, nofExtraWorkers);
+  G4MPImanager* g4MPI = new G4MPImanager(argcMPI, argvMPI, nofExtraWorkers);
   g4MPI->SetVerbose(1);
   
   // MPI session (G4MPIsession) instead of G4UIterminal
@@ -113,34 +152,6 @@ int main(int argc,char** argv) {
 
   G4cout << "G4PARTICLEHPDATA = " << std::getenv("G4PARTICLEHPDATA") << G4endl;
   //G4cout << "G4ALPHAHPDATA = " << std::getenv("G4ALPHAHPDATA") << G4endl;
-
-  G4String macro;
-  G4String materialFile;
-  G4String activityFile;
-  G4String onOffBiasing = "on";
-#ifdef G4MULTITHREADED
-  G4int nThreads = 1;
-#endif
-  for ( G4int i=1; i<argc; i=i+2 ) {
-      if      ( G4String(argv[i]) == "-m" ) macro = argv[i+1];
-      else if ( G4String(argv[i]) == "-af" ) activityFile = argv[i+1];
-      else if ( G4String(argv[i]) == "-mf" ) materialFile = argv[i+1];
-      else if ( G4String(argv[i]) == "-biasing" ) onOffBiasing = argv[i+1];
-#ifdef G4MULTITHREADED
-      else if ( G4String(argv[i]) == "-t" ) {
-          nThreads = G4UIcommand::ConvertToInt(argv[i+1]);
-      }
-#endif
-      else {
-          PrintUsage();
-          return 1;
-      }
-  }
-
-  G4cout << "macro = " << macro << G4endl;
-  G4cout << "biasing = " << onOffBiasing << G4endl;
-  G4cout << "materialFile = " << materialFile << G4endl;
-  G4cout << "activityFile = " << activityFile << G4endl;
 
   //detect interactive mode (if no arguments) and define UI session
   /*G4UIExecutive* ui = 0;

@@ -15,6 +15,8 @@ ActivityTable::ActivityTable(G4String aFile, MyRadioactiveDecayBase *aRadDecay)
   fRadDecay = aRadDecay;
   G4AutoLock lock(&ActivityTable::ActivityTableMutex); //lock the mutex while reading from the text-file
 
+  //fRadDecay->LoadAllDecayTables();
+
   if(!aFile.size()) aFile = "input/activities.txt";
   fInit = true;
 

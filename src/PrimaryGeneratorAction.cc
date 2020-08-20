@@ -215,16 +215,17 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
   }
 
-  //const G4double timeCutOff = 1.E30*ns; //this is in ns
+  const G4double timeCutOff = 1.E30*ns; //this is in ns
   //const G4double timeCutOff = 1.E3*ns; //this is in ns
   //const G4double timeCutOff = DBL_MAX; //this is in ns
-  const G4double timeCutOff = 1.*ns; //only take the prompt emission into account
+  //const G4double timeCutOff = 1.*ns; //only take the prompt emission into account
   G4double time = 0.;
   G4bool hasDaughter = true;
   G4int loopCount = 0;
   while(theDecayTable && hasDaughter && time<timeCutOff) {
     if(!theDecayTable->entries()) break;
-    if(loopCount>10) break; //do not continue decay chain neyond 10 decays
+    //if(loopCount>10) break; //do not continue decay chain neyond 10 decays
+    if(loopCount) break; //do not follow the decay chain
     // Data found.  Try to decay nucleus
     // theDecayTable->DumpInfo();
     // Decay without variance reduction
@@ -246,12 +247,12 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       G4double kinEnergy = secondary->GetKineticEnergy();
 
       if(particleDef->GetPDGCharge()>2) { //this is the daugther of the decay => should be decayed further
-        ion = particleDef;
+        /*ion = particleDef;
         theDecayTable = fRadDecay->GetDecayTable(ion);
         hasDaughter = true;
         G4double LifeTime = ion->GetPDGLifeTime();
         //f(LifeTime>0.) time += G4RandExponential::shoot(LifeTime);
-        if(LifeTime>0.) time += -LifeTime*log(G4UniformRand());
+        if(LifeTime>0.) time += -LifeTime*log(G4UniformRand());*/
         //G4cout << "LifeTime = " << LifeTime << G4endl;
         //G4cout << "time = " << time << G4endl;
         continue; // do not add it to the primary vertex

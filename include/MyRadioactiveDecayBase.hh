@@ -111,6 +111,7 @@ class MyRadioactiveDecayBase : public G4VRestDiscreteProcess
 
     G4DecayTable* LoadDecayTable(const G4ParticleDefinition& theParentNucleus);
     // Load the decay data of isotope theParentNucleus
+    void LoadAllDecayTables();
 
     void AddUserDecayDataFile(G4int Z, G4int A,G4String filename);
     // Allow the user to replace the radio-active decay data provided in Geant4

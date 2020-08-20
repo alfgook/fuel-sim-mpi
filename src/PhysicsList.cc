@@ -70,7 +70,7 @@
 #include "G4ShortLivedConstructor.hh"
 
 
-PhysicsList::PhysicsList()
+PhysicsList::PhysicsList(G4bool np=true)
 :G4VModularPhysicsList()
 {
   G4int verb = 1;
@@ -106,7 +106,7 @@ PhysicsList::PhysicsList()
   //RegisterPhysics( new G4HadronPhysicsQGSP_BIC_HP(verbose)); //try to add on top
 
   // Neutron Physics
-  //RegisterPhysics( new NeutronHPphysics("neutronHP")); //using FREYA
+  if(np) RegisterPhysics( new NeutronHPphysics("neutronHP")); //using FREYA
 #endif
   // Stopping Physics
   //RegisterPhysics( new G4StoppingPhysics());

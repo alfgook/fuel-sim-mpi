@@ -39,7 +39,7 @@
 class PhysicsList: public G4VModularPhysicsList
 {
 public:
-  PhysicsList();
+  PhysicsList(G4bool np);
  ~PhysicsList();
 
 public:

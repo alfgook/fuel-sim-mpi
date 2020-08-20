@@ -6,6 +6,8 @@
 
 #include "G4NeutronHPManager.hh"
 
+#include "G4AutoDelete.hh"
+
 G4FissLib_new::G4FissLib_new()
 :G4HadronicInteraction("FissLib_new")
 {
@@ -31,6 +33,7 @@ G4FissLib_new::G4FissLib_new()
   }
   delete theFS;
   
+  G4AutoDelete::Register(this);
 }
   
 G4FissLib_new::~G4FissLib_new()

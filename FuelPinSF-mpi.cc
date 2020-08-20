@@ -230,11 +230,11 @@ int main(int argc,char** argv) {
 
   //initialize G4 kernel
   runManager->Initialize();
-
+/*
   G4VisExecutive* visManager = new G4VisExecutive;
   visManager-> Initialize();
   G4cout << G4endl;
-
+*/
   //initialize visualization
   //G4VisManager* visManager = nullptr;
 
@@ -267,7 +267,7 @@ int main(int argc,char** argv) {
   // --------------------------------------------------------------------
   // termination
   // --------------------------------------------------------------------
-  delete visManager;
+  //delete visManager;
   delete g4MPI;
   delete runManager;
 

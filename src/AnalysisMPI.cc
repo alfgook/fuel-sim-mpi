@@ -66,10 +66,10 @@ AnalysisMPI::Book()
 
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 
-  /*#ifdef G4MULTITHREADED
+  #ifdef G4MULTITHREADED
   // MT ntuple merging
   analysisManager->SetNtupleMerging(true);
-  #endif*/
+  #endif
 
 //----------------histograms---------------------------------------------------
   analysisManager->CreateH1("sGamma","Gamma-ray source",2000,0,20); // 0

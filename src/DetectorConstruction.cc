@@ -74,7 +74,7 @@
 DetectorConstruction::DetectorConstruction(G4String aMaterialFile)
  : G4VUserDetectorConstruction(),
     fStepLimit(NULL), 
-    fCheckOverlaps(true)
+    fCheckOverlaps(false)
 {
 	G4cout << "DetectorConstruction::DetectorConstruction" << G4endl;
 	fMaterialFile = aMaterialFile;

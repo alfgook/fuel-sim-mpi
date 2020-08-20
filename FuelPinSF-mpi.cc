@@ -61,7 +61,7 @@
 
 #include "G4UIExecutive.hh"
 #include "G4VisExecutive.hh"
-#include "G4ScoringManager.hh"
+//#include "G4ScoringManager.hh"
 
 
 #include <unistd.h>
@@ -176,7 +176,7 @@ int main(int argc,char** argv) {
   G4MTRunManager* runManager = new G4MTRunManager;
   nThreads = std::min(nThreads,G4Threading::G4GetNumberOfCores());
   runManager->SetNumberOfThreads(nThreads);
-  G4ScoringManager::GetScoringManager();
+  //G4ScoringManager::GetScoringManager();
 #else
   //my Verbose output class
   G4VSteppingVerbose::SetInstance(new SteppingVerbose);

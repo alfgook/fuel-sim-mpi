@@ -115,6 +115,8 @@ int main(int argc,char** argv) {
       }
   }
 
+  G4cout << "input dir = " << std::getenv("FUEL_SIM_INPUT_DIR") << G4endl;
+
   G4cout << "macro = " << macro << G4endl;
   G4cout << "biasing = " << onOffBiasing << G4endl;
   G4cout << "materialFile = " << materialFile << G4endl;

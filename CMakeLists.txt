@@ -80,6 +80,9 @@ foreach(_script ${rdecay01_SCRIPTS})
     )
 endforeach()
 
+#set environment variable to point to the directory of input files
+set(ENV{FUEL_SIM_INPUT_DIR} ${PROJECT_BINARY_DIR}/input)
+
 #----------------------------------------------------------------------------
 # Copy all input data to the build directory.
 # This is so that we can run the executable directly because it

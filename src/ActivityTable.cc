@@ -1,3 +1,4 @@
+#include "Config.h"
 #include "ActivityTable.hh"
 #include "Randomize.hh"
 #include "G4DecayTable.hh"
@@ -17,7 +18,8 @@ ActivityTable::ActivityTable(G4String aFile, MyRadioactiveDecayBase *aRadDecay)
 
   //fRadDecay->LoadAllDecayTables();
 
-  if(!aFile.size()) aFile = "input/activities.txt";
+  G4String dir(INPUT_DIR);
+  if(!aFile.size()) aFile = dir + "/activities.txt";
   fInit = true;
 
   nPrimaries = 0;
@@ -29,10 +31,10 @@ ActivityTable::ActivityTable(G4String aFile, MyRadioactiveDecayBase *aRadDecay)
       ed << "      Could not open activity file: " << aFile.data() << G4endl;
       G4Exception("ActivityTable::ActivityTable(...)",
                   "ActivityTable.01",
-                  JustWarning,
+                  FatalException,
                   ed);
 
-    textfile.open("input/DummyActivity.txt");
+    /*textfile.open("input/DummyActivity.txt");
     if(!textfile.is_open()) {
       G4ExceptionDescription ed2;
       ed2 << "      Could not open the dummy activity file: input/DummyActivity.txt" << G4endl;
@@ -40,7 +42,7 @@ ActivityTable::ActivityTable(G4String aFile, MyRadioactiveDecayBase *aRadDecay)
                   "ActivityTable.02",
                   FatalException,
                   ed2);
-    }
+    }*/
 
     fInit = false;
   }
@@ -68,7 +70,8 @@ ActivityTable::ActivityTable(G4String aFile, MyRadioactiveDecayBase *aRadDecay)
   //--read file used to convert element name to Z
   std::vector<std::string> elements;
 
-  textfile.open("input/elements.txt");
+  aFile = dir + "/elements.txt";
+  textfile.open(aFile.data());
   if(!textfile.is_open()) {
     G4ExceptionDescription ed;
     ed << "      Could not open the input file: input/elements.txt" << G4endl;
@@ -86,7 +89,8 @@ ActivityTable::ActivityTable(G4String aFile, MyRadioactiveDecayBase *aRadDecay)
   std::vector<std::string> ExcitationKey;
   std::vector<double> ExcitationEnergy;
 
-  textfile.open("input/MetaStables.txt");
+  aFile = dir + "/MetaStables.txt";
+  textfile.open(aFile.data());
   if(!textfile.is_open()) {
     G4ExceptionDescription ed;
     ed << "      Could not open the input file: input/MetaStables.txt" << G4endl;

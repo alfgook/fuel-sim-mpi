@@ -150,9 +150,10 @@ int DetectorConstruction::ReadMCNPmatCard(const char *FileName)
 	double TotMass = 0.;
 
 	std::string str;
-
 	//read AME-2016
-	std::ifstream textfile("input/atomic-mass-eval-2016.txt");
+	G4String dir(INPUT_DIR);
+	G4String aFile = dir + "/atomic-mass-eval-2016.txt";
+	std::ifstream textfile(aFile.data());
 	if(!textfile.is_open()) {
       G4ExceptionDescription ed;
       ed << "      Could not open the file: input/input/atomic-mass-eval-2016.txt" << G4endl;

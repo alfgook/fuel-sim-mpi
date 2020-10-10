@@ -267,7 +267,9 @@ void DetectorConstruction::ReadMCNPmatCard(const char *FileName)
   std::string str;
 
   //read AME-2016
-  std::ifstream textfile("atomic-mass-eval-2016.txt");
+  G4String dir(INPUT_DIR);
+  G4String aFile = dir + "/atomic-mass-eval-2016.txt";
+  std::ifstream textfile(aFile.data());
   getline(textfile,str);
   getline(textfile,str);
 

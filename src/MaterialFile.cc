@@ -1,3 +1,4 @@
+#include "Config.h"
 #include "MaterialFile.hh"
 
 #include <algorithm>
@@ -48,7 +49,10 @@ MaterialFile::MaterialFile(const char *FileName, G4String matName, G4double Volu
 
 		//read AME-2016
 	std::string str;
-	std::ifstream textfile("input/atomic-mass-eval-2016.txt");
+
+	G4String dir(INPUT_DIR);
+	G4String aFile = dir + "/atomic-mass-eval-2016.txt";
+	std::ifstream textfile(aFile.data());
 	if(!textfile.is_open()) {
 	  G4ExceptionDescription ed;
 	  ed << "      Could not open the file: input/input/atomic-mass-eval-2016.txt" << G4endl;

@@ -384,8 +384,17 @@ void ActivityTable::GenerateMotherNuclide(G4int &Z, G4int &A, G4double &E, G4boo
   catch (const std::out_of_range& oor) {
     G4cerr << "GenerateMotherNuclide fZZ.at(fBin)" << G4endl;
   }
-  A = fAA.at(fBin);
-  E = fExcEnergy.at(fBin);
-  ApplyBRbias = fBRbias.at(fBin);
+  try {A = fAA.at(fBin);}
+  catch (const std::out_of_range& oor) {
+    G4cerr << "GenerateMotherNuclide fAA.at(fBin)" << G4endl;
+  }
+  try {E = fExcEnergy.at(fBin);}
+  catch (const std::out_of_range& oor) {
+    G4cerr << "GenerateMotherNuclide fExcEnergy.at(fBin)" << G4endl;
+  }
+  try {ApplyBRbias = fBRbias.at(fBin);}
+  catch (const std::out_of_range& oor) {
+    G4cerr << "GenerateMotherNuclide fBRbias.at(fBin)" << G4endl;
+  }
 
 }

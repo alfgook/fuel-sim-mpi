@@ -903,7 +903,7 @@ MyRadioactiveDecayBase::LoadDecayTable(const G4ParticleDefinition& theParentNucl
   return theDecayTable;
 }
 
-/*void MyRadioactiveDecayBase::LoadAllDecayTables()
+void MyRadioactiveDecayBase::LoadAllDecayTables()
 {
   std::string path = dirPath;
   for (const auto & entry : std::filesystem::directory_iterator(path)) {
@@ -925,9 +925,10 @@ MyRadioactiveDecayBase::LoadDecayTable(const G4ParticleDefinition& theParentNucl
         G4ParticleDefinition* ion = G4IonTable::GetIonTable()->GetIon(Z,A,0.);
         GetDecayTable(ion);
       }
-  }     
+  }
+        
 
-}*/
+}
 
 void
 MyRadioactiveDecayBase::AddUserDecayDataFile(G4int Z, G4int A, G4String filename)

@@ -62,7 +62,7 @@ AnalysisMPI::AnalysisMPI()
 void
 AnalysisMPI::Book()
 {
-  G4cout << "AnalysisMPI::Book start" << G4endl;
+  G4cout << "Analysis::Book start" << G4endl;
 
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 

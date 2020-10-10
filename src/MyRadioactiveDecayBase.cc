@@ -903,33 +903,6 @@ MyRadioactiveDecayBase::LoadDecayTable(const G4ParticleDefinition& theParentNucl
   return theDecayTable;
 }
 
-void MyRadioactiveDecayBase::LoadAllDecayTables()
-{
-  std::string path = dirPath;
-  for (const auto & entry : std::filesystem::directory_iterator(path)) {
-      //G4cout << entry.path().string() << G4endl;
-      //G4cout << entry.path().extension().string() << G4endl;
-
-      std::string stem = entry.path().stem().string();
-      std::string extension = entry.path().extension().string();
-
-      stem.erase(0,1); //remove the z character
-      extension.erase(0,2); //remove the a character
-
-      G4int Z = atoi(stem.data());
-      G4int A = atoi(extension.data());
-
-      //G4cout << "Z = " << Z << " : A = " << A << G4endl;
-
-      if(Z && A) {
-        G4ParticleDefinition* ion = G4IonTable::GetIonTable()->GetIon(Z,A,0.);
-        GetDecayTable(ion);
-      }
-  }
-        
-
-}
-
 void
 MyRadioactiveDecayBase::AddUserDecayDataFile(G4int Z, G4int A, G4String filename)
 {

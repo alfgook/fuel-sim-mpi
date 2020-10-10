@@ -62,16 +62,18 @@ class ActivityTable
     G4double GetTotalActivity() { return activityTotal; };
     G4bool IsInit() { return fInit; };
     G4bool GetMetaStable() { 
-        try {fMetaStable.at(fBin)}
+        try {fMetaStable.at(fBin);}
         catch (const std::out_of_range& oor) {
             G4cerr << "GetMetaStable fMetaStable.at(fBin)" << G4endl;
+            return false;
         }
         return fMetaStable.at(fBin); 
     };
     G4int GetRestrictedDecayChannelNbr() {
-        try {fTables.at(fBin)}
+        try {fTables.at(fBin);}
         catch (const std::out_of_range& oor) {
             G4cerr << "GetRestrictedDecayChannelNbr fTables.at(fBin)" << G4endl;
+            return 0;
         }
         return fTables.at(fBin).SelectDecayChannel(); 
 

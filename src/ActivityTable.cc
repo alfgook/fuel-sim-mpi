@@ -375,13 +375,15 @@ void ActivityTable::CleanUpTable()
 
 void ActivityTable::GenerateMotherNuclide(G4int &Z, G4int &A, G4double &E, G4bool &ApplyBRbias)
 {
-
   G4double urn = G4UniformRand();
   for(fBin=0;fBin<activityCumulative.size();fBin++) {
     if(urn<=activityCumulative.at(fBin)) break;
   }
 
-  Z = fZZ.at(fBin);
+  try { Z = fZZ.at(fBin); }
+  catch (const std::out_of_range& oor) {
+    G4cerr << "GenerateMotherNuclide fZZ.at(fBin)" << G4endl;
+  }
   A = fAA.at(fBin);
   E = fExcEnergy.at(fBin);
   ApplyBRbias = fBRbias.at(fBin);

@@ -61,8 +61,21 @@ class ActivityTable
     void GenerateMotherNuclide(G4int &Z, G4int &A, G4double &E, G4bool &ApplyBRbias);
     G4double GetTotalActivity() { return activityTotal; };
     G4bool IsInit() { return fInit; };
-    G4bool GetMetaStable() { return fMetaStable.at(fBin); };
-    G4int GetRestrictedDecayChannelNbr() { return fTables.at(fBin).SelectDecayChannel(); };
+    G4bool GetMetaStable() { 
+        try {fMetaStable.at(fBin)}
+        catch (const std::out_of_range& oor) {
+            G4cerr << "GetMetaStable fMetaStable.at(fBin)" << G4endl;
+        }
+        return fMetaStable.at(fBin); 
+    };
+    G4int GetRestrictedDecayChannelNbr() {
+        try {fTables.at(fBin)}
+        catch (const std::out_of_range& oor) {
+            G4cerr << "GetRestrictedDecayChannelNbr fTables.at(fBin)" << G4endl;
+        }
+        return fTables.at(fBin).SelectDecayChannel(); 
+
+    };
 
     void RestrictTo(G4String);
     void ExcludeAphaAndSF();

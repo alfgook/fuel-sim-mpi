@@ -31,6 +31,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+#include "Config.h"
 
 #include "G4MPImanager.hh"
 #include "G4MPIsession.hh"
@@ -115,7 +116,8 @@ int main(int argc,char** argv) {
       }
   }
 
-  G4cout << "input dir = " << std::getenv("FUEL_SIM_INPUT_DIR") << G4endl;
+  const char* input_dir = INPUT_DIR;
+  G4cout << "input dir = " << input_dir << G4endl;
 
   G4cout << "macro = " << macro << G4endl;
   G4cout << "biasing = " << onOffBiasing << G4endl;

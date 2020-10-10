@@ -28,6 +28,8 @@
 /// \file DetectorConstruction.cc
 /// \brief Implementation of the DetectorConstruction class
 
+#include "Config.h"
+
 #include "DetectorConstruction.hh"
 
 #include "ScintilatorSD.hh"
@@ -78,7 +80,10 @@ DetectorConstruction::DetectorConstruction(G4String aMaterialFile)
 {
 	G4cout << "DetectorConstruction::DetectorConstruction" << G4endl;
 	fMaterialFile = aMaterialFile;
-	if(!fMaterialFile.size()) fMaterialFile = "input/SKB-TR-10-13-PWR_MCNP_matls.inp";
+	if(!fMaterialFile.size()) {
+		G4String dir(INPUT_DIR);
+		fMaterialFile = dir + "/SKB-TR-10-13-PWR_MCNP_matls.inp";
+	}
 
 	fMessenger = new G4GenericMessenger(this,"/Detector/XSbias/", "control the biasing of cross section");
   	auto& cmd = fMessenger->DeclareMethod("ChangeBiasForParticle",

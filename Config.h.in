@@ -1,0 +1,3 @@
+// the configured options and settings for fuel-sim-mpi
+#define INPUT_DIR "@FUEL_SIM_INPUT_DIR@"
+

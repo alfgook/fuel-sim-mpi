@@ -6,8 +6,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 message(STATUS
             "CXX_FLAGS : ${CMAKE_CXX_FLAGS}")
 
-# Setup the project
-cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 # Check if we have a fortran compiler
 find_program(FORT NAMES $ENV{FC}
                         gfortran
@@ -50,11 +48,13 @@ add_definitions(-DIS_MPI_COMPILED)
 include_directories(${PROJECT_SOURCE_DIR}/include 
                     ${PROJECT_SOURCE_DIR}/SaG4n/include
                     ${Geant4_INCLUDE_DIR}
-                    ${G4mpi_INCLUDE_DIR})
+                    ${G4mpi_INCLUDE_DIR}
+                    ${PROJECT_BINARY_DIR})
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc
                   ${PROJECT_SOURCE_DIR}/SaG4n/src/*.cc)
 file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh
-                   ${PROJECT_SOURCE_DIR}/SaG4n/include/*.hh)
+                   ${PROJECT_SOURCE_DIR}/SaG4n/include/*.hh
+		  ${PROJECT_BINARY_DIR}/Config.h)
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
@@ -81,7 +81,14 @@ foreach(_script ${rdecay01_SCRIPTS})
 endforeach()
 
 #set environment variable to point to the directory of input files
-set(ENV{FUEL_SIM_INPUT_DIR} ${PROJECT_BINARY_DIR}/input)
+#set(ENV{FUEL_SIM_INPUT_DIR} ${PROJECT_BINARY_DIR}/input)
+#set($ENV{FUEL_SIM_INPUT_DIR} input)
+set(FUEL_SIM_INPUT_DIR ${PROJECT_SOURCE_DIR}/input)
+#add_definitions( -DFUEL_SIM_INPUT_DIR=${PROJECT_BINARY_DIR}/input )
+configure_file(Config.h.in Config.h)
+#target_include_directories(FuelPinSF PUBLIC
+#                           "${PROJECT_BINARY_DIR}"
+#                           )
 
 #----------------------------------------------------------------------------
 # Copy all input data to the build directory.

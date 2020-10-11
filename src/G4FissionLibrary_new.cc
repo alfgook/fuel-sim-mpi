@@ -145,11 +145,11 @@ G4HadFinalState * G4FissionLibrary_new::ApplyYourself(const G4HadProjectile & th
   {
     G4ReactionProduct thePhoton;// = new G4ReactionProduct;
     thePhoton.SetDefinition(G4Gamma::Gamma());
-    thePhoton.SetKineticEnergy(aFission->getPhotonEnergy(i)*MeV);
+    thePhoton.SetKineticEnergy(fe->getPhotonEnergy(i)*MeV);
     momentum = thePhoton.GetTotalMomentum();
-    G4ThreeVector temp(momentum*aFission->getPhotonDircosu(i), 
-                       momentum*aFission->getPhotonDircosv(i), 
-                       momentum*aFission->getPhotonDircosw(i));
+    G4ThreeVector temp(momentum*fe->getPhotonDircosu(i), 
+                       momentum*fe->getPhotonDircosv(i), 
+                       momentum*fe->getPhotonDircosw(i));
     thePhoton.SetMomentum( temp );
     thePhoton.Lorentz(thePhoton, -1.*theTarget);
     

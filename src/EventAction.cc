@@ -103,7 +103,6 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 	//G4cout << "final weight of event = " << fAccumulatedEventWeight << G4endl;
 
 	G4int eventID = evt->GetEventID();
-    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 	// Get hits collections IDs (only once)
 	if ( fScintillatorHCID == -1 ) {
 		G4HCtable *HCtable = G4SDManager::GetSDMpointer()->GetHCtable();

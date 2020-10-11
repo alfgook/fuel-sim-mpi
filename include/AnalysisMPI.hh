@@ -53,6 +53,9 @@ public:
   void Write();
   void CloseFile(G4bool reset = true);
 
+  void FillScintillatorHit(G4int& eventID, G4int& copyNbr, G4int& PDGcode, G4double& time, G4double& light, G4double& weight);
+  void FillSplitEvent(G4int& eventID, G4int& PDGcode, G4double& time, G4double& KinE, G4double& posX, G4double& posY, G4double& posZ, G4double& dirX, G4double& dirY, G4double& dirZ, G4double& weight);
+
   void ClearIncidentFlag();
 
 private:

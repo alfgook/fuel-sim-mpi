@@ -137,3 +137,27 @@ AnalysisMPI::CloseFile(G4bool reset)
   G4AnalysisManager* mgr = G4AnalysisManager::Instance();
   mgr->CloseFile(reset);
 }
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+void
+AnalysisMPI::FillScintillatorHit(G4int& eventID, G4int& copyNbr, G4int& PDGcode, G4double& time, G4double& light, G4double& weight)
+{
+  G4AnalysisManager* mgr = G4AnalysisManager::Instance();
+  const G4int ntupleID = 1;
+  analysisManager->FillNtupleIColumn(ntupleID, 0, eventID);
+  analysisManager->FillNtupleIColumn(ntupleID, 1, copyNbr);
+  analysisManager->FillNtupleIColumn(ntupleID, 2, PDGcode);
+  analysisManager->FillNtupleDColumn(ntupleID, 3, 0.);
+  analysisManager->FillNtupleDColumn(ntupleID, 4, TimeInEvent);
+  analysisManager->FillNtupleDColumn(ntupleID, 5, light);
+  analysisManager->FillNtupleDColumn(ntupleID, 6, weight);
+  analysisManager->AddNtupleRow(ntupleID);
+      
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+void
+AnalysisMPI::FillSplitEvent(G4int& eventID, G4int& PDGcode, G4double& time, G4double& KinE, G4double& posX, G4double& posY, G4double& posZ, G4double& dirX, G4double& dirY, G4double& dirZ, G4double& weight)
+{
+
+}

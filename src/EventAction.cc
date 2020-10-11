@@ -31,7 +31,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #include "EventAction.hh"
-#include "Analysis.hh"
+#include "AnalysisMPI.hh"
 
 #include "G4Event.hh"
 #include "G4RunManager.hh"
@@ -127,15 +127,8 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 		G4double TimeInEvent = (*fHC)[i]->GetTime();
 
 		if(light>0.) {
-    		const G4int ntupleID = 1;
-			analysisManager->FillNtupleIColumn(ntupleID, 0, eventID);
-			analysisManager->FillNtupleIColumn(ntupleID, 1, copyNbr);
-			analysisManager->FillNtupleIColumn(ntupleID, 2, PDGcode);
-			analysisManager->FillNtupleDColumn(ntupleID, 3, 0.);
-			analysisManager->FillNtupleDColumn(ntupleID, 4, TimeInEvent);
-			analysisManager->FillNtupleDColumn(ntupleID, 5, light);
-			analysisManager->FillNtupleDColumn(ntupleID, 6, weight);
-			analysisManager->AddNtupleRow(ntupleID);
+    		AnalysisMPI *analysis = AnalysisMPI::GetAnalysis();
+    		analysis->FillScintillatorHit(eventID, copyNbr, PDGcode, TimeInEvent, light, weight);
 		}
 
 	}

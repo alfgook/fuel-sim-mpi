@@ -31,7 +31,7 @@
 #include "SteppingAction.hh"
 #include "EventAction.hh"
 #include "TrackingAction.hh"
-#include "Analysis.hh"
+#include "AnalysisMPI.hh"
 #include "G4LogicalVolumeStore.hh"
 #include "G4PhysicalVolumeStore.hh"
 #include "G4Tubs.hh"
@@ -90,7 +90,19 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
     G4double kinE = postStepPoint->GetKineticEnergy();
     if(kinE) { //ions that stop inside the parallel geometry also invokes this process
 
-      const G4int ntupleID = 0;
+      AnalysisMPI *analysis = AnalysisMPI::GetAnalysis();
+      analysis->FillSplitEvent(G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID(),
+                                aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding(),
+                                postStepPoint->GetGlobalTime(),
+                                postStepPoint->GetKineticEnergy(),
+                                postStepPoint->GetPosition().x(),
+                                postStepPoint->GetPosition().y(),
+                                postStepPoint->GetPosition().z(),
+                                postStepPoint->GetMomentumDirection().x(),
+                                postStepPoint->GetMomentumDirection().y(),
+                                postStepPoint->GetMomentumDirection().z(),
+                                postStepPoint->GetWeight());
+      /*const G4int ntupleID = 0;
       auto analysisManager = G4AnalysisManager::Instance();
       analysisManager->FillNtupleIColumn(ntupleID, 0, G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID());
       analysisManager->FillNtupleIColumn(ntupleID, 1, aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding());
@@ -103,7 +115,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
       analysisManager->FillNtupleDColumn(ntupleID, 8, postStepPoint->GetMomentumDirection().y() );
       analysisManager->FillNtupleDColumn(ntupleID, 9, postStepPoint->GetMomentumDirection().z() );
       analysisManager->FillNtupleDColumn(ntupleID, 10, postStepPoint->GetWeight() );
-      analysisManager->AddNtupleRow(ntupleID);
+      analysisManager->AddNtupleRow(ntupleID);*/
 
     }
     G4Track *track = aStep->GetTrack();

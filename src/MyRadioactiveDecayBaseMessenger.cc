@@ -165,7 +165,6 @@ MyRadioactiveDecayBaseMessenger::MyRadioactiveDecayBaseMessenger
 
 MyRadioactiveDecayBaseMessenger::~MyRadioactiveDecayBaseMessenger ()
 {
-  G4cout << "~MyRadioactiveDecayBaseMessenger1" << G4endl;
   delete grdmDirectory;
   delete nucleuslimitsCmd;
   delete verboseCmd;
@@ -179,7 +178,6 @@ MyRadioactiveDecayBaseMessenger::~MyRadioactiveDecayBaseMessenger ()
   delete userEvaporationDataCmd;
   delete colldirCmd;
   delete collangleCmd;
-  G4cout << "~MyRadioactiveDecayBaseMessenger2" << G4endl;
 }
 
 

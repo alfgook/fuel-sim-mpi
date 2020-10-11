@@ -96,10 +96,8 @@ DetectorConstruction::DetectorConstruction(G4String aMaterialFile)
 
 DetectorConstruction::~DetectorConstruction()
 {
-	G4cout << "DetectorConstruction::~DetectorConstruction1" << G4endl;
 	delete fStepLimit;
 	delete fMessenger;
-	G4cout << "DetectorConstruction::~DetectorConstruction1" << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

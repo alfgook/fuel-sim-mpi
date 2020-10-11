@@ -189,24 +189,28 @@ MyRadioactiveDecayBase::~MyRadioactiveDecayBase()
 {
   G4cout << "~MyRadioactiveDecayBase1" << G4endl;
   delete theRadioactiveDecayBaseMessenger;
+  G4cout << "~MyRadioactiveDecayBase1a" << G4endl;
   delete photonEvaporation;
+  G4cout << "~MyRadioactiveDecayBase1b" << G4endl;
   for (DecayTableMap::iterator i = dkmap->begin(); i != dkmap->end(); i++) {
     delete i->second;
   }
   dkmap->clear();
   delete dkmap;
+  G4cout << "~MyRadioactiveDecayBase1c" << G4endl;
 #ifdef G4MULTITHREADED
   G4AutoLock lk(&MyRadioactiveDecayBase::radioactiveDecayMutex);
 //  G4cout << "MyRadioactiveDecayBase:: locking mutex 197" << G4endl;
   
   --NumberOfInstances();
-  if(NumberOfInstances()==0)
+  if(NumberOfInstances()==0 && master_dkmap)
   {
     for (DecayTableMap::iterator i = master_dkmap->begin(); i != master_dkmap->end(); i++) {
       delete i->second;
     }
     master_dkmap->clear();
     delete master_dkmap;
+    master_dkmap = nullptr;
   }
   lk.unlock();
 //  G4cout << "MyRadioactiveDecayBase:: unlocking mutex 209" << G4endl;

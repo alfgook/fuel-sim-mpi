@@ -124,7 +124,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
   }
 
 //------- scoring gammas/neutrons that make it through the cask wall -------------
-	G4int PDGcode = aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding();
+	/*G4int PDGcode = aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding();
 	if(PDGcode!=22 && PDGcode!=2112) return;
 	G4VPhysicalVolume *preStepVolume = aStep->GetPreStepPoint()->GetPhysicalVolume();
 	G4VPhysicalVolume *postStepVolume = aStep->GetPostStepPoint()->GetPhysicalVolume();
@@ -137,9 +137,9 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 		//G4cout << "  weight = " << Weight << G4endl;
 
 		//G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-		//if(PDGcode==22) analysisManager->FillH1(3,Energy,Weight);
-		//if(PDGcode==2112) analysisManager->FillH1(4,Energy,Weight);
-	}
+		if(PDGcode==22) analysisManager->FillH1(3,Energy,Weight);
+		if(PDGcode==2112) analysisManager->FillH1(4,Energy,Weight);
+	}*/
 
 }
 

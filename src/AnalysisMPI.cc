@@ -142,7 +142,7 @@ AnalysisMPI::CloseFile(G4bool reset)
 void
 AnalysisMPI::FillScintillatorHit(G4int& eventID, G4int& copyNbr, G4int& PDGcode, G4double& time, G4double& light, G4double& weight)
 {
-  G4AnalysisManager* mgr = G4AnalysisManager::Instance();
+  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
   const G4int ntupleID = 1;
   analysisManager->FillNtupleIColumn(ntupleID, 0, eventID);
   analysisManager->FillNtupleIColumn(ntupleID, 1, copyNbr);
@@ -152,12 +152,25 @@ AnalysisMPI::FillScintillatorHit(G4int& eventID, G4int& copyNbr, G4int& PDGcode,
   analysisManager->FillNtupleDColumn(ntupleID, 5, light);
   analysisManager->FillNtupleDColumn(ntupleID, 6, weight);
   analysisManager->AddNtupleRow(ntupleID);
-      
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void
 AnalysisMPI::FillSplitEvent(G4int& eventID, G4int& PDGcode, G4double& time, G4double& KinE, G4double& posX, G4double& posY, G4double& posZ, G4double& dirX, G4double& dirY, G4double& dirZ, G4double& weight)
 {
-
+  const G4int ntupleID = 0;
+  auto analysisManager = G4AnalysisManager::Instance();
+  analysisManager->FillNtupleIColumn(ntupleID, 0, G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID());
+  analysisManager->FillNtupleIColumn(ntupleID, 1, aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding());
+  analysisManager->FillNtupleDColumn(ntupleID, 2, postStepPoint->GetGlobalTime());
+  analysisManager->FillNtupleDColumn(ntupleID, 3, postStepPoint->GetKineticEnergy());
+  analysisManager->FillNtupleDColumn(ntupleID, 4, postStepPoint->GetPosition().x() );
+  analysisManager->FillNtupleDColumn(ntupleID, 5, postStepPoint->GetPosition().y() );
+  analysisManager->FillNtupleDColumn(ntupleID, 6, postStepPoint->GetPosition().z() );
+  analysisManager->FillNtupleDColumn(ntupleID, 7, postStepPoint->GetMomentumDirection().x() );
+  analysisManager->FillNtupleDColumn(ntupleID, 8, postStepPoint->GetMomentumDirection().y() );
+  analysisManager->FillNtupleDColumn(ntupleID, 9, postStepPoint->GetMomentumDirection().z() );
+  analysisManager->FillNtupleDColumn(ntupleID, 10, postStepPoint->GetWeight() );
+  analysisManager->AddNtupleRow(ntupleID);
 }

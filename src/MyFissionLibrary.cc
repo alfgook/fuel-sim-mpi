@@ -189,7 +189,7 @@ G4HadFinalState * MyFissionLibrary::ApplyYourself(const G4HadProjectile & theTra
                        momentum*aFission->getPhotonDircosv(i), 
                        momentum*aFission->getPhotonDircosw(i));
     thePhoton.SetMomentum( temp );
-    thePhoton.Lorentz(*thePhoton, -1.*theTarget);
+    thePhoton.Lorentz(thePhoton, -1.*theTarget);
     
     G4DynamicParticle * it = new G4DynamicParticle;
     it->SetDefinition(thePhoton.GetDefinition());

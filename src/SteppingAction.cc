@@ -136,9 +136,9 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 		//G4cout << "  energy = " << Energy << G4endl;
 		//G4cout << "  weight = " << Weight << G4endl;
 
-		G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-		if(PDGcode==22) analysisManager->FillH1(3,Energy,Weight);
-		if(PDGcode==2112) analysisManager->FillH1(4,Energy,Weight);
+		//G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+		//if(PDGcode==22) analysisManager->FillH1(3,Energy,Weight);
+		//if(PDGcode==2112) analysisManager->FillH1(4,Energy,Weight);
 	}
 
 }

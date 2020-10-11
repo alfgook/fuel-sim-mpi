@@ -140,7 +140,7 @@ AnalysisMPI::CloseFile(G4bool reset)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void
-AnalysisMPI::FillScintillatorHit(G4int& eventID, G4int& copyNbr, G4int& PDGcode, G4double& time, G4double& light, G4double& weight)
+AnalysisMPI::FillScintillatorHit(G4int eventID, G4int copyNbr, G4int PDGcode, G4double time, G4double light, G4double weight)
 {
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
   const G4int ntupleID = 1;
@@ -157,7 +157,7 @@ AnalysisMPI::FillScintillatorHit(G4int& eventID, G4int& copyNbr, G4int& PDGcode,
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void
-AnalysisMPI::FillSplitEvent(G4int& eventID, G4int& PDGcode, G4double& time, G4double& KinE, G4double& posX, G4double& posY, G4double& posZ, G4double& dirX, G4double& dirY, G4double& dirZ, G4double& weight)
+AnalysisMPI::FillSplitEvent(G4int eventID, G4int PDGcode, G4double time, G4double KinE, G4double posX, G4double posY, G4double posZ, G4double dirX, G4double dirY, G4double dirZ, G4double weight)
 {
   const G4int ntupleID = 0;
   auto analysisManager = G4AnalysisManager::Instance();

@@ -55,8 +55,8 @@ ActionInitialization::~ActionInitialization()
 void ActionInitialization::BuildForMaster() const
 {
   //RunAction* runAction = new RunAction();
-  //RunActionMPI* runAction = new RunActionMPI();
-  //SetUserAction(runAction);
+  RunActionMPI* runAction = new RunActionMPI();
+  SetUserAction(runAction);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -153,6 +153,7 @@ void PrimaryGenerator::GeneratePrimaryVertex(G4Event* event)
     this->AddParticle(particleDefinition,10.*MeV,G4ThreeVector(0,0,1));
   }
   
+  /* The bug doesn't appear to be in here!!!
   G4cout << "nParticles = " << nParticles << G4endl;
   G4cout << "theParticles.size() = " << theParticles.size() << G4endl;
   G4cout << "fDirection.size() = " << fDirection.size() << G4endl;
@@ -168,6 +169,7 @@ void PrimaryGenerator::GeneratePrimaryVertex(G4Event* event)
     G4cout << "error nParticles!=fKinEnergy.size()" << G4endl;
   }
   //--end Test to debug-------
+  */
 
   for(G4int i=0;i<nParticles;i++) {
     G4PrimaryParticle* particle = new G4PrimaryParticle(theParticles.at(i));

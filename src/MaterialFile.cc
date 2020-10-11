@@ -230,7 +230,6 @@ MaterialFile::MaterialFile(const char *FileName, G4String matName, G4double Volu
 	MaterialFileEntry temp;
 	temp.Z = 0;
 	theList.erase(std::remove(std::begin(theList),std::end(theList),temp),theList.end());
-	Print();
 	//Print();
 /*
 	// remove elements with small mass fraction

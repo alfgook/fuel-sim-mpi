@@ -243,7 +243,9 @@ G4DecayTable* MyRadioactiveDecayBase::GetDecayTable(const G4ParticleDefinition* 
   G4DecayTable* theDecayTable = 0;
   if (table_ptr == dkmap->end() ) {                   // If table not there,     
     theDecayTable = LoadDecayTable(*aNucleus);        // load from file and
-    if(theDecayTable) (*dkmap)[key] = theDecayTable;  // store in library 
+    if(theDecayTable) {
+      (*dkmap)[key] = theDecayTable;  // store in library
+    }
   } else {
     theDecayTable = table_ptr->second;
   }
@@ -896,7 +898,7 @@ MyRadioactiveDecayBase::LoadDecayTable(const G4ParticleDefinition& theParentNucl
   }
 
 #ifdef G4MULTITHREADED
-  //(*master_dkmap)[key] = theDecayTable;                  // store in master library
+  (*master_dkmap)[key] = theDecayTable;                  // store in master library
   lk.unlock(); //explicit unlock
   //G4cout << "LoadDecayTable unlocking its mutex" << G4endl;
 #endif

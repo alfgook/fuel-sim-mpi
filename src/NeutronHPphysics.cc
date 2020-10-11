@@ -81,7 +81,9 @@ NeutronHPphysics::NeutronHPphysics(const G4String& name)
 
 NeutronHPphysics::~NeutronHPphysics()
 {
+   G4cout << "~NeutronHPphysics1" << G4endl;
   delete fNeutronMessenger;
+   G4cout << "~NeutronHPphysics2" << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

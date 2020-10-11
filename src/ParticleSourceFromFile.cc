@@ -59,8 +59,11 @@ ParticleSourceFromFile::ParticleSourceFromFile(G4String FileName)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 ParticleSourceFromFile::~ParticleSourceFromFile()
 {
+
+   G4cout << "~ParticleSourceFromFile1" << G4endl;
   // Delete analysis reader
   delete G4AnalysisReader::Instance(); 
+   G4cout << "~ParticleSourceFromFile2" << G4endl;
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void  ParticleSourceFromFile::OpenFile(G4String FileName)

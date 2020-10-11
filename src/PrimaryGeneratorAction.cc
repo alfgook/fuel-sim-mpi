@@ -117,10 +117,12 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(G4String aFile)
 
 PrimaryGeneratorAction::~PrimaryGeneratorAction()
 {
+   G4cout << "~PrimaryGeneratorAction1" << G4endl;
   delete fMessenger;
   delete fParticleGun;
   delete fSimpleGun;
   delete fParticleSourceFromFile;
+   G4cout << "~PrimaryGeneratorAction2" << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

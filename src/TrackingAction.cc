@@ -64,7 +64,9 @@ TrackingAction::TrackingAction(EventAction* EA)
 
 TrackingAction::~TrackingAction()
 {
+   G4cout << "~TrackingAction1" << G4endl;
   delete fTrackMessenger;
+   G4cout << "~TrackingAction2" << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

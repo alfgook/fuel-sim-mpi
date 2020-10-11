@@ -63,10 +63,12 @@ GB01BOptrChangeCrossSection::GB01BOptrChangeCrossSection(G4String particleName, 
 
 GB01BOptrChangeCrossSection::~GB01BOptrChangeCrossSection()
 {
+  G4cout << "GB01BOptrChangeCrossSection::~GB01BOptrChangeCrossSection1" << G4endl;
   for ( std::map< const G4BiasingProcessInterface*, G4BOptnChangeCrossSection* >::iterator 
           it = fChangeCrossSectionOperations.begin() ;
         it != fChangeCrossSectionOperations.end() ;
         it++ ) delete (*it).second;
+  G4cout << "GB01BOptrChangeCrossSection::~GB01BOptrChangeCrossSection2" << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

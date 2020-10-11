@@ -187,6 +187,7 @@ void MyRadioactiveDecayBase::ProcessDescription(std::ostream& outFile) const
 
 MyRadioactiveDecayBase::~MyRadioactiveDecayBase()
 {
+  G4cout << "~MyRadioactiveDecayBase1" << G4endl;
   delete theRadioactiveDecayBaseMessenger;
   delete photonEvaporation;
   for (DecayTableMap::iterator i = dkmap->begin(); i != dkmap->end(); i++) {
@@ -210,6 +211,7 @@ MyRadioactiveDecayBase::~MyRadioactiveDecayBase()
   lk.unlock();
 //  G4cout << "MyRadioactiveDecayBase:: unlocking mutex 209" << G4endl;
 #endif
+  G4cout << "~MyRadioactiveDecayBase2" << G4endl;
 }
 
 

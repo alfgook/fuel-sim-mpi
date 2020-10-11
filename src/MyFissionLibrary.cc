@@ -194,11 +194,8 @@ G4HadFinalState * MyFissionLibrary::ApplyYourself(const G4HadProjectile & theTra
     G4DynamicParticle * it = new G4DynamicParticle;
     it->SetDefinition(thePhoton.GetDefinition());
     it->SetMomentum(thePhoton.GetMomentum());
-//    it->SetGlobalTime(aFission->getPhotonAge(i)*second);
-//    G4cout <<"MyFissionLibrary::ApplyYourself: energy of prompt photon " << i << " = " << it->GetKineticEnergy()<<G4endl;
     // theResult.AddSecondary(it);     // geant4.10.00
-    theResult.Get()->AddSecondary(it); // geant4.10.01
-    //delete thePhoton;  
+    theResult.Get()->AddSecondary(it); // geant4.10.01 
   }
 
   delete aFission;

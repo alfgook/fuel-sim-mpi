@@ -43,9 +43,9 @@ MaterialFile::MaterialFile(const char *FileName, G4String matName, G4double Volu
 
 	// a list of important (alpha,n) target nuclei according to Table 5.2.10 of Scale 6.2 manual
 	std::array<G4int,19> alphaNtargets = {30070,40090,50100,50110,60130,70140,80170,80180,90190,100210,100220,110230,120250,120260,130270,140290,140300,150310,170370};
-	G4cout << "======================================================" << G4endl;
-	G4cout << "== Reading material from : " << FileName << G4endl;
-	G4cout << "======================================================" << G4endl;
+//	G4cout << "======================================================" << G4endl;
+//	G4cout << "== Reading material from : " << FileName << G4endl;
+//	G4cout << "======================================================" << G4endl;
 
 		//read AME-2016
 	std::string str;
@@ -225,7 +225,7 @@ MaterialFile::MaterialFile(const char *FileName, G4String matName, G4double Volu
 		}
 	}
 
-	Print();
+	//Print();
 
 	MaterialFileEntry temp;
 	temp.Z = 0;
@@ -292,7 +292,7 @@ MaterialFile::MaterialFile(const char *FileName, G4String matName, G4double Volu
 		}
 		total_mass += theList[i].mass;
 	}
-	PrintZAID();
+	//PrintZAID();
 
 	/*G4cout << "nElements = " << nElements << G4endl;
 	G4cout << "matName = " << matName << G4endl;*/
@@ -301,7 +301,7 @@ MaterialFile::MaterialFile(const char *FileName, G4String matName, G4double Volu
 	theMaterial = new G4Material(matName,density,nElements,kStateSolid);
 	G4int nComp = 0;
 	for(size_t i=0;i<theList.size();i+=nComp) {
-		G4cout << "------------------"  << G4endl;
+//		G4cout << "------------------"  << G4endl;
 		G4int Z = theList[i].Z;
 
 		G4double sum_of_moles = 0.;

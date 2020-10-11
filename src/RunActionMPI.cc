@@ -45,7 +45,7 @@
 RunActionMPI::RunActionMPI()
 :G4UserRunAction()
 {
-  G4cout << G4MPImanager::GetManager()->GetRank() << " : " <<"RunActionMPI::RunActionMPI()" << G4endl;
+//  G4cout << G4MPImanager::GetManager()->GetRank() << " : " <<"RunActionMPI::RunActionMPI()" << G4endl;
   AnalysisMPI::GetAnalysis()->Book();
 }
 
@@ -59,7 +59,7 @@ RunActionMPI::~RunActionMPI()
 
 void RunActionMPI::BeginOfRunAction(const G4Run*)
 { 
-  G4cout << G4MPImanager::GetManager()->GetRank() << " : " << "RunActionMPI::BeginOfRunAction()" << G4endl;
+//  G4cout << G4MPImanager::GetManager()->GetRank() << " : " << "RunActionMPI::BeginOfRunAction()" << G4endl;
   AnalysisMPI::GetAnalysis()->OpenFile();
   //
   runTimer.Start();

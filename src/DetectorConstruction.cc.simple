@@ -529,7 +529,7 @@ G4LogicalVolume* DetectorConstruction::Make5inchEJ309(G4int copyNbr, const char*
 
   char nameLV[32];
   snprintf(nameLV,32,"%s_LV",name);
-  G4cout << "logicl vol name = " << nameLV << G4endl;
+//  G4cout << "logicl vol name = " << nameLV << G4endl;
   
     G4Tubs *Scintillator5inchS = new G4Tubs("Scintillator5inch",0.,ScintRad,ScintHeight/2.,0.*deg,360.*deg);
     G4LogicalVolume* ScintillatorLV = new G4LogicalVolume(Scintillator5inchS, fEJ309, "5x5-EJ-309-LV",0,0,0);

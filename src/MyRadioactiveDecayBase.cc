@@ -196,7 +196,7 @@ MyRadioactiveDecayBase::~MyRadioactiveDecayBase()
   delete dkmap;
 #ifdef G4MULTITHREADED
   G4AutoLock lk(&MyRadioactiveDecayBase::radioactiveDecayMutex);
-  G4cout << "MyRadioactiveDecayBase:: locking mutex 197" << G4endl;
+//  G4cout << "MyRadioactiveDecayBase:: locking mutex 197" << G4endl;
   
   --NumberOfInstances();
   if(NumberOfInstances()==0)
@@ -208,7 +208,7 @@ MyRadioactiveDecayBase::~MyRadioactiveDecayBase()
     delete master_dkmap;
   }
   lk.unlock();
-  G4cout << "MyRadioactiveDecayBase:: unlocking mutex 209" << G4endl;
+//  G4cout << "MyRadioactiveDecayBase:: unlocking mutex 209" << G4endl;
 #endif
 }
 

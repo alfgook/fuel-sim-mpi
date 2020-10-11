@@ -78,7 +78,7 @@ DetectorConstruction::DetectorConstruction(G4String aMaterialFile)
     fStepLimit(NULL), 
     fCheckOverlaps(true)
 {
-	G4cout << "DetectorConstruction::DetectorConstruction" << G4endl;
+	//G4cout << "DetectorConstruction::DetectorConstruction" << G4endl;
 	fMaterialFile = aMaterialFile;
 	if(!fMaterialFile.size()) {
 		G4String dir(INPUT_DIR);
@@ -129,9 +129,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   
   DefineMaterials();
 
-	G4cout << "======================================================" << G4endl;
-	G4cout << "========== DetectorConstruction::DefineVolumes() =========" << G4endl;
-	G4cout << "======================================================" << G4endl;
+//	G4cout << "======================================================" << G4endl;
+//	G4cout << "========== DetectorConstruction::DefineVolumes() =========" << G4endl;
+//	G4cout << "======================================================" << G4endl;
   // Define volumes
   return DefineVolumes();
 }
@@ -232,7 +232,7 @@ int DetectorConstruction::ReadMCNPmatCard(const char *FileName)
 		WF.push_back(WeightFrac);
 		ZAIDs.push_back(ZAID);
 
-		G4cout << ZAID << "  " << AtomicNumber << "  " << MassNumber << "  " << WeightFrac << G4endl;
+		//G4cout << ZAID << "  " << AtomicNumber << "  " << MassNumber << "  " << WeightFrac << G4endl;
 	}
 
 	textfile.close();
@@ -290,7 +290,7 @@ int DetectorConstruction::ReadMCNPmatCard(const char *FileName)
 	double FuelVolume = 17.*17.*PinLentgh*pow(PinRad,2.)*3.141592654; //total volume of fuel in the w17x17 (17 x 17 x rod-height x pi x ror-rad²)
 	double density = TotMass/FuelVolume*g/cm3;
 	//double density = 9.105*g/cm3;
-	G4cout << "fuel material denisty is " << density/(g/cm3) << " g/cm3" << G4endl;
+//	G4cout << "fuel material denisty is " << density/(g/cm3) << " g/cm3" << G4endl;
 	fFuelMat = new G4Material("fuel",density,theElements.size());
 	for(size_t i=0;i<theElements.size();i++) {
 		G4double massFraction(MassofElements[i]/TotMassMod);
@@ -898,7 +898,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 	DetectorRegion->AddRootLogicalVolume(logicVol);
 	
 	// Print materials
-	G4cout << *(G4Material::GetMaterialTable()) << G4endl;
+//	G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 /*
 	// test 3x3 inch
 	G4AssemblyVolume* test = EJ309_3x3inch(0,"testDet");

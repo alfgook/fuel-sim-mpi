@@ -198,7 +198,7 @@ MyRadioactiveDecayBase::~MyRadioactiveDecayBase()
   dkmap->clear();
   delete dkmap;
   G4cout << "~MyRadioactiveDecayBase1c" << G4endl;
-#ifdef G4MULTITHREADED
+/*#ifdef G4MULTITHREADED
   G4AutoLock lk(&MyRadioactiveDecayBase::radioactiveDecayMutex);
 //  G4cout << "MyRadioactiveDecayBase:: locking mutex 197" << G4endl;
   
@@ -214,7 +214,7 @@ MyRadioactiveDecayBase::~MyRadioactiveDecayBase()
   }
   lk.unlock();
 //  G4cout << "MyRadioactiveDecayBase:: unlocking mutex 209" << G4endl;
-#endif
+#endif*/
   G4cout << "~MyRadioactiveDecayBase2" << G4endl;
 }
 

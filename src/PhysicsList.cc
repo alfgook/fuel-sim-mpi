@@ -73,7 +73,7 @@
 PhysicsList::PhysicsList(G4bool np=true)
 :G4VModularPhysicsList()
 {
-  G4int verb = 1;
+  G4int verb = 0;
   SetVerboseLevel(verb);
   
   //add new units for radioActive decays

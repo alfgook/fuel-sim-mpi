@@ -153,6 +153,18 @@ void PrimaryGenerator::GeneratePrimaryVertex(G4Event* event)
     this->AddParticle(particleDefinition,10.*MeV,G4ThreeVector(0,0,1));
   }
   
+  //---Test to debug-------
+  if(nParticles!=theParticles.size()) {
+    G4cout << "error nParticles!=theParticles.size()" << G4endl;
+  }
+  if(nParticles!=fDirection.size()) {
+    G4cout << "error nParticles!=fDirection.size()" << G4endl;
+  }
+  if(nParticles!=fKinEnergy.size()) {
+    G4cout << "error nParticles!=fKinEnergy.size()" << G4endl;
+  }
+  //--end Test to debug-------
+
   for(G4int i=0;i<nParticles;i++) {
     G4PrimaryParticle* particle = new G4PrimaryParticle(theParticles.at(i));
     particle->SetMomentumDirection(fDirection.at(i));

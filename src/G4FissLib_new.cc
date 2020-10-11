@@ -40,7 +40,7 @@ G4FissLib_new::~G4FissLib_new()
 {
   G4cout << "G4FissLib_new::~G4FissLib_new() 1" << G4endl;
   //delete [] theFission;
-
+/*
   //G4cout << "theFission.size() = " << theFission.size() << G4endl;
   for ( std::vector<G4NeutronHPChannel*>::iterator 
         ite = theFission.begin() ; ite != theFission.end() ; ite++ )
@@ -50,7 +50,7 @@ G4FissLib_new::~G4FissLib_new()
     //delete *ite;
     //G4cout << "ite = " << (*ite) << G4endl;
   }
-  theFission.clear();
+  theFission.clear();*/
  // G4cout << "theFission.size() = " << theFission.size() << G4endl;
   G4cout << "G4FissLib_new::~G4FissLib_new() 2" << G4endl;
 }

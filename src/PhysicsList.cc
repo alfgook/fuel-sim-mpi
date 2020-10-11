@@ -112,11 +112,11 @@ PhysicsList::PhysicsList(G4bool np=true)
   //RegisterPhysics( new G4StoppingPhysics());
 
   // Ion Physics
-  RegisterPhysics( new G4IonPhysicsPHP_new(verbose)); //this is the physics list from the SaG4n application-package from ciemat
+  //RegisterPhysics( new G4IonPhysicsPHP_new(verbose)); //this is the physics list from the SaG4n application-package from ciemat
 
   // EM Physics
-  RegisterPhysics( new G4EmStandardPhysics_option4(verbose) ); // photons, electrons et al
-  RegisterPhysics( new G4EmExtraPhysics(verbose) ); // neutrinos et al
+  //RegisterPhysics( new G4EmStandardPhysics_option4(verbose) ); // photons, electrons et al
+  //RegisterPhysics( new G4EmExtraPhysics(verbose) ); // neutrinos et al
   //RegisterPhysics( new G4EmStandardPhysics() );
   //RegisterPhysics( new G4EmPenelopePhysics() );
   //RegisterPhysics( new G4EmLivermorePhysics() );

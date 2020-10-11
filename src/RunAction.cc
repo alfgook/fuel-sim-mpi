@@ -90,7 +90,7 @@ RunAction::~RunAction()
 
 void RunAction::BeginOfRunAction(const G4Run*)
 { 
-  G4cout << "RunAction::BeginOfRunAction()" << G4endl;
+//  G4cout << "RunAction::BeginOfRunAction()" << G4endl;
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 
   analysisManager->OpenFile();

@@ -115,8 +115,8 @@ PrimaryGenerator::PrimaryGenerator()
 
 PrimaryGenerator::~PrimaryGenerator()
 {
-  delete fPosDist;
-  delete fPosGenerator;
+  //delete fPosDist;
+  //delete fPosGenerator;
 }
 
 void PrimaryGenerator::GenerateDecayPos()

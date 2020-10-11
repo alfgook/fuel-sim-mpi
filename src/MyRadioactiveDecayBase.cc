@@ -525,8 +525,8 @@ MyRadioactiveDecayBase::LoadDecayTable(const G4ParticleDefinition& theParentNucl
 
 #ifdef G4MULTITHREADED
   G4AutoLock lk(&MyRadioactiveDecayBase::radioactiveDecayMutex);
-  G4cout << "LoadDecayTable locking its mutex 526" << G4endl;
-  G4cout << "theParentNucleus.GetParticleName() = " << theParentNucleus.GetParticleName() << G4endl;
+//  G4cout << "LoadDecayTable locking its mutex 526" << G4endl;
+//  G4cout << "theParentNucleus.GetParticleName() = " << theParentNucleus.GetParticleName() << G4endl;
 
   G4String key = theParentNucleus.GetParticleName();
   DecayTableMap::iterator master_table_ptr = master_dkmap->find(key);

@@ -198,7 +198,7 @@ ActivityTable::ActivityTable(G4String aFile, MyRadioactiveDecayBase *aRadDecay)
   activityTotal = activityCumulative.back();
   for(unsigned int i=0;i<activity.size();i++) activityCumulative[i] /= activityTotal;
 
-  G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "Activity = " << activityTotal << G4endl; 
+//  G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "Activity = " << activityTotal << G4endl; 
 }
 
 ActivityTable::~ActivityTable()

@@ -44,7 +44,6 @@
 #include "G4DynamicParticle.hh"
 //#include "G4SystemOfUnits.hh"
 #include "G4UnitsTable.hh"
-#include "G4SPSPosDistribution.hh"
 #include "PrimaryGenerator.hh"
 #include "G4GenericMessenger.hh"
 

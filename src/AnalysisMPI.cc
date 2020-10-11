@@ -148,7 +148,7 @@ AnalysisMPI::FillScintillatorHit(G4int& eventID, G4int& copyNbr, G4int& PDGcode,
   analysisManager->FillNtupleIColumn(ntupleID, 1, copyNbr);
   analysisManager->FillNtupleIColumn(ntupleID, 2, PDGcode);
   analysisManager->FillNtupleDColumn(ntupleID, 3, 0.);
-  analysisManager->FillNtupleDColumn(ntupleID, 4, TimeInEvent);
+  analysisManager->FillNtupleDColumn(ntupleID, 4, time);
   analysisManager->FillNtupleDColumn(ntupleID, 5, light);
   analysisManager->FillNtupleDColumn(ntupleID, 6, weight);
   analysisManager->AddNtupleRow(ntupleID);
@@ -161,16 +161,16 @@ AnalysisMPI::FillSplitEvent(G4int& eventID, G4int& PDGcode, G4double& time, G4do
 {
   const G4int ntupleID = 0;
   auto analysisManager = G4AnalysisManager::Instance();
-  analysisManager->FillNtupleIColumn(ntupleID, 0, G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID());
-  analysisManager->FillNtupleIColumn(ntupleID, 1, aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding());
-  analysisManager->FillNtupleDColumn(ntupleID, 2, postStepPoint->GetGlobalTime());
-  analysisManager->FillNtupleDColumn(ntupleID, 3, postStepPoint->GetKineticEnergy());
-  analysisManager->FillNtupleDColumn(ntupleID, 4, postStepPoint->GetPosition().x() );
-  analysisManager->FillNtupleDColumn(ntupleID, 5, postStepPoint->GetPosition().y() );
-  analysisManager->FillNtupleDColumn(ntupleID, 6, postStepPoint->GetPosition().z() );
-  analysisManager->FillNtupleDColumn(ntupleID, 7, postStepPoint->GetMomentumDirection().x() );
-  analysisManager->FillNtupleDColumn(ntupleID, 8, postStepPoint->GetMomentumDirection().y() );
-  analysisManager->FillNtupleDColumn(ntupleID, 9, postStepPoint->GetMomentumDirection().z() );
-  analysisManager->FillNtupleDColumn(ntupleID, 10, postStepPoint->GetWeight() );
+  analysisManager->FillNtupleIColumn(ntupleID, 0, eventID);
+  analysisManager->FillNtupleIColumn(ntupleID, 1, PDGcode);
+  analysisManager->FillNtupleDColumn(ntupleID, 2, time);
+  analysisManager->FillNtupleDColumn(ntupleID, 3, KinE);
+  analysisManager->FillNtupleDColumn(ntupleID, 4, posX);
+  analysisManager->FillNtupleDColumn(ntupleID, 5, posY);
+  analysisManager->FillNtupleDColumn(ntupleID, 6, posZ);
+  analysisManager->FillNtupleDColumn(ntupleID, 7, dirX);
+  analysisManager->FillNtupleDColumn(ntupleID, 8, dirY);
+  analysisManager->FillNtupleDColumn(ntupleID, 9, dirZ);
+  analysisManager->FillNtupleDColumn(ntupleID, 10, weight);
   analysisManager->AddNtupleRow(ntupleID);
 }

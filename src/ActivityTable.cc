@@ -181,7 +181,7 @@ ActivityTable::ActivityTable(G4String aFile, MyRadioactiveDecayBase *aRadDecay)
     fMetaStable.push_back(MetaStable);
     fExcEnergy.push_back(ExcEnergy);
     //fTables.push_back(MyDecayTable table);
-    G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << nuclides[i] << "  " << Z << "  " << A << "  " << fExcEnergy[i] << G4endl;
+//    G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << nuclides[i] << "  " << Z << "  " << A << "  " << fExcEnergy[i] << G4endl;
   }
   //--------------------------------------------------------
 

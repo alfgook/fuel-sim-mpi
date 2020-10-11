@@ -181,24 +181,24 @@ G4HadFinalState * MyFissionLibrary::ApplyYourself(const G4HadProjectile & theTra
   // Build gammas, lorentz transform them, and add them to dynamic particle vector
   for(G4int i=0; i<gPrompt; i++)
   {
-    G4ReactionProduct * thePhoton = new G4ReactionProduct;
-    thePhoton->SetDefinition(G4Gamma::Gamma());
-    thePhoton->SetKineticEnergy(aFission->getPhotonEnergy(i)*MeV);
-    momentum = thePhoton->GetTotalMomentum();
+    G4ReactionProduct thePhoton;// = new G4ReactionProduct;
+    thePhoton.SetDefinition(G4Gamma::Gamma());
+    thePhoton.SetKineticEnergy(aFission->getPhotonEnergy(i)*MeV);
+    momentum = thePhoton.GetTotalMomentum();
     G4ThreeVector temp(momentum*aFission->getPhotonDircosu(i), 
                        momentum*aFission->getPhotonDircosv(i), 
                        momentum*aFission->getPhotonDircosw(i));
-    thePhoton->SetMomentum( temp );
-    thePhoton->Lorentz(*thePhoton, -1.*theTarget);
+    thePhoton.SetMomentum( temp );
+    thePhoton.Lorentz(*thePhoton, -1.*theTarget);
     
     G4DynamicParticle * it = new G4DynamicParticle;
-    it->SetDefinition(thePhoton->GetDefinition());
-    it->SetMomentum(thePhoton->GetMomentum());
+    it->SetDefinition(thePhoton.GetDefinition());
+    it->SetMomentum(thePhoton.GetMomentum());
 //    it->SetGlobalTime(aFission->getPhotonAge(i)*second);
 //    G4cout <<"MyFissionLibrary::ApplyYourself: energy of prompt photon " << i << " = " << it->GetKineticEnergy()<<G4endl;
     // theResult.AddSecondary(it);     // geant4.10.00
     theResult.Get()->AddSecondary(it); // geant4.10.01
-    delete thePhoton;  
+    //delete thePhoton;  
   }
 
   delete aFission;

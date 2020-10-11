@@ -142,7 +142,7 @@ AnalysisMPI::CloseFile(G4bool reset)
 void
 AnalysisMPI::FillScintillatorHit(G4int eventID, G4int copyNbr, G4int PDGcode, G4double time, G4double light, G4double weight)
 {
-  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+  /*G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
   const G4int ntupleID = 1;
   analysisManager->FillNtupleIColumn(ntupleID, 0, eventID);
   analysisManager->FillNtupleIColumn(ntupleID, 1, copyNbr);
@@ -151,7 +151,7 @@ AnalysisMPI::FillScintillatorHit(G4int eventID, G4int copyNbr, G4int PDGcode, G4
   analysisManager->FillNtupleDColumn(ntupleID, 4, time);
   analysisManager->FillNtupleDColumn(ntupleID, 5, light);
   analysisManager->FillNtupleDColumn(ntupleID, 6, weight);
-  analysisManager->AddNtupleRow(ntupleID);
+  analysisManager->AddNtupleRow(ntupleID);*/
 
 }
 
@@ -159,7 +159,7 @@ AnalysisMPI::FillScintillatorHit(G4int eventID, G4int copyNbr, G4int PDGcode, G4
 void
 AnalysisMPI::FillSplitEvent(G4int eventID, G4int PDGcode, G4double time, G4double KinE, G4double posX, G4double posY, G4double posZ, G4double dirX, G4double dirY, G4double dirZ, G4double weight)
 {
-  const G4int ntupleID = 0;
+  /*const G4int ntupleID = 0;
   auto analysisManager = G4AnalysisManager::Instance();
   analysisManager->FillNtupleIColumn(ntupleID, 0, eventID);
   analysisManager->FillNtupleIColumn(ntupleID, 1, PDGcode);
@@ -172,5 +172,5 @@ AnalysisMPI::FillSplitEvent(G4int eventID, G4int PDGcode, G4double time, G4doubl
   analysisManager->FillNtupleDColumn(ntupleID, 8, dirY);
   analysisManager->FillNtupleDColumn(ntupleID, 9, dirZ);
   analysisManager->FillNtupleDColumn(ntupleID, 10, weight);
-  analysisManager->AddNtupleRow(ntupleID);
+  analysisManager->AddNtupleRow(ntupleID);*/
 }

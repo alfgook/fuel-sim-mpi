@@ -90,7 +90,7 @@ PhysicsList::PhysicsList(G4bool np=true)
   new G4UnitDefinition("year",   "y",   "Time", year);
 
 
-  G4int verbose = 1;
+  G4int verbose = 0;
 
   // Mandatory for G4NuclideTable
   // Half-life threshold must be set small or many short-lived isomers 
@@ -115,8 +115,8 @@ PhysicsList::PhysicsList(G4bool np=true)
   RegisterPhysics( new G4IonPhysicsPHP_new(verbose)); //this is the physics list from the SaG4n application-package from ciemat
 
   // EM Physics
-  RegisterPhysics( new G4EmStandardPhysics_option4() ); // photons, electrons et al
-  RegisterPhysics( new G4EmExtraPhysics() ); // neutrinos et al
+  RegisterPhysics( new G4EmStandardPhysics_option4(verbose) ); // photons, electrons et al
+  RegisterPhysics( new G4EmExtraPhysics(verbose) ); // neutrinos et al
   //RegisterPhysics( new G4EmStandardPhysics() );
   //RegisterPhysics( new G4EmPenelopePhysics() );
   //RegisterPhysics( new G4EmLivermorePhysics() );

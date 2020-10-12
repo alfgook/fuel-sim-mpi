@@ -208,7 +208,7 @@ ActivityTable::~ActivityTable()
 
 void ActivityTable::RestrictTo(G4String KinematicsName)
 {
-    //G4AutoLock lock(&ActivityTable::ActivityTableMutex); //lock the mutex while reading from the text-file
+    G4AutoLock lock(&ActivityTable::ActivityTableMutex); //lock the mutex while reading from the text-file
 
     G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "====================================" << G4endl;
     G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "==  Restricting decay to " << KinematicsName << G4endl;
@@ -267,7 +267,7 @@ void ActivityTable::RestrictTo(G4String KinematicsName)
   G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "====================================" << G4endl;
 
   CleanUpTable();
-  //lock.unlock(); //explicit unlock
+  lock.unlock(); //explicit unlock
 }
 
 void ActivityTable::ExcludeAphaAndSF()

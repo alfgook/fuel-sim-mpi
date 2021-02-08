@@ -42,14 +42,13 @@ class G4VSteppingVerbose;
 class ActionInitialization : public G4VUserActionInitialization
 {
   public:
-    ActionInitialization(G4int nn, G4String);
+    ActionInitialization(G4String);
     virtual ~ActionInitialization();
 
     virtual void BuildForMaster() const;
     virtual void Build() const;
     
   private:
-  	G4int nThreads;
   	G4String fActivityFile;
 };
 

@@ -74,13 +74,12 @@
 namespace {
     void PrintUsage() {
         G4cerr << " Usage: " << G4endl;
-        G4cerr << " FuelPinSF [-m macro ] [-af filename] [-mf filename] [-t nThreads]" << G4endl;
+        G4cerr << " FuelPinSF [-m macro ] [-af filename] [-mf filename]" << G4endl;
         G4cerr << "   option [-af filename]: file for the activity of the fuel material " << G4endl;
         G4cerr << "                          if not specified a simple G4ParticleGun will used " << G4endl;
         G4cerr << "   option [-mf filename]: file for the fuel material in MCNP format" << G4endl;
         G4cerr << "   option [-biasing keyword]: if keyword=off the geometrical biasing is ignored" << G4endl;
-        G4cerr << "   option [-np keyword]: if keyword=off the neutronphysics is not registered" << G4endl;
-        G4cerr << "   note: -t option is available only for multi-threaded mode."
+        G4cerr << "   option [-np keyword]: if keyword=off the neutronphysics is not registered" 
         << G4endl;
     }
 }
@@ -107,11 +106,6 @@ int main(int argc,char** argv) {
       else if ( G4String(argv[i]) == "-np" ) {
         if(G4String(argv[i+1]) == "off") RegisterNP = false;
       }
-#ifdef G4MULTITHREADED
-      else if ( G4String(argv[i]) == "-t" ) {
-          nThreads = G4UIcommand::ConvertToInt(argv[i+1]);
-      }
-#endif
       else {
           PrintUsage();
           return 1;
@@ -175,21 +169,10 @@ int main(int argc,char** argv) {
   //CLHEP::RanluxEngine defaultEngine( 1234567, 4 ); 
   //G4Random::setTheEngine( &defaultEngine ); 
   G4int seed = time( NULL ); 
-  //G4Random::setTheSeed( seed );
+  G4Random::setTheSeed( seed );
 
 
   //construct the default run manager
-/*#ifdef G4MULTITHREADED
-  G4MTRunManager* runManager = new G4MTRunManager;
-  nThreads = std::min(nThreads,G4Threading::G4GetNumberOfCores());
-  runManager->SetNumberOfThreads(nThreads);
-  G4cout << "number of threads = " << runManager->GetNumberOfThreads() << G4endl;
-  //G4ScoringManager::GetScoringManager();
-#else
-  //my Verbose output class
-  //G4VSteppingVerbose::SetInstance(new SteppingVerbose);
-  G4RunManager* runManager = new G4RunManager;
-#endif*/
   G4RunManager* runManager = new G4RunManager;
 
   //code is 35-40 % faster if it is executed only with MPI threading (without transport)
@@ -236,7 +219,7 @@ int main(int argc,char** argv) {
   }
   runManager->SetUserInitialization(thePhysicsList);
 
-  runManager->SetUserInitialization(new ActionInitialization(nThreads,activityFile));
+  runManager->SetUserInitialization(new ActionInitialization(activityFile));
 
   //initialize G4 kernel
   runManager->Initialize();

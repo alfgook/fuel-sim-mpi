@@ -38,10 +38,9 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-ActionInitialization::ActionInitialization(G4int nn, G4String aFile)
+ActionInitialization::ActionInitialization(G4String aFile)
  : G4VUserActionInitialization()
 {
-  nThreads = nn;
   fActivityFile = aFile;
 }
 
@@ -65,7 +64,7 @@ void ActionInitialization::Build() const
 {
 
   //complex primary that decays all the nuclides based on thier activities
-  PrimaryGeneratorAction* primary = new PrimaryGeneratorAction(fActivityFile); primary->SetNumberOfWorkers(nThreads);
+  PrimaryGeneratorAction* primary = new PrimaryGeneratorAction(fActivityFile);
 
   SetUserAction(primary);
     

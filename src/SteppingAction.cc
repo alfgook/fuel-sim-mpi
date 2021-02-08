@@ -51,8 +51,8 @@
 SteppingAction::SteppingAction()
 : G4UserSteppingAction()
 {
-	fCaskPV = G4PhysicalVolumeStore::GetInstance()->GetVolume("ShieldingWallPV");
-  fWorldPV = G4PhysicalVolumeStore::GetInstance()->GetVolume("DetectionVolumePV");
+	//fCaskPV = G4PhysicalVolumeStore::GetInstance()->GetVolume("ShieldingWallPV");
+  //fWorldPV = G4PhysicalVolumeStore::GetInstance()->GetVolume("DetectionVolumePV");
 
   fSplittingActive = true;
 	//timer.Start();

@@ -108,9 +108,9 @@ class G4FissionLibrary_new : public G4ParticleHPFinalState
   G4ParticleHPPhotonDist theFinalStatePhotons;
   G4ParticleHPFissionERelease theEnergyRelease;
 
-  #ifdef G4MULTITHREADED
+  /*#ifdef G4MULTITHREADED
   public:
     static G4Mutex FissionLibrary_newMutex;
-  #endif
+  #endif*/
 };
 #endif

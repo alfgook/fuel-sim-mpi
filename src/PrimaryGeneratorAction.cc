@@ -156,7 +156,10 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     return;
   }
 
-  if(!fActivityTable) fActivityTable = new ActivityTable(fFile, fRadDecay);
+  if(!fActivityTable) {
+    G4cout << "creating ActivityTable" << G4endl;
+    fActivityTable = new ActivityTable(fFile, fRadDecay);
+  }
   //fTimer.Start();
   if(fUseSimpleGun) {
     fSimpleGun->GeneratePrimaryVertex(anEvent);

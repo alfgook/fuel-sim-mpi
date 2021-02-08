@@ -4,9 +4,10 @@
 #include "G4DecayTable.hh"
 #include "G4IonTable.hh"
 
+/*#ifdef G4MULTITHREADED
 #include "G4AutoLock.hh"
 G4Mutex ActivityTable::ActivityTableMutex = G4MUTEX_INITIALIZER; //used for reading from the input text file
-
+#endif*/
 
 #include "G4MPImanager.hh"
 
@@ -14,7 +15,9 @@ ActivityTable::ActivityTable(G4String aFile, MyRadioactiveDecayBase *aRadDecay)
 {
   fBin = 0;
   fRadDecay = aRadDecay;
+  /*#ifdef G4MULTITHREADED
   G4AutoLock lock(&ActivityTable::ActivityTableMutex); //lock the mutex while reading from the text-file
+  #endif*/
 
   //fRadDecay->LoadAllDecayTables();
 
@@ -208,8 +211,9 @@ ActivityTable::~ActivityTable()
 
 void ActivityTable::RestrictTo(G4String KinematicsName)
 {
+    /*#ifdef G4MULTITHREADED
     G4AutoLock lock(&ActivityTable::ActivityTableMutex); //lock the mutex while reading from the text-file
-
+    #endif*/
     G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "====================================" << G4endl;
     G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "==  Restricting decay to " << KinematicsName << G4endl;
     G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "==  total activity = " << activityTotal << G4endl;
@@ -267,13 +271,16 @@ void ActivityTable::RestrictTo(G4String KinematicsName)
   G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "====================================" << G4endl;
 
   CleanUpTable();
+  /*#ifdef G4MULTITHREADED
   lock.unlock(); //explicit unlock
+  #endif*/
 }
 
 void ActivityTable::ExcludeAphaAndSF()
 {
-    //G4AutoLock lock(&ActivityTable::ActivityTableMutex); //lock the mutex while reading from the text-file
-
+    /*#ifdef G4MULTITHREADED
+    G4AutoLock lock(&ActivityTable::ActivityTableMutex); //lock the mutex while reading from the text-file
+    #endif*/
     G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "====================================" << G4endl;
     G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "==  Restricting decay to exclude (sf) and alpha decay" << G4endl;
     G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "==  total activity = " << activityTotal << G4endl;
@@ -347,7 +354,9 @@ void ActivityTable::ExcludeAphaAndSF()
   G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "== restricted activity = " << activityTotal << G4endl; 
   G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "====================================" << G4endl;
 
-  //lock.unlock(); //explicit unlock
+  /*#ifdef G4MULTITHREADED
+  lock.unlock(); //explicit unlock
+  #endif*/
 }
 
 void ActivityTable::CleanUpTable()

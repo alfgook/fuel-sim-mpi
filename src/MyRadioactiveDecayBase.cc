@@ -88,6 +88,8 @@
 #include <algorithm>
 #include <fstream>
 
+#include <G4MPImanager.hh>
+
 //#include <filesystem>
 
 using namespace CLHEP;
@@ -95,7 +97,7 @@ using namespace CLHEP;
 const G4double MyRadioactiveDecayBase::levelTolerance = 10.0*eV;
 const G4ThreeVector MyRadioactiveDecayBase::origin(0.,0.,0.);
 
-#ifdef G4MULTITHREADED
+/*#ifdef G4MULTITHREADED
 #include "G4AutoLock.hh"
 G4Mutex MyRadioactiveDecayBase::radioactiveDecayMutex = G4MUTEX_INITIALIZER;
 DecayTableMap* MyRadioactiveDecayBase::master_dkmap = 0;
@@ -105,7 +107,7 @@ G4int& MyRadioactiveDecayBase::NumberOfInstances()
   static G4int numberOfInstances = 0;
   return numberOfInstances;
 }
-#endif
+#endif*/
 
 MyRadioactiveDecayBase::MyRadioactiveDecayBase(const G4String& processName)
  : G4VRestDiscreteProcess(processName, fDecay), isInitialised(false),
@@ -152,12 +154,12 @@ MyRadioactiveDecayBase::MyRadioactiveDecayBase(const G4String& processName)
   theUserRadioactiveDataFiles.clear();
 
   // Instantiate the map of decay tables
-#ifdef G4MULTITHREADED
+/*#ifdef G4MULTITHREADED
   G4AutoLock lk(&MyRadioactiveDecayBase::radioactiveDecayMutex);
   //G4cout << "MyRadioactiveDecayBase:: locking mutex 155" << G4endl;
   NumberOfInstances()++;
   if(!master_dkmap) master_dkmap = new DecayTableMap;
-#endif
+#endif*/
   dkmap = new DecayTableMap;
 
   // Apply default values
@@ -169,10 +171,10 @@ MyRadioactiveDecayBase::MyRadioactiveDecayBase(const G4String& processName)
   isAllVolumesMode = true;
   SelectAllVolumes();
   G4HadronicProcessStore::Instance()->RegisterExtraProcess(this);
-  #ifdef G4MULTITHREADED
+/*  #ifdef G4MULTITHREADED
   //G4cout << "MyRadioactiveDecayBase:: unlocking mutex 172" << G4endl;
   lk.unlock();
-#endif
+#endif*/
 }
 
 void MyRadioactiveDecayBase::ProcessDescription(std::ostream& outFile) const
@@ -187,13 +189,20 @@ void MyRadioactiveDecayBase::ProcessDescription(std::ostream& outFile) const
 
 MyRadioactiveDecayBase::~MyRadioactiveDecayBase()
 {
+  //G4cout << "MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " <<"MyRadioactiveDecayBase::~MyRadioactiveDecayBase()1" << G4endl;
   delete theRadioactiveDecayBaseMessenger;
+  //G4cout << "MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " <<"MyRadioactiveDecayBase::~MyRadioactiveDecayBase()1a" << G4endl;
   delete photonEvaporation;
+  //G4cout << "MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " <<"MyRadioactiveDecayBase::~MyRadioactiveDecayBase()1b" << G4endl;
   for (DecayTableMap::iterator i = dkmap->begin(); i != dkmap->end(); i++) {
-    delete i->second;
+    if(i->second) delete i->second;
+    i->second = nullptr;
   }
+  //G4cout << "MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " <<"MyRadioactiveDecayBase::~MyRadioactiveDecayBase()1b1" << G4endl;
   dkmap->clear();
   delete dkmap;
+  //G4cout << "MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " <<"MyRadioactiveDecayBase::~MyRadioactiveDecayBase()1c" << G4endl;
+
 /*#ifdef G4MULTITHREADED
   G4AutoLock lk(&MyRadioactiveDecayBase::radioactiveDecayMutex);
 //  G4cout << "MyRadioactiveDecayBase:: locking mutex 197" << G4endl;
@@ -526,7 +535,7 @@ MyRadioactiveDecayBase::LoadDecayTable(const G4ParticleDefinition& theParentNucl
   G4Ions::G4FloatLevelBase floatingLevel =
     ((const G4Ions*)(&theParentNucleus))->GetFloatLevelBase();
 
-#ifdef G4MULTITHREADED
+/*#ifdef G4MULTITHREADED
   G4AutoLock lk(&MyRadioactiveDecayBase::radioactiveDecayMutex);
 //  G4cout << "LoadDecayTable locking its mutex 526" << G4endl;
 //  G4cout << "theParentNucleus.GetParticleName() = " << theParentNucleus.GetParticleName() << G4endl;
@@ -537,7 +546,7 @@ MyRadioactiveDecayBase::LoadDecayTable(const G4ParticleDefinition& theParentNucl
   if (master_table_ptr != master_dkmap->end() ) {   // If table is there             
     return master_table_ptr->second;
   }
-#endif
+#endif*/
 
   //Check if data have been provided by the user
   G4String file = theUserRadioactiveDataFiles[1000*A+Z];
@@ -898,11 +907,11 @@ MyRadioactiveDecayBase::LoadDecayTable(const G4ParticleDefinition& theParentNucl
     if(theDecayTable->entries()) theDecayTable->DumpInfo();
   }
 
-#ifdef G4MULTITHREADED
+/*#ifdef G4MULTITHREADED
   (*master_dkmap)[key] = theDecayTable;                  // store in master library
   lk.unlock(); //explicit unlock
   //G4cout << "LoadDecayTable unlocking its mutex" << G4endl;
-#endif
+#endif*/
   return theDecayTable;
 }
 

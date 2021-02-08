@@ -4,8 +4,10 @@
 #define FissionGenerator_h 1
 
 #include "fissionEvent.h"
-#include "G4AutoLock.hh"
 #include "Randomize.hh"
+/*#ifdef G4MULTITHREADED
+#include "G4AutoLock.hh"
+#endif*/
 
 class FissionGenerator {
 

@@ -31,6 +31,8 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+#undef G4MULTITHREADED
+
 #include "Config.h"
 
 #include "G4MPImanager.hh"
@@ -175,18 +177,22 @@ int main(int argc,char** argv) {
   G4int seed = time( NULL ); 
   //G4Random::setTheSeed( seed );
 
+
   //construct the default run manager
-#ifdef G4MULTITHREADED
+/*#ifdef G4MULTITHREADED
   G4MTRunManager* runManager = new G4MTRunManager;
   nThreads = std::min(nThreads,G4Threading::G4GetNumberOfCores());
   runManager->SetNumberOfThreads(nThreads);
+  G4cout << "number of threads = " << runManager->GetNumberOfThreads() << G4endl;
   //G4ScoringManager::GetScoringManager();
 #else
   //my Verbose output class
-  G4VSteppingVerbose::SetInstance(new SteppingVerbose);
+  //G4VSteppingVerbose::SetInstance(new SteppingVerbose);
   G4RunManager* runManager = new G4RunManager;
-#endif
-  G4cout << "number of threads = " << runManager->GetNumberOfThreads() << G4endl;
+#endif*/
+  G4RunManager* runManager = new G4RunManager;
+
+  //code is 35-40 % faster if it is executed only with MPI threading (without transport)
 
   //set mandatory initialization classes
   //

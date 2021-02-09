@@ -65,6 +65,7 @@ namespace {
         G4cerr << "                          if not specified a simple G4ParticleGun will used " << G4endl;
         G4cerr << "   option [-mf filename]: file for the fuel material in MCNP format" << G4endl;
         G4cerr << "   option [-biasing keyword]: if keyword=off the geometrical biasing is ignored" << G4endl;
+        G4cerr << "   option [-np keyword]: if keyword=off the neutronphysics is not registered" << G4endl;
         G4cerr << "   note: -t option is available only for multi-threaded mode."
         << G4endl;
     }
@@ -79,6 +80,8 @@ int main(int argc,char** argv) {
   G4String materialFile;
   G4String activityFile;
   G4String onOffBiasing = "on";
+  G4bool RegisterNP = false;
+
 #ifdef G4MULTITHREADED
   G4int nThreads = 1;
 #endif
@@ -87,6 +90,9 @@ int main(int argc,char** argv) {
       else if ( G4String(argv[i]) == "-af" ) activityFile = argv[i+1];
       else if ( G4String(argv[i]) == "-mf" ) materialFile = argv[i+1];
       else if ( G4String(argv[i]) == "-biasing" ) onOffBiasing = argv[i+1];
+      else if ( G4String(argv[i]) == "-np" ) {
+        if(G4String(argv[i+1]) == "on") RegisterNP = true;
+      }
 #ifdef G4MULTITHREADED
       else if ( G4String(argv[i]) == "-t" ) {
           nThreads = G4UIcommand::ConvertToInt(argv[i+1]);
@@ -141,7 +147,7 @@ int main(int argc,char** argv) {
 
   //----  My own physics list ----
   //G4VModularPhysicsList* thePhysicsList = new FTFP_BERT;
-  PhysicsList *thePhysicsList = new PhysicsList(false);
+  PhysicsList *thePhysicsList = new PhysicsList(RegisterNP);
   
   //----  One of the reference physics lists ----
 

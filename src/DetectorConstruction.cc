@@ -923,8 +923,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumesBWR()
 
 //============= The Copper Canister ==========================================
   	//Dimensions from Fig 3-7. & Tab 3-6 copper enclosure
-  	G4double CuDimA = 4835.*mm;
-  	G4double CuDimB = 1050.*mm;
+  	G4double CuDimA = 4835.*mm; // total length
+  	G4double CuDimB = 1050.*mm; // outer diameter
   	G4double CuDimC = 850.*mm;  
   	G4double CuDimE = 952.*mm;
   	G4double CuDimG = CuDimC;

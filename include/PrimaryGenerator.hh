@@ -72,7 +72,7 @@ class PrimaryGenerator : public G4VPrimaryGenerator
   	std::vector<G4double>				fKinEnergy;
   	std::vector<G4ThreeVector>			fDirection;
     std::vector<G4ParticleDefinition*>	theParticles;
-    G4ThreeVector assemblyPos[7];
+    G4ThreeVector assemblyPos[12];
 
     G4ParticleDefinition  *theSpectrumParticle;
     std::vector<G4double> theSpectrumI;

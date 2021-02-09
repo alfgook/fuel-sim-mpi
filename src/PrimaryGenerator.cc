@@ -61,24 +61,26 @@ PrimaryGenerator::PrimaryGenerator()
 : G4VPrimaryGenerator()
 {
 
-/*
+
   fPosDist = new G4SPSPosDistribution();
   fPosGenerator = new G4SPSRandomGenerator();
   fPosDist->SetBiasRndm(fPosGenerator);
   fPosDist->SetPosDisType("Volume");
   fPosDist->SetPosDisShape("Cylinder");
 
-  fPosDist->SetRadius(5.*mm);
-  fPosDist->SetHalfZ(367./2.*cm);
-*/
+  fPosDist->SetRadius(0.5*8.36*mm); //PWR
+  fPosDist->SetHalfZ(0.5*3712.*mm); //PWR
+
+  /*
   fPosDist = new G4SPSPosDistribution();
   fPosGenerator = new G4SPSRandomGenerator();
   fPosDist->SetBiasRndm(fPosGenerator);
   fPosDist->SetPosDisType("Volume");
   fPosDist->SetPosDisShape("Para");
-  fPosDist->SetHalfX(214./2.*mm);
-  fPosDist->SetHalfY(214./2.*mm);
-  fPosDist->SetHalfZ(4296./2.*mm);
+  //fPosDist->SetHalfX(214./2.*mm); //PWR
+  //fPosDist->SetHalfY(214./2.*mm); //PWR
+  //fPosDist->SetHalfZ(4296./2.*mm); //PWR
+  */
 
   nParticles = 0;
   fKinEnergy.clear();
@@ -90,23 +92,29 @@ PrimaryGenerator::PrimaryGenerator()
   fWeight =1.;
   fTime = 0.;
 
-  //PWR-assemblies in transpot cask
-  nAssemblies = 7;
-  /*assemblyPos[0] = G4ThreeVector(0,300,0);
-  assemblyPos[1] = G4ThreeVector(-262,135,0);
-  assemblyPos[2] = G4ThreeVector(262,135,0);
-  assemblyPos[3] = G4ThreeVector(0.,0.,0.);
-  assemblyPos[4] = G4ThreeVector(262,-135,0);
-  assemblyPos[5] = G4ThreeVector(-262,-135,0);
-  assemblyPos[6] = G4ThreeVector(0,-300,0);*/
+  //BWR-assemblies in transpot cask
+  nAssemblies = 12;
+  G4double InsertDimensionJhalf = 0.5*210.;
+  assemblyPos[0] = G4ThreeVector(-InsertDimensionJhalf,3.*InsertDimensionJhalf,0);
+  assemblyPos[1] = G4ThreeVector(InsertDimensionJhalf,3.*InsertDimensionJhalf,0);
+  assemblyPos[2] = G4ThreeVector(-3.*InsertDimensionJhalf,InsertDimensionJhalf,0);
+  assemblyPos[3] = G4ThreeVector(-InsertDimensionJhalf,InsertDimensionJhalf,0);
+  assemblyPos[4] = G4ThreeVector(InsertDimensionJhalf,InsertDimensionJhalf,0);
+  assemblyPos[5] = G4ThreeVector(3.*InsertDimensionJhalf,InsertDimensionJhalf,0);
+  assemblyPos[6] = G4ThreeVector(-3.*InsertDimensionJhalf,-InsertDimensionJhalf,0);
+  assemblyPos[7] = G4ThreeVector(-InsertDimensionJhalf,-InsertDimensionJhalf,0);
+  assemblyPos[8] = G4ThreeVector(InsertDimensionJhalf,-InsertDimensionJhalf,0);
+  assemblyPos[9] = G4ThreeVector(3.*InsertDimensionJhalf,-InsertDimensionJhalf,0);
+  assemblyPos[10] = G4ThreeVector(-InsertDimensionJhalf,-3.*InsertDimensionJhalf,0);
+  assemblyPos[11] = G4ThreeVector(InsertDimensionJhalf,-3.*InsertDimensionJhalf,0);
 
   //PWR-assemblies in copper canister
-  nAssemblies = 4;
+/*  nAssemblies = 4;
   assemblyPos[0] = G4ThreeVector(185,185,0);
   assemblyPos[1] = G4ThreeVector(-185,185,0);
   assemblyPos[2] = G4ThreeVector(-185,-185,0);
   assemblyPos[3] = G4ThreeVector(185,-185,0);
-
+*/
   decayPos = G4ThreeVector(0,0,0);
 
 }
@@ -121,20 +129,25 @@ PrimaryGenerator::~PrimaryGenerator()
 
 void PrimaryGenerator::GenerateDecayPos()
 {
-  const G4double Pitch = 221.5/17.*mm;
+  const G4double Pitch = 12.4*mm;
 
   decayPos = fPosDist->GenerateOne();
-  G4int rowNbr = G4int(17.*G4UniformRand()) - 8;
-  G4int colNbr = G4int(17.*G4UniformRand()) - 8;
-  //G4int assemblyNbr = G4int(7.*G4UniformRand());
-  G4int assemblyNbr = nAssemblies*G4UniformRand();
-  while(assemblyNbr>=nAssemblies || assemblyNbr<0) assemblyNbr = nAssemblies*G4UniformRand(); //just for safety
+  G4int rowNbr = G4int(10.*G4UniformRand()) - 4;
+  G4int colNbr = G4int(10.*G4UniformRand()) - 4;
+  while((rowNbr==1 && colNbr==1) || (rowNbr==-1 && colNbr==-1)) {
+    rowNbr = G4int(10.*G4UniformRand()) - 4;
+    colNbr = G4int(10.*G4UniformRand()) - 4;
+  }
 
-  /*G4cout << "rowNbr = " << rowNbr << G4endl;
-  G4cout << "colNbr = " << colNbr << G4endl;
-  G4cout << "assemblyNbr = " << assemblyNbr << G4endl;*/
+  G4int assemblyNbr = 0;
+  //G4int assemblyNbr = nAssemblies*G4UniformRand();
+  //while(assemblyNbr>=nAssemblies || assemblyNbr<0) assemblyNbr = nAssemblies*G4UniformRand(); //just for safety
 
-  //decayPos += G4ThreeVector(rowNbr*Pitch,colNbr*Pitch,0.);
+  //G4cout << "rowNbr = " << rowNbr << G4endl;
+  //G4cout << "colNbr = " << colNbr << G4endl;
+  //G4cout << "assemblyNbr = " << assemblyNbr << G4endl;
+
+  decayPos += G4ThreeVector(rowNbr*Pitch-0.5*Pitch,colNbr*Pitch-0.5*Pitch,0.);
   decayPos += assemblyPos[assemblyNbr];
 }
 

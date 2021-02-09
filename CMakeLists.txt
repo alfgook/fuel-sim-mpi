@@ -114,6 +114,7 @@ set(input_files
     input/SKB-TR-10-13-PWR_MCNP_matls_new.inp
     input/SKB-TR-10-13-PWR_neutron_spectrum.txt
     input/test_mat.plt
+    input/SKB-TR-10-13-BWR-CRAM-37years-nuclide-vector.plt
   )
 
 foreach(_script ${input_files})

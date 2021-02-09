@@ -133,7 +133,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 //	G4cout << "========== DetectorConstruction::DefineVolumes() =========" << G4endl;
 //	G4cout << "======================================================" << G4endl;
   // Define volumes
-  return DefineVolumes();
+  //return DefineVolumes();
+  return DefineVolumesBWR();
 }
 
 int DetectorConstruction::ReadMCNPmatCard(const char *FileName)
@@ -304,62 +305,34 @@ int DetectorConstruction::ReadMCNPmatCard(const char *FileName)
 void DetectorConstruction::DefineMaterials()
 { 
 	// Material definition
+
+	/*
+	//---------PWR-------------
 	G4double PinRad = 0.5*cm;
 	G4double PinLenght = 367.*cm;
 
 	G4double FuelVolume = 17.*17.*PinLenght*pow(PinRad,2.)*3.141592654;
 
 	FuelVolume = PinLenght*pow(22.15*cm,2.);
-
-	// UO2 density = 10.97 g/cm3 and total mass = 672069 g => Volume = 61264.266 cm3
-
-	//FuelVolume *= 0.8;
-	//MaterialFile mFile("./input/SKB-TR-10-13-PWR-5years-nuclide-vector.plt","fuel-material",FuelVolume);
-	//MaterialFile mFile("./input/test_mat.plt","fuel-material",FuelVolume);
-
-
-	//-----------------
 	MaterialFile *mFile = new MaterialFile("./input/SKB-TR-10-13-PWR-5years-nuclide-vector.plt","fuel-material",FuelVolume);
 	fFuelMat = mFile->GetMaterial();
+	*/
 
-	/*if( ReadMCNPmatCard(fMaterialFile.data()) ) {
-		G4ExceptionDescription ed;
-	  	ed << "      Failed to read the material file " << fMaterialFile << G4endl;
-	  	G4Exception(" DetectorConstruction::DefineMaterials(...)",
-		      "DetectorConstruction.02",
-		      FatalException,
-		      ed);
-	}*/
-/*
-	G4Element *PuMatrix = new G4Element("PuMatrix","PuMatrix",5.);
-	PuMatrix->AddIsotope(new G4Isotope("pu-238",94,238),81.28*perCent);
-	PuMatrix->AddIsotope(new G4Isotope("pu-238",94,239),14.952*perCent);
-	PuMatrix->AddIsotope(new G4Isotope("pu-238",94,240),2.879*perCent);
-	PuMatrix->AddIsotope(new G4Isotope("pu-238",94,241),0.791*perCent);
-	PuMatrix->AddIsotope(new G4Isotope("pu-238",94,242),0.098*perCent);
+	//---------BWR-------------
+	G4double FuelRodPitch = 12.4*mm;
+	G4double FuelRodOuterDiameter = 9.62*mm;
+	G4double FuelRodInnerDiameter = 8.36*mm;
+	G4double FuelRodLength = 3712.*mm; // is acctully for SVEA-64 (I would guess it is the same)
+	G4double CladdingThickness = 0.63*mm;
 
+	G4double PinRad = 0.5*9.62*mm;
+	G4double PinLenght = 3712.*mm;
 
-	//G4Element *ONat = nistManager->FindOrBuildElement("O");
+	G4double FuelVolume = 96.*PinLenght*pow(PinRad,2.)*3.141592654;
 
-	//enrichment to 45.61% O-18
-	
-	G4Element *ONat = new G4Element("Enriched-Oxygen","Oxygen",3.);
-	ONat->AddIsotope(new G4Isotope("O-16",8,16),54.37*perCent);
-	ONat->AddIsotope(new G4Isotope("O-17",8,17),0.02*perCent);
-	ONat->AddIsotope(new G4Isotope("O-18",8,18),45.61*perCent);
+	MaterialFile *mFile = new MaterialFile("./input/SKB-TR-10-13-BWR-CRAM-37years-nuclide-vector.plt","fuel-material",FuelVolume);
+	fFuelMat = mFile->GetMaterial();
 
-
-	G4Element *ONat = new G4Element("Enriched-Oxygen","Oxygen",3.);
-	ONat->AddIsotope(new G4Isotope("O-16",8,16),68.974*perCent);
-	ONat->AddIsotope(new G4Isotope("O-17",8,17),0.026*perCent);
-	ONat->AddIsotope(new G4Isotope("O-18",8,18),31.000*perCent);
-
-	fFuelMat = new G4Material("PuO2",11.5*g/cm3,2);
-	G4int nAtoms = 1;
-	fFuelMat->AddElement(PuMatrix,nAtoms = 1);
-	fFuelMat->AddElement(ONat,nAtoms = 2);
-
-*/
 
 	// Cast Iron
 	G4double CastIronDensity = 7300.*kg/m3; //
@@ -739,6 +712,676 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                         1,               // copy number
                         fCheckOverlaps); // checking overlaps
 
+//****************Detectors********************************************************
+
+	const G4double PbWallThickness = 4.*cm;
+	const G4double BoronWallThickness = 2.*mm;
+	//const G4double CuWallThickness = 0.*mm;
+	const G4double DummyDetectionVolume = 1.*mm;
+	const G4double totWallThickness = PbWallThickness + BoronWallThickness + DummyDetectionVolume;
+
+	//const G4double ShieldingWallDistance = CuDimB/2. + totWallThickness/2. + 5.*cm;
+	//const G4double distance = CuDimB/2. + 16.3*cm; // lead wall at surface of canister
+
+	const G4double distance = CuDimB/2. + 47.5*cm; // 1 m from center
+	const G4double ShieldingWallDistance = distance - totWallThickness/2. - 5.*cm;
+	//const G4double ShieldingWallDistance = CuDimB/2. + 47.5*cm/2.;
+
+	G4double WallHalfY = InsertDimJ/2. + 90.*mm;
+	G4double WallHalfZ = WallHalfY;
+
+	G4Material *fPb = nistManager->FindOrBuildMaterial("G4_Pb");
+	//G4Material *fPb = nistManager->FindOrBuildMaterial("G4_AIR");
+	G4Box *ShieldingWallS = new G4Box("ShieldingWallS",totWallThickness/2.,WallHalfY,WallHalfZ);
+  	G4LogicalVolume *ShieldingWallLV = new G4LogicalVolume(ShieldingWallS,fPb,"ShieldingWallLV",0,0,0);
+
+	G4Box *B4CWallS = new G4Box("B4CWallS",BoronWallThickness/2.,WallHalfY,WallHalfZ);
+	G4Material *fB4C = nistManager->FindOrBuildMaterial("G4_BORON_CARBIDE");
+	//G4Material *fB4C = nistManager->FindOrBuildMaterial("G4_AIR");
+  	G4LogicalVolume *B4CWallLV = new G4LogicalVolume(B4CWallS,fB4C,"B4CWallLV",0,0,0);
+
+  	G4double PbBoxWallThicknes = 5.*cm;
+  	G4Box *ShieldingBoxWallS = new G4Box("ShieldingBoxWallS",WallHalfY+PbWallThickness/2.,WallHalfY+2.*PbBoxWallThicknes,WallHalfY+2.*PbBoxWallThicknes);
+  	G4Box *ShieldingBoxHoleS = new G4Box("ShieldingBoxHoleS",WallHalfY+PbWallThickness,WallHalfY,WallHalfY);
+  	G4SubtractionSolid *ShieldingBoxS = new G4SubtractionSolid("ShieldingBoxS",ShieldingBoxWallS,ShieldingBoxHoleS);
+  	G4LogicalVolume *ShieldingBoxLV = new G4LogicalVolume(ShieldingBoxS,fPb,"ShieldingBoxLV",0,0,0);
+
+  	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(-totWallThickness/2.+BoronWallThickness/2.,0,0), // at (0,0,0)
+                        B4CWallLV,         // its logical volume
+                        "B4CWallPV",         // its name
+                        ShieldingWallLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps
+/*
+  	if(CuWallThickness>1E-3*mm) {
+  		G4Box *CuWallS = new G4Box("CuWallS",CuWallThickness/2.,InsertDimJ,2.*InsertDimJ);
+  		G4LogicalVolume *CuWallLV = new G4LogicalVolume(CuWallS,CopperMaterial,"CuWallLV",0,0,0);
+  		CuWallLV->SetVisAttributes(YellowVisAtt);
+
+  		new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(totWallThickness/2.-CuWallThickness/2.,0,0), // at (0,0,0)
+                        CuWallLV,         // its logical volume
+                        "CuWallPV",         // its name
+                        ShieldingWallLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps
+  	}*/
+
+  	if(DummyDetectionVolume>1E-3*mm) {
+  		G4Box *DummyS = new G4Box("DummyS",DummyDetectionVolume/2.,WallHalfY,WallHalfZ);
+  		G4LogicalVolume *DummyLV = new G4LogicalVolume(DummyS,air,"DetectionVolume",0,0,0);
+
+  		new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(totWallThickness/2.-DummyDetectionVolume/2.,0,0), // at (0,0,0)
+                        DummyLV,         // its logical volume
+                        "DetectionVolumePV",         // its name
+                        ShieldingWallLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps
+  	}
+
+  	for(G4int i=0;i<4;i++) {
+  		G4RotationMatrix *rot = new G4RotationMatrix();
+  		rot->rotateZ(i*90*deg);
+  		G4ThreeVector pos(ShieldingWallDistance,0,0);
+  		pos *= *rot;
+
+  		G4ThreeVector pos1(ShieldingWallDistance+WallHalfY,0,0);
+  		pos1 *= *rot;
+
+  		rot->rotateX(45.*deg);
+  		new G4PVPlacement(
+                        rot,               // rotation
+                        pos, // at (0,0,0)
+                        ShieldingWallLV,         // its logical volume
+                        "ShieldingWallPV",         // its name
+                        worldLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+  		new G4PVPlacement(
+                        rot,               // rotation
+                        pos1, // at (0,0,0)
+                        ShieldingBoxLV,         // its logical volume
+                        "ShieldingBoxPV",         // its name
+                        worldLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps
+  		
+  	}
+	/*new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(ShieldingWallDistance,0,0), // at (0,0,0)
+                        ShieldingWallLV,         // its logical volume
+                        "ShieldingWallPV1",         // its name
+                        worldLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps*/
+
+
+	const G4int nDetClusters = 4;
+	const G4int nDetPerCluster = 4;
+	const G4int nDetectors = nDetPerCluster*nDetClusters;
+	G4AssemblyVolume* neutronDetectors[nDetectors];
+	char DetName[32];
+	for(G4int i=0;i<nDetectors;i++) {
+		snprintf(DetName,32,"EJ309_%d",i+1);
+		neutronDetectors[i] = EJ309_5x5inch(i+1, DetName);
+	}
+
+	//G4double phiCluster[] = {0.,180.};
+	G4double phiCluster[] = {0.,90.,180.,270.};
+	for(G4int cluster=0;cluster<nDetClusters;cluster++) {
+		G4ThreeVector position[nDetPerCluster];
+		position[0] = G4ThreeVector(0.,InsertDimJ/2.,0.);
+		position[1] = G4ThreeVector(InsertDimJ/2.,0.,0.);
+		position[2] = G4ThreeVector(-InsertDimJ/2.,0.,0.);
+		position[3] = G4ThreeVector(0.,-InsertDimJ/2.,0.);
+
+		G4ThreeVector posCluster = G4ThreeVector(0.,0.,distance);
+		G4RotationMatrix *rotPos = new G4RotationMatrix();
+		rotPos->rotateY(90.*degree);
+		rotPos->rotateZ(phiCluster[cluster]*degree);
+
+		G4RotationMatrix *rotDet = new G4RotationMatrix();
+		rotDet->rotateY(90.*degree);
+		rotDet->rotateZ(phiCluster[cluster]*degree);
+
+		//posCluster *= *rotPos;
+		for(G4int i=0;i<nDetPerCluster;i++) {
+			position[i] += posCluster;
+			position[i] *= *rotPos;
+			neutronDetectors[cluster*nDetPerCluster + i]->MakeImprint(worldLV,position[i],rotDet);
+		}
+	}
+
+	// Create a region
+	G4LogicalVolume* logicVol = G4LogicalVolumeStore::GetInstance()->GetVolume("5inch-EJ309");
+	G4Region* DetectorRegion = new G4Region("DetectorRegion");
+	DetectorRegion->AddRootLogicalVolume(logicVol);
+	
+	// Print materials
+//	G4cout << *(G4Material::GetMaterialTable()) << G4endl;
+/*
+	// test 3x3 inch
+	G4AssemblyVolume* test = EJ309_3x3inch(0,"testDet");
+	G4RotationMatrix *rotTest = new G4RotationMatrix();
+	G4ThreeVector posTest(0,0,2.7*m);
+	test->MakeImprint(worldLV,posTest,rotTest);*/
+
+	return worldPV;
+}
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+G4VPhysicalVolume* DetectorConstruction::DefineVolumesBWR()
+{
+    G4Material* air  = G4Material::GetMaterial("G4_AIR");
+	
+	//world
+    G4double worldRadiusY = 250*cm;
+    G4double worldRadiusX = 250*cm;
+	G4double worldLength = 300*cm;
+    //********************Definitions of Solids, Logical Volumes, Physical Volumes***************************
+    
+    // World
+    
+    G4GeometryManager::GetInstance()->SetWorldMaximumExtent(worldLength);
+
+    G4Box* worldS = new G4Box("world",worldRadiusX,worldRadiusY,worldLength); 
+    G4LogicalVolume* worldLV
+    = new G4LogicalVolume(
+                          worldS,   //its solid
+                          air,      //its material
+                          "World.logical"); //its name
+    
+    //  Must place the World Physical volume unrotated at (0,0,0).
+    // 
+    G4VPhysicalVolume* worldPV
+    = new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(0,0,0), // at (0,0,0)
+                        worldLV,         // its logical volume
+                        "World.physical",         // its name
+                        0,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps 
+    //worldLV->SetVisAttributes(G4VisAttributes::GetInvisible());
+	G4VisAttributes *WorldVisAtt = new G4VisAttributes(G4Colour::Gray());
+	WorldVisAtt->SetForceWireframe(true);
+  	worldLV->SetVisAttributes(WorldVisAtt);
+	//worldLV->SetVisAttributes(G4VisAttributes::GetInvisible());
+
+//============= The Copper Canister ==========================================
+  	//Dimensions from Fig 3-7. & Tab 3-6 copper enclosure
+  	G4double CuDimA = 4835.*mm;
+  	G4double CuDimB = 1050.*mm;
+  	G4double CuDimC = 850.*mm;  
+  	G4double CuDimE = 952.*mm;
+  	G4double CuDimG = CuDimC;
+  	G4double CuDimK = 35.*mm;
+  	G4double CuDimL = 50.*mm;
+  	G4double CuDimM = 50.*mm;
+  	G4double CuDimP = 75.*mm;
+  	G4double CuDimF = 821.*mm;
+  	G4double InnerFreeLength = 4575.*mm;
+
+  	//Dimensions from Fig 3-6. & Tab 3-3,3-4,3-5
+  	G4double InsertDimA = 4573*mm;
+  	//G4double InsertDimB = 80.*mm; //PWR
+  	//G4double InsertDimC = 4443.*mm; //PWR
+  	G4double InsertDimB = 60.*mm; //BWR
+  	G4double InsertDimC = 4463.*mm; //BWR
+  	G4double InsertDimD = 949.*mm;
+  	G4double InsertDimE = 910.*mm;
+  	G4double InsertDimF = 50.*mm;
+  	G4double InsertDimG = 5.*deg;
+
+  	G4Tubs *CanS = new G4Tubs("CanS",0.,CuDimB/2.,CuDimA/2.,0.,360.*deg);
+  	G4Tubs *CanTopCut1S = new G4Tubs("CanTopCut1S",0.,CuDimG/2.,CuDimL/2.,0.,360.*deg);
+  	G4Tubs *CanTopCut2S = new G4Tubs("CanTopCut2S",0.,CuDimF/2.,CuDimK/2.,0.,360.*deg);
+  	G4Tubs *CanBottomCut1S = new G4Tubs("CanTopCut2S",0.,CuDimC/2.,CuDimP/2.,0.,360.*deg);
+
+	G4Material* CopperMaterial = nistManager->FindOrBuildMaterial("G4_Cu");
+	G4Material* ArgonMaterial = nistManager->FindOrBuildMaterial("G4_Ar");
+	G4Material* StainLessSteelMaterial = nistManager->FindOrBuildMaterial("G4_STAINLESS-STEEL");
+
+	G4LogicalVolume *CanLV = new G4LogicalVolume(CanS,CopperMaterial,"CaskCylinderLV",0,0,0);
+	G4LogicalVolume *CanTopCut1LV = new G4LogicalVolume(CanTopCut1S,air,"CanTopCut1LV",0,0,0);
+	G4LogicalVolume *CanTopCut2LV = new G4LogicalVolume(CanTopCut2S,air,"CanTopCut2LV",0,0,0);
+	G4LogicalVolume *CanBottomCut1LV = new G4LogicalVolume(CanBottomCut1S,air,"CanBottomCut1LV",0,0,0);
+
+	CanTopCut1LV->SetVisAttributes(G4VisAttributes::GetInvisible());
+	CanTopCut2LV->SetVisAttributes(G4VisAttributes::GetInvisible());
+	CanBottomCut1LV->SetVisAttributes(G4VisAttributes::GetInvisible());
+
+	//  interior
+  	G4Tubs *CavityS = new G4Tubs("CavityS",0.,CuDimE/2.,InnerFreeLength/2.,0.,360.*deg);
+
+  	G4double pRmax2 = InsertDimE/2.;
+  	G4double pRmax1 = pRmax2 - InsertDimF*std::tan(InsertDimG);
+  	G4Cons *SteelLidS = new G4Cons("SteelLidS",0.,pRmax1,0.,pRmax2,InsertDimF/2.,0.,360.*deg);
+
+  	G4Tubs *InsertS = new G4Tubs("InsertS",0.,InsertDimD/2.,InsertDimA/2.,0.,360.*deg);
+
+
+	G4LogicalVolume *CavityLV = new G4LogicalVolume(CavityS,ArgonMaterial,"CaskCavityLV",0,0,0); //
+	G4LogicalVolume *InsertLV = new G4LogicalVolume(InsertS,fCastIron,"InsertLV",0,0,0); //
+	G4LogicalVolume *SteelLidLV = new G4LogicalVolume(SteelLidS,StainLessSteelMaterial,"SteelLidLV",0,0,0); //this should be  iron in the end
+
+	G4VisAttributes *GreenVisAtt = new G4VisAttributes(G4Colour::Green());
+	CavityLV->SetVisAttributes(GreenVisAtt);
+
+	G4VisAttributes *GrayVisAtt = new G4VisAttributes(G4Colour::Gray());
+	InsertLV->SetVisAttributes(GrayVisAtt);
+
+	G4VisAttributes *YellowVisAtt = new G4VisAttributes(G4Colour::Yellow());
+	CanLV->SetVisAttributes(YellowVisAtt);
+
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(0,0,0), // at (0,0,0)
+                        CanLV,         // its logical volume
+                        "CaskCylinderPV",         // its name
+                        worldLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(0,0,CuDimA/2.- CuDimK - CuDimL/2.), // at (0,0,0)
+                        CanTopCut1LV,         // its logical volume
+                        "CanTopCut1PV",         // its name
+                        CanLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps 
+
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(0,0,CuDimA/2.- CuDimK/2.), // at (0,0,0)
+                        CanTopCut2LV,         // its logical volume
+                        "CanTopCut2PV",         // its name
+                        CanLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps 
+
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(0,0,-CuDimA/2. + CuDimP/2.), // at (0,0,0)
+                        CanBottomCut1LV,         // its logical volume
+                        "CanBottomCut1PV",         // its name
+                        CanLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps 
+
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(0,0,+CuDimA/2.-InnerFreeLength/2.-CuDimK-CuDimL-CuDimM), // at (0,0,0)
+                        CavityLV,         // its logical volume
+                        "CaskCavityPV",         // its name
+                        CanLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps 
+
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(0,0,0), // at (0,0,0)
+                        InsertLV,         // its logical volume
+                        "InsertPV",         // its name
+                        CavityLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps 
+
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(0,0,+InsertDimA/2.-InsertDimF/2.), // at (0,0,0)
+                        SteelLidLV,         // its logical volume
+                        "SteelLidPV",         // its name
+                        InsertLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+//-------- Insert Channels -----------------------------------------
+
+  	//Dimensions from Fig 3-6. & Tab 3-3,3-4,3-5
+  	G4double InsertDimI = 20.*mm; //BWR
+  	G4double InsertDimJ = 210.*mm; //BWR
+  	G4double InsertDimK = 30.*mm; //BWR
+  	G4double InsertDimL = 160.*mm; //BWR
+  	G4double InsertDimM = 10.*mm; //BWR
+
+  	G4double ChannelLength = InsertDimA - InsertDimF - InsertDimB;
+
+  	G4Box *ChannelOutS = new G4Box("ChannelOutS",InsertDimL/2.+InsertDimM,InsertDimL/2.+InsertDimM,InsertDimC/2.);
+  	G4Box *ChannelInS = new G4Box("ChannelInS",InsertDimL/2.,InsertDimL/2.,InsertDimC/2.);
+
+  	G4LogicalVolume *ChannelOutLV = new G4LogicalVolume(ChannelOutS,StainLessSteelMaterial,"ChannelOutLV",0,0,0);
+  	G4LogicalVolume *ChannelInLV = new G4LogicalVolume(ChannelInS,ArgonMaterial,"ChannelInLV",0,0,0);
+
+	ChannelOutLV->SetVisAttributes(GrayVisAtt);
+	ChannelInLV->SetVisAttributes(GreenVisAtt);
+
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(0,0,0), // at (0,0,0)
+                        ChannelInLV,         // its logical volume
+                        "ChannelInPV",         // its name
+                        ChannelOutLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+  	G4double deltaZ = InsertDimA/2. - InsertDimF - InsertDimC/2.;
+
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(-InsertDimJ/2.,InsertDimJ*3./2.,deltaZ), // at (0,0,0)
+                        ChannelOutLV,         // its logical volume
+                        "ChannelOutPV1",         // its name
+                        InsertLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(InsertDimJ/2.,InsertDimJ*3./2.,deltaZ), // at (0,0,0)
+                        ChannelOutLV,         // its logical volume
+                        "ChannelOutPV2",         // its name
+                        InsertLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(-InsertDimJ*3./2.,InsertDimJ/2.,deltaZ), // at (0,0,0)
+                        ChannelOutLV,         // its logical volume
+                        "ChannelOutPV3",         // its name
+                        InsertLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(-InsertDimJ/2.,InsertDimJ/2.,deltaZ), // at (0,0,0)
+                        ChannelOutLV,         // its logical volume
+                        "ChannelOutPV4",         // its name
+                        InsertLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(InsertDimJ/2.,InsertDimJ/2.,deltaZ), // at (0,0,0)
+                        ChannelOutLV,         // its logical volume
+                        "ChannelOutPV5",         // its name
+                        InsertLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(InsertDimJ*3./2.,InsertDimJ/2.,deltaZ), // at (0,0,0)
+                        ChannelOutLV,         // its logical volume
+                        "ChannelOutPV6",         // its name
+                        InsertLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(-InsertDimJ*3./2.,-InsertDimJ/2.,deltaZ), // at (0,0,0)
+                        ChannelOutLV,         // its logical volume
+                        "ChannelOutPV7",         // its name
+                        InsertLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(-InsertDimJ/2.,-InsertDimJ/2.,deltaZ), // at (0,0,0)
+                        ChannelOutLV,         // its logical volume
+                        "ChannelOutPV8",         // its name
+                        InsertLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(InsertDimJ/2.,-InsertDimJ/2.,deltaZ), // at (0,0,0)
+                        ChannelOutLV,         // its logical volume
+                        "ChannelOutPV9",         // its name
+                        InsertLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(InsertDimJ*3./2.,-InsertDimJ/2.,deltaZ), // at (0,0,0)
+                        ChannelOutLV,         // its logical volume
+                        "ChannelOutPV10",         // its name
+                        InsertLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(-InsertDimJ/2.,-InsertDimJ*3./2.,deltaZ), // at (0,0,0)
+                        ChannelOutLV,         // its logical volume
+                        "ChannelOutPV11",         // its name
+                        InsertLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(InsertDimJ/2.,-InsertDimJ*3./2.,deltaZ), // at (0,0,0)
+                        ChannelOutLV,         // its logical volume
+                        "ChannelOutPV12",         // its name
+                        InsertLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+	// Create a region
+	G4Region* FuelRegion = new G4Region("FuelRegion");
+	FuelRegion->AddRootLogicalVolume(InsertLV);
+	//FuelRegion->AddRootLogicalVolume(CaskBottomLV);
+	//FuelRegion->AddRootLogicalVolume(CaskTopLV);
+//******************FUEL***********************************************************
+	// THe BWR assemblies are 10x10 we assume the SVEA-96
+	// parameters taken from SKB TR10-13 Table A-3. /SKBdoc 1193244/
+	G4double FuelRodPitch = 12.4*mm;
+	G4double FuelRodOuterDiameter = 9.62*mm;
+	G4double FuelRodInnerDiameter = 8.36*mm;
+	G4double FuelRodLength = 3712.*mm; // is acctully for SVEA-64 (I would guess it is the same)
+	G4double CladdingThickness = 0.63*mm;
+
+
+
+	G4double PinRad = FuelRodOuterDiameter*0.5;
+
+	G4double HalfWidthBox = FuelRodPitch*0.5;
+
+	G4Box *DummyFuelBox = new G4Box("DummyFuelBox",HalfWidthBox,HalfWidthBox,0.5*FuelRodLength);
+	//G4Box *DummyFuelBox = new G4Box("DummyFuelBox",HalfWidthBox,HalfWidthBox,HalfWidthBox.);
+	G4LogicalVolume *DummyFuelBoxLV = new G4LogicalVolume(DummyFuelBox,ArgonMaterial,"DummyFuelBoxLV",0,0,0);
+	DummyFuelBoxLV->SetVisAttributes(G4VisAttributes::GetInvisible());
+
+	G4Box *DummyFuelBox5 = new G4Box("DummyFuelBox5",5.*HalfWidthBox,HalfWidthBox,0.5*FuelRodLength);
+	G4LogicalVolume *DummyFuelBox5LV = new G4LogicalVolume(DummyFuelBox5,ArgonMaterial,"DummyFuelBox5LV",0,0,0);
+	DummyFuelBox5LV->SetVisAttributes(G4VisAttributes::GetInvisible());
+
+	G4Box *DummyFuelBox4 = new G4Box("DummyFuelBox4",4.*HalfWidthBox,HalfWidthBox,0.5*FuelRodLength);
+	G4LogicalVolume *DummyFuelBox4LV = new G4LogicalVolume(DummyFuelBox4,ArgonMaterial,"DummyFuelBox4LV",0,0,0);
+	DummyFuelBox4LV->SetVisAttributes(G4VisAttributes::GetInvisible());
+
+	G4Box *DummyFuelBox5x4 = new G4Box("DummyFuelBox5x4",5*HalfWidthBox,4*HalfWidthBox,0.5*FuelRodLength);
+	G4LogicalVolume *DummyFuelBox5x4LV = new G4LogicalVolume(DummyFuelBox5x4,ArgonMaterial,"DummyFuelBox5x4LV",0,0,0);
+	DummyFuelBox5x4LV->SetVisAttributes(G4VisAttributes::GetInvisible());
+
+	//Since the ORIGEN calculation does not sepparate fuel and cladding I can't do it either
+	G4Tubs *CladdingRodS = new G4Tubs("CladdingRodS",0.,PinRad,0.5*FuelRodLength,0.,360.*deg);
+	G4LogicalVolume *CladdingRodLV = new G4LogicalVolume(CladdingRodS,fFuelMat,"CladdingRodLV",0,0,0);
+	//G4LogicalVolume *CladdingRodLV = new G4LogicalVolume(CladdingRodS,air,"CladdingRodLV",0,0,0);
+
+
+	G4VisAttributes *RedVisAtt = new G4VisAttributes(G4Colour::Red());
+	CladdingRodLV->SetVisAttributes(RedVisAtt);
+
+	//place pin in dummy box
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(0,0,0), // at (0,0,0)
+                        CladdingRodLV,         // its logical volume
+                        "FuelRodPV",         // its name
+                        DummyFuelBoxLV,               // its mother  volume
+                        false,           // no boolean operations
+                        0,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+
+	//G4VPhysicalVolume *repX = 
+	new G4PVReplica("FuelAssembly4",
+                 DummyFuelBoxLV,
+                 DummyFuelBox4LV,
+                 kXAxis, 4, 2.*HalfWidthBox);
+
+	new G4PVReplica("FuelAssembly5",
+                 DummyFuelBoxLV,
+                 DummyFuelBox5LV,
+                 kXAxis, 5, 2.*HalfWidthBox);
+	
+	//G4VPhysicalVolume *FuelAssembly =
+	new G4PVReplica("FuelAssembly5x4",
+                 DummyFuelBox5LV,
+                 DummyFuelBox5x4LV,
+                 kYAxis, 4, 2.*HalfWidthBox);
+
+	//place 1 assembly
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(5.*HalfWidthBox,6*HalfWidthBox,0), // at (0,0,0)
+                        DummyFuelBox5x4LV,         // its logical volume
+                        "Fuel5x4_A",         // its name
+                        ChannelInLV,               // its mother  volume
+                        false,           // no boolean operations
+                        1,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+	//place 1 assembly
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(-5.*HalfWidthBox,6*HalfWidthBox,0), // at (0,0,0)
+                        DummyFuelBox5x4LV,         // its logical volume
+                        "Fuel5x4_B",         // its name
+                        ChannelInLV,               // its mother  volume
+                        false,           // no boolean operations
+                        1,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+	//place 1 assembly
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(-5.*HalfWidthBox,-6*HalfWidthBox,0), // at (0,0,0)
+                        DummyFuelBox5x4LV,         // its logical volume
+                        "Fuel5x4_B",         // its name
+                        ChannelInLV,               // its mother  volume
+                        false,           // no boolean operations
+                        1,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+	//place 1 assembly
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(5.*HalfWidthBox,-6*HalfWidthBox,0), // at (0,0,0)
+                        DummyFuelBox5x4LV,         // its logical volume
+                        "Fuel5x4_D",         // its name
+                        ChannelInLV,               // its mother  volume
+                        false,           // no boolean operations
+                        1,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(6.*HalfWidthBox,HalfWidthBox,0), // at (0,0,0)
+                        DummyFuelBox4LV,         // its logical volume
+                        "Fuel4x1_A",         // its name
+                        ChannelInLV,               // its mother  volume
+                        false,           // no boolean operations
+                        1,               // copy number
+                        fCheckOverlaps); // checking overlaps
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(-6.*HalfWidthBox,HalfWidthBox,0), // at (0,0,0)
+                        DummyFuelBox4LV,         // its logical volume
+                        "Fuel4x1_B",         // its name
+                        ChannelInLV,               // its mother  volume
+                        false,           // no boolean operations
+                        1,               // copy number
+                        fCheckOverlaps); // checking overlaps
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(-6.*HalfWidthBox,-HalfWidthBox,0), // at (0,0,0)
+                        DummyFuelBox4LV,         // its logical volume
+                        "Fuel4x1_C",         // its name
+                        ChannelInLV,               // its mother  volume
+                        false,           // no boolean operations
+                        1,               // copy number
+                        fCheckOverlaps); // checking overlaps
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(6.*HalfWidthBox,-HalfWidthBox,0), // at (0,0,0)
+                        DummyFuelBox4LV,         // its logical volume
+                        "Fuel4x1_D",         // its name
+                        ChannelInLV,               // its mother  volume
+                        false,           // no boolean operations
+                        1,               // copy number
+                        fCheckOverlaps); // checking overlaps
+
+	// fuel modeled as a simple homogenous Volume
+/*
+	G4double HalfWidthBox = 214./2.;
+	G4Box *DummyFuelBox = new G4Box("DummyFuelBox",HalfWidthBox,HalfWidthBox,4296./2.*mm);
+	G4LogicalVolume *DummyFuelBoxLV = new G4LogicalVolume(DummyFuelBox,fFuelMat,"DummyFuelBoxLV",0,0,0);
+	//place 1 assembly
+	new G4PVPlacement(
+                        0,               // no rotation
+                        G4ThreeVector(0,0,0), // at (0,0,0)
+                        DummyFuelBoxLV,         // its logical volume
+                        "Fuel",         // its name
+                        ChannelInLV,               // its mother  volume
+                        false,           // no boolean operations
+                        1,               // copy number
+                        fCheckOverlaps); // checking overlaps
+*/
 //****************Detectors********************************************************
 
 	const G4double PbWallThickness = 4.*cm;

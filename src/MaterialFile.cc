@@ -231,56 +231,7 @@ MaterialFile::MaterialFile(const char *FileName, G4String matName, G4double Volu
 	temp.Z = 0;
 	theList.erase(std::remove(std::begin(theList),std::end(theList),temp),theList.end());
 	//Print();
-/*
-	// remove elements with small mass fraction
-	G4int nn = 0;
-	for(G4int i=0;i<theList.size();i+=nn) {
 
-		nn = 0;
-		G4double mass_of_element = 0;
-		for(G4int j=i;j<theList.size();j++) {
-			if(theList[j].Z!=theList[i].Z) break;
-			++nn;
-			mass_of_element += theList[j].mass;
-		}
-
-		//if(mass_of_element/total_mass<1.E-09) {
-		if(mass_of_element<1.*g) {
-			G4cout << "removing " << theList[i].nuclide << " with mass " << mass_of_element/g << ", nn = " << nn << G4endl;
-			G4cout << "removing " << theList[i+nn].nuclide << " with mass " << mass_of_element/g << G4endl;
-			G4cout << "------" << G4endl;
-			theList.erase(theList.begin()+i,theList.begin()+(i+nn));
-			nn = 0;
-		}
-	}
-
-	total_mass = 0;
-	for(G4int i=0;i<theList.size();i++) {
-		total_mass += theList[i].mass;
-	}
-	Print();
-	G4cout << "removed elements with small mass" << G4endl;
-
-
-	// remove isotopes with small abundance
-	for(G4int i=0;i<theList.size();i++) {
-		G4double sum_of_moles = 0.;
-		for(G4int j=i;j<theList.size();j++) {
-			if(theList[j].Z!=theList[i].Z) break; 
-			sum_of_moles += theList[j].moles;
-		}
-
-		for(G4int j=i;j<theList.size();j++) {
-			if(theList[j].Z!=theList[i].Z) break; 
-			G4double abundance = theList[j].moles/sum_of_moles;
-			if(abundance<1.e-4) {
-				theList.erase(theList.begin()+j,theList.begin()+(j+1));
-			}
-		}
-	}
-	Print();
-	G4cout << "removed isotopes with small abundance" << G4endl;
-*/
 	total_mass = 0.;
 	nElements = 1;
 	G4int ZZ = theList[0].Z;

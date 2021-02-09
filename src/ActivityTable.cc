@@ -24,7 +24,7 @@ ActivityTable::ActivityTable(G4String aFile, MyRadioactiveDecayBase *aRadDecay)
   //fRadDecay->LoadAllDecayTables();
 
   G4String dir(INPUT_DIR);
-  if(!aFile.size()) aFile = dir + "/activities.txt";
+  if(!aFile.size()) aFile = dir + "/activities-BWR.txt";
   fInit = true;
 
   nPrimaries = 0;

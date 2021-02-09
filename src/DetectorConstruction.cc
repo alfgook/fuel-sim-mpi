@@ -70,6 +70,9 @@
 #include "G4GenericMessenger.hh"
 
 #include "MaterialFile.hh"
+#ifndef NOT_USING_MPI
+	#include "G4MPImanager.hh"
+#endif
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -332,6 +335,9 @@ void DetectorConstruction::DefineMaterials()
 
 	MaterialFile *mFile = new MaterialFile("./input/SKB-TR-10-13-BWR-CRAM-37years-nuclide-vector.plt","fuel-material",FuelVolume);
 	fFuelMat = mFile->GetMaterial();
+	#ifndef NOT_USING_MPI
+	if(G4MPImanager::GetManager()->GetRank()==0) mFile->Print();
+	#endif
 
 
 	// Cast Iron
@@ -871,7 +877,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 	DetectorRegion->AddRootLogicalVolume(logicVol);
 	
 	// Print materials
-//	G4cout << *(G4Material::GetMaterialTable()) << G4endl;
+	G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 /*
 	// test 3x3 inch
 	G4AssemblyVolume* test = EJ309_3x3inch(0,"testDet");
@@ -1541,7 +1547,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumesBWR()
 	DetectorRegion->AddRootLogicalVolume(logicVol);
 	
 	// Print materials
-//	G4cout << *(G4Material::GetMaterialTable()) << G4endl;
+	G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 /*
 	// test 3x3 inch
 	G4AssemblyVolume* test = EJ309_3x3inch(0,"testDet");

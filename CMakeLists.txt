@@ -101,6 +101,7 @@ configure_file(Config.h.in Config.h)
 #
 set(input_files
     input/actinides.txt
+    input/activities-BWR.txt
     input/activities.txt
     input/activity-nat-Pu.txt
     input/atomic-mass-eval-2016.txt

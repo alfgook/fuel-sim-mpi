@@ -199,7 +199,8 @@ MaterialFile::MaterialFile(const char *FileName, G4String matName, G4double Volu
 			continue;
 		}
 
-		if(theList[i].mass<0.1*g) {
+		//if(theList[i].mass<0.1*g) {
+		if(theList[i].mass<1.*g) {
 			//G4cout << "removing " << theList[i].nuclide << " with mass " << theList[i].mass/g << ", nn = " << nn << G4endl;
 			//G4cout << "------" << G4endl;
 			theList.erase(theList.begin()+i,theList.begin()+(i+nn));

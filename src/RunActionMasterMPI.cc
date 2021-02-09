@@ -33,9 +33,11 @@
 #include "RunActionMasterMPI.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "AnalysisMPI.hh"
-#include "G4MPImanager.hh"
- 
+
+#ifndef NOT_USING_MPI
+#include "G4MPImanager.hh" 
 #include "G4MPIntupleMerger.hh"
+#endif
 
 #include "G4UnitsTable.hh"
 #include "G4PhysicalConstants.hh"
@@ -47,6 +49,7 @@
 RunActionMasterMPI::RunActionMasterMPI()
 :G4UserRunAction()
 {
+  #ifndef NOT_USING_MPI
 	if ( G4MPImanager::GetManager()->GetTotalSize() >= 2 ) {
     // Activate MPI ntuple merging
     // The merger must be created before creating G4AnalysisManager:
@@ -58,8 +61,8 @@ RunActionMasterMPI::RunActionMasterMPI()
     G4bool rowMode = true;
     fMPIntupleMerger = new G4MPIntupleMerger(nofReducedNtupleFiles, rowWise, rowMode);
   }
+  #endif
 
-//  G4cout << G4MPImanager::GetManager()->GetRank() << " : " <<"RunActionMasterMPI::RunActionMasterMPI()" << G4endl;
   AnalysisMPI::GetAnalysis()->Book();
 
 
@@ -69,7 +72,9 @@ RunActionMasterMPI::RunActionMasterMPI()
 
 RunActionMasterMPI::~RunActionMasterMPI()
 { 
+  #ifndef NOT_USING_MPI
   delete fMPIntupleMerger;
+  #endif
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -84,8 +89,7 @@ void RunActionMasterMPI::BeginOfRunAction(const G4Run*)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void RunActionMasterMPI::EndOfRunAction(const G4Run*)
-{
-  const G4int rank = G4MPImanager::GetManager()-> GetRank();    
+{    
  //save histograms
   auto analysisManager = AnalysisMPI::GetAnalysis();
   //if(rank==0) analysisManager->OpenFile();
@@ -93,7 +97,11 @@ void RunActionMasterMPI::EndOfRunAction(const G4Run*)
   analysisManager->CloseFile();
 
   runTimer.Stop();
+  #ifndef NOT_USING_MPI
   G4cout << G4MPImanager::GetManager()->GetRank() << " : " << "EndOfRunAction: total run time " << runTimer.GetRealElapsed() << " seconds" << G4endl;
+  #else
+  G4cout << "EndOfRunAction: total run time " << runTimer.GetRealElapsed() << " seconds" << G4endl;
+  #endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

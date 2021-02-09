@@ -39,7 +39,9 @@
 #include "G4Timer.hh"
 
 class PrimaryGeneratorAction;
+#ifndef NOT_USING_MPI
 class G4MPIntupleMerger;
+#endif
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -54,7 +56,9 @@ class RunActionMasterMPI : public G4UserRunAction
     
   private:  
   	G4Timer runTimer;
+  	#ifndef NOT_USING_MPI
   	G4MPIntupleMerger* fMPIntupleMerger;
+  	#endif
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

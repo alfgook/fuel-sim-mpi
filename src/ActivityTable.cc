@@ -9,7 +9,9 @@
 G4Mutex ActivityTable::ActivityTableMutex = G4MUTEX_INITIALIZER; //used for reading from the input text file
 #endif*/
 
+#ifndef NOT_USING_MPI
 #include "G4MPImanager.hh"
+#endif
 
 ActivityTable::ActivityTable(G4String aFile, MyRadioactiveDecayBase *aRadDecay)
 {
@@ -214,11 +216,13 @@ void ActivityTable::RestrictTo(G4String KinematicsName)
     /*#ifdef G4MULTITHREADED
     G4AutoLock lock(&ActivityTable::ActivityTableMutex); //lock the mutex while reading from the text-file
     #endif*/
+  #ifndef NOT_USING_MPI
     G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "====================================" << G4endl;
     G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "==  Restricting decay to " << KinematicsName << G4endl;
     G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "==  total activity = " << activityTotal << G4endl;
 
     G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "   Z   A   rest-activity  total-activity" << G4endl;
+  #endif
 
   for(size_t bin=0;bin<activityCumulative.size();bin++) {
     G4int Z = fZZ.at(bin);
@@ -253,9 +257,9 @@ void ActivityTable::RestrictTo(G4String KinematicsName)
       G4double BR = table.GetBrsum();
       G4double newActivity = BR*activity.at(bin);
       activity[bin] = newActivity;
-      G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "   " << fZZ[bin] << "  " << fAA[bin] << "  " << newActivity <<  "  " << newActivity/BR << G4endl;
-      for(size_t i=0;i<table.GetEntries();i++) G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "   " << table.GetEntry(i);
-      G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << G4endl;
+      //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "   " << fZZ[bin] << "  " << fAA[bin] << "  " << newActivity <<  "  " << newActivity/BR << G4endl;
+      //for(size_t i=0;i<table.GetEntries();i++) G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "   " << table.GetEntry(i);
+      //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << G4endl;
     }
     fTables.push_back(table);
   }
@@ -267,8 +271,8 @@ void ActivityTable::RestrictTo(G4String KinematicsName)
   activityTotal = activityCumulative.back();
   for(unsigned int i=0;i<activity.size();i++) activityCumulative[i] /= activityTotal;
 
-  G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "== restricted activity = " << activityTotal << G4endl; 
-  G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "====================================" << G4endl;
+  //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "== restricted activity = " << activityTotal << G4endl; 
+  //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "====================================" << G4endl;
 
   CleanUpTable();
   /*#ifdef G4MULTITHREADED
@@ -281,11 +285,11 @@ void ActivityTable::ExcludeAphaAndSF()
     /*#ifdef G4MULTITHREADED
     G4AutoLock lock(&ActivityTable::ActivityTableMutex); //lock the mutex while reading from the text-file
     #endif*/
-    G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "====================================" << G4endl;
-    G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "==  Restricting decay to exclude (sf) and alpha decay" << G4endl;
-    G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "==  total activity = " << activityTotal << G4endl;
+    //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "====================================" << G4endl;
+    //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "==  Restricting decay to exclude (sf) and alpha decay" << G4endl;
+    //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "==  total activity = " << activityTotal << G4endl;
 
-    G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "   Z   A   rest-activity  total-activity  main-branch" << G4endl;
+    //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "   Z   A   rest-activity  total-activity  main-branch" << G4endl;
 
   for(size_t bin=0;bin<activityCumulative.size();bin++) {
     G4int Z = fZZ.at(bin);
@@ -294,12 +298,12 @@ void ActivityTable::ExcludeAphaAndSF()
 
     G4ParticleDefinition* ion = G4IonTable::GetIonTable()->GetIon(Z,A,E);
     if(!ion) {
-      G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "!ion" << G4endl;
+      //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "!ion" << G4endl;
       continue;
     }
     G4DecayTable *theDecayTable = fRadDecay->GetDecayTable(ion);
     if(!theDecayTable) {
-      G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "!ion" << G4endl;
+      //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "!ion" << G4endl;
       continue;
     }
     //if(theDecayTable->entries()) theDecayTable->DumpInfo();
@@ -335,7 +339,7 @@ void ActivityTable::ExcludeAphaAndSF()
       G4double BR = table.GetBrsum();
       G4double newActivity = BR*activity.at(bin);
       activity[bin] = newActivity;
-      G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "   "<< fZZ[bin] << "  " << fAA[bin] << "  " << newActivity <<  "  " << newActivity/BR << "  " << MainBranchName << G4endl;
+      //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "   "<< fZZ[bin] << "  " << fAA[bin] << "  " << newActivity <<  "  " << newActivity/BR << "  " << MainBranchName << G4endl;
       //for(size_t i=0;i<table.GetEntries();i++) G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "   " << table.GetEntry(i);
       //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << G4endl;
     }
@@ -351,8 +355,8 @@ void ActivityTable::ExcludeAphaAndSF()
   activityTotal = activityCumulative.back();
   for(unsigned int i=0;i<activity.size();i++) activityCumulative[i] /= activityTotal;
 
-  G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "== restricted activity = " << activityTotal << G4endl; 
-  G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "====================================" << G4endl;
+  //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "== restricted activity = " << activityTotal << G4endl; 
+  //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "====================================" << G4endl;
 
   /*#ifdef G4MULTITHREADED
   lock.unlock(); //explicit unlock

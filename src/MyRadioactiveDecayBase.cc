@@ -88,7 +88,9 @@
 #include <algorithm>
 #include <fstream>
 
+#ifndef NOT_USING_MPI
 #include <G4MPImanager.hh>
+#endif
 
 //#include <filesystem>
 

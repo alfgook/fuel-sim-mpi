@@ -39,7 +39,7 @@
 #include "G4ParticleDefinition.hh"
 #include "G4RunManager.hh"
 
-#if IS_MPI_COMPILED
+#ifndef NOT_USING_MPI
 #include "G4MPImanager.hh"
 #endif
 
@@ -69,7 +69,7 @@ ParticleSourceFromFile::~ParticleSourceFromFile()
 void  ParticleSourceFromFile::OpenFile(G4String FileName)
 {
   eofReached = false;
-  #if IS_MPI_COMPILED
+  #ifndef NOT_USING_MPI
   //G4cout << "THIS IS AN MPI SESSION" << G4endl;
   G4int rank = G4MPImanager::GetManager()->GetRank();
   FileName += "_r" + std::to_string(rank);

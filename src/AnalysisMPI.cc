@@ -30,7 +30,9 @@
 #include "G4AutoDelete.hh"
 #include "G4SystemOfUnits.hh"
 #include "AnalysisMPI.hh"
+#ifndef NOT_USING_MPI
 #include "G4MPImanager.hh"
+#endif
 
 //Select format of output here
 //Note: ntuple merging is supported only with Root format
@@ -120,9 +122,13 @@ AnalysisMPI::OpenFile()
   G4String filename = mgr->GetFileName();
   //G4String filename = "test";
   G4cout << "AnalysisMPI::filename " << filename << G4endl;
+  #ifndef NOT_USING_MPI
   G4int rank = G4MPImanager::GetManager()->GetRank();
+  #else
+  G4int rank = 0;
+  #endif
   filename += "_r" + std::to_string(rank);
-  mgr->OpenFile(filename.c_str());
+  if(rank==0) mgr->OpenFile(filename.c_str());
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

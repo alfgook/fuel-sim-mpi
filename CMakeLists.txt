@@ -32,15 +32,17 @@ else()
   find_package(Geant4 REQUIRED)
 endif()
 
-find_package(G4mpi REQUIRED)
 #----------------------------------------------------------------------------
 # Setup Geant4 include directories and compile definitions
 #
 include(${Geant4_USE_FILE})
 
-#------------------------------------------------------------------------------
-add_definitions(-DTOOLS_USE_NATIVE_MPI) 
-add_definitions(-DIS_MPI_COMPILED) 
+if(NOT NO_MPI_BUILD)
+  find_package(G4mpi REQUIRED)
+  add_definitions(-DTOOLS_USE_NATIVE_MPI) 
+  add_definitions(-DIS_MPI_COMPILED)
+endif()
+
 
 #----------------------------------------------------------------------------
 # Locate sources and headers for this project
@@ -59,8 +61,10 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
 #
-add_executable(FuelPinSF-mpi FuelPinSF-mpi.cc ${sources} ${headers})
-target_link_libraries(FuelPinSF-mpi ${Geant4_LIBRARIES} ${G4mpi_LIBRARIES})
+if(NOT NO_MPI_BUILD)
+  add_executable(FuelPinSF-mpi FuelPinSF-mpi.cc ${sources} ${headers})
+  target_link_libraries(FuelPinSF-mpi ${Geant4_LIBRARIES} ${G4mpi_LIBRARIES})
+endif()
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we
@@ -123,6 +127,7 @@ endforeach()
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
+if(NOT NO_MPI_BUILD)
 install(TARGETS FuelPinSF-mpi DESTINATION bin)
 
 # Check if we override built-in version with new version (libFission.*) of the library
@@ -137,6 +142,59 @@ if(USE_FISSION_NEW)
             "fission library not found")
   else()
     target_link_libraries(FuelPinSF-mpi 
+                          ${LFISSION} 
+                         )
+    configure_file(${LFISSION} .
+                  COPYONLY
+                  )
+    message(STATUS ${LFISSION})
+  endif()
+  message(STATUS
+          "Overriding fission library libFission.* with version in ${FISSION_DIR}")
+  include_directories(${CMAKE_SOURCE_DIR}/../include ${FISSION_DIR}/include)
+  add_definitions(-DFISSION_NEW)
+
+  # Check if we use FREYA 
+  if(USE_FREYA)
+    if(NOT FORT)
+      message(FATAL_ERROR
+              "No Fortran compiler found, so FREYA is not included")
+    endif()
+    message(STATUS
+            "Using FREYA")
+    add_definitions(-DUSEFREYA)
+  endif()
+endif()
+
+if(DEBUG_ALPHA_N)
+message(STATUS
+            "DEBUGING : Compiling in (alpha,n) mode only !!!!!")
+  add_definitions(-DDEBUG_ALPHA_N)
+ENDIF()
+
+endif()
+#------------------------------------------------------------------------------------------
+
+add_executable(FuelPinSF FuelPinSF.cc ${sources} ${headers})
+#target_link_libraries(FuelPinSF ${Geant4_LIBRARIES} ${G4mpi_LIBRARIES})
+target_link_libraries(FuelPinSF ${Geant4_LIBRARIES})
+
+target_compile_definitions(FuelPinSF PUBLIC -DNOT_USING_MPI)
+
+
+
+# Check if we override built-in version with new version (libFission.*) of the library
+if(USE_FISSION_NEW)
+  find_library(LFISSION Fission
+               PATHS ${CMAKE_SOURCE_DIR}/../lib ${FISSION_DIR}/lib
+               DOC "fission library"
+               NO_DEFAULT_PATH
+              )
+  if(NOT LFISSION)
+    message(FATAL_ERROR
+            "fission library not found")
+  else()
+    target_link_libraries(FuelPinSF 
                           ${LFISSION} 
                          )
     configure_file(${LFISSION} .

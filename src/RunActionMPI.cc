@@ -33,7 +33,10 @@
 #include "RunActionMPI.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "AnalysisMPI.hh"
+
+#ifndef NOT_USING_MPI
 #include "G4MPImanager.hh"
+#endif
 
 #include "G4UnitsTable.hh"
 #include "G4PhysicalConstants.hh"
@@ -76,7 +79,11 @@ void RunActionMPI::EndOfRunAction(const G4Run*)
   analysisManager->CloseFile();
 
   runTimer.Stop();
+  #ifndef NOT_USING_MPI
   G4cout << G4MPImanager::GetManager()->GetRank() << " : " << "EndOfRunAction: total run time " << runTimer.GetRealElapsed() << " seconds" << G4endl;
+  #else
+  G4cout << "EndOfRunAction: total run time " << runTimer.GetRealElapsed() << " seconds" << G4endl;
+  #endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

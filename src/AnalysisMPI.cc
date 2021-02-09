@@ -115,8 +115,11 @@ AnalysisMPI::~AnalysisMPI()
 void
 AnalysisMPI::OpenFile()
 {
+  G4cout << "AnalysisMPI::Openfile start" << G4endl;
   G4AnalysisManager* mgr = G4AnalysisManager::Instance();
   G4String filename = mgr->GetFileName();
+  //G4String filename = "test";
+  G4cout << "AnalysisMPI::filename " << filename << G4endl;
   G4int rank = G4MPImanager::GetManager()->GetRank();
   filename += "_r" + std::to_string(rank);
   mgr->OpenFile(filename.c_str());

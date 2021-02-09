@@ -23,68 +23,41 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
+/// \file RunActionMasterMPI.hh
+/// \brief Definition of the RunActionMasterMPI class
 //
-/// \file ActionInitialization.cc
-/// \brief Implementation of the ActionInitialization class
+// 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#include "ActionInitialization.hh"
-#include "PrimaryGeneratorAction.hh"
-//#include "RunAction.hh"
-#include "RunActionMPI.hh"
-#include "RunActionMasterMPI.hh"
-#include "EventAction.hh"
-#include "SteppingAction.hh"
-#include "TrackingAction.hh"
-#include "MyStackingAction.hh"
+#ifndef RunActionMasterMPI_h
+#define RunActionMasterMPI_h 1
+
+#include "G4UserRunAction.hh"
+#include "globals.hh"
+
+#include "G4Timer.hh"
+
+class PrimaryGeneratorAction;
+class G4MPIntupleMerger;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-ActionInitialization::ActionInitialization(G4String aFile)
- : G4VUserActionInitialization()
+class RunActionMasterMPI : public G4UserRunAction
 {
-  fActivityFile = aFile;
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-ActionInitialization::~ActionInitialization()
-{}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void ActionInitialization::BuildForMaster() const
-{
-  //RunAction* runAction = new RunAction();
-  RunActionMasterMPI* runAction = new RunActionMasterMPI();
-  SetUserAction(runAction);
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void ActionInitialization::Build() const
-{
-
-  //complex primary that decays all the nuclides based on thier activities
-  PrimaryGeneratorAction* primary = new PrimaryGeneratorAction(fActivityFile);
-
-  SetUserAction(primary);
+  public:
+    RunActionMasterMPI();
+   ~RunActionMasterMPI();
+  
+    virtual void BeginOfRunAction(const G4Run*);
+    virtual void   EndOfRunAction(const G4Run*);
     
-  //RunAction* runAction = new RunAction();
-  //RunActionMPI* runAction = new RunActionMPI();
-  RunActionMasterMPI* runAction = new RunActionMasterMPI();
-  SetUserAction(runAction);
-  
-  EventAction* eventAction = new EventAction();
-  SetUserAction(eventAction);
-  
-  TrackingAction* trackingAction = new TrackingAction(eventAction);
-  SetUserAction(trackingAction);
-  
-  SteppingAction* steppingAction = new SteppingAction();
-  SetUserAction(steppingAction);
-
-  MyStackingAction* stackingAction = new MyStackingAction(eventAction);
-  SetUserAction(stackingAction);
-}  
+  private:  
+  	G4Timer runTimer;
+  	G4MPIntupleMerger* fMPIntupleMerger;
+};
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+#endif
+

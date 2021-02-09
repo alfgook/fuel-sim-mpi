@@ -40,12 +40,7 @@
 #include "G4MPIextraWorker.hh"
 
 #include "G4Types.hh"
-
-#ifdef G4MULTITHREADED
-#include "G4MTRunManager.hh"
-#else
 #include "G4RunManager.hh"
-#endif
 
 #include "G4UImanager.hh"
 #include "Randomize.hh"
@@ -92,9 +87,7 @@ int main(int argc,char** argv) {
   G4String activityFile;
   G4String onOffBiasing = "on";
   G4bool RegisterNP = true;
-#ifdef G4MULTITHREADED
-  G4int nThreads = 1;
-#endif
+
   for ( G4int i=1; i<argc; i=i+2 ) {
       if      ( G4String(argv[i]) == "-m" ) {
         macro = argv[i+1];
@@ -132,9 +125,9 @@ int main(int argc,char** argv) {
   // --------------------------------------------------------------------
   // At first, G4MPImanager/G4MPIsession should be created.
   G4int nofExtraWorkers = 0;
-//#ifndef G4MULTITHREADED
-//  if ( mergeNtuple ) nofExtraWorkers = 1;
-//#endif
+
+  nofExtraWorkers = 1;
+
   G4MPImanager* g4MPI = new G4MPImanager(argcMPI, argvMPI, nofExtraWorkers);
   g4MPI->SetVerbose(1);
   
@@ -223,32 +216,14 @@ int main(int argc,char** argv) {
 
   //initialize G4 kernel
   runManager->Initialize();
-/*
-  G4VisExecutive* visManager = new G4VisExecutive;
-  visManager-> Initialize();
-  G4cout << G4endl;
-*/
-  //initialize visualization
-  //G4VisManager* visManager = nullptr;
 
-  //get the pointer to the User Interface manager
-  //G4UImanager* UImanager = G4UImanager::GetUIpointer();
-
-  /*if (ui)  {
-   //interactive mode
-   visManager = new G4VisExecutive;
-   visManager->Initialize();
-   UImanager->ApplyCommand("/control/execute macros/vis.mac");
-   ui->SessionStart();
-   delete ui;
+  // extra worker (for collecting ntuple data)
+  if ( g4MPI->IsExtraWorker() ) {
+    G4cout << "Set extra worker" << G4endl;
+    G4UserRunAction* runAction 
+      = const_cast<G4UserRunAction*>(runManager->GetUserRunAction());
+    g4MPI->SetExtraWorker(new G4MPIextraWorker(runAction));
   }
-  else  {
-   //batch mode
-   G4String command = "/control/execute ";
-   G4String fileName = macro;
-   UImanager->ApplyCommand(command+fileName);
-  }*/
-
     // --------------------------------------------------------------------
   // ready for go
   // MPIsession treats both interactive and batch modes.

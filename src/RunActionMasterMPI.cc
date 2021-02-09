@@ -23,68 +23,77 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
+/// \file RunActionMasterMPI.cc
+/// \brief Implementation of the RunActionMasterMPI class
 //
-/// \file ActionInitialization.cc
-/// \brief Implementation of the ActionInitialization class
+// 
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#include "ActionInitialization.hh"
-#include "PrimaryGeneratorAction.hh"
-//#include "RunAction.hh"
-#include "RunActionMPI.hh"
 #include "RunActionMasterMPI.hh"
-#include "EventAction.hh"
-#include "SteppingAction.hh"
-#include "TrackingAction.hh"
-#include "MyStackingAction.hh"
+#include "PrimaryGeneratorAction.hh"
+#include "AnalysisMPI.hh"
+#include "G4MPImanager.hh"
+ 
+#include "G4MPIntupleMerger.hh"
+
+#include "G4UnitsTable.hh"
+#include "G4PhysicalConstants.hh"
+#include "G4SystemOfUnits.hh"
+#include <iomanip>
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-ActionInitialization::ActionInitialization(G4String aFile)
- : G4VUserActionInitialization()
+RunActionMasterMPI::RunActionMasterMPI()
+:G4UserRunAction()
 {
-  fActivityFile = aFile;
+	if ( G4MPImanager::GetManager()->GetTotalSize() >= 2 ) {
+    // Activate MPI ntuple merging
+    // The merger must be created before creating G4AnalysisManager:
+    // (= the first call to G4AnalysisManager::Instance())
+    // and deleted only at the end of program
+    G4int nofReducedNtupleFiles = 0;  
+       // Multiple reduced ntuple files are not yet supported 
+    G4bool rowWise = false;
+    G4bool rowMode = true;
+    fMPIntupleMerger = new G4MPIntupleMerger(nofReducedNtupleFiles, rowWise, rowMode);
+  }
+
+//  G4cout << G4MPImanager::GetManager()->GetRank() << " : " <<"RunActionMasterMPI::RunActionMasterMPI()" << G4endl;
+  AnalysisMPI::GetAnalysis()->Book();
+
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-ActionInitialization::~ActionInitialization()
-{}
-
+RunActionMasterMPI::~RunActionMasterMPI()
+{ 
+  delete fMPIntupleMerger;
+}
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void ActionInitialization::BuildForMaster() const
-{
-  //RunAction* runAction = new RunAction();
-  RunActionMasterMPI* runAction = new RunActionMasterMPI();
-  SetUserAction(runAction);
+void RunActionMasterMPI::BeginOfRunAction(const G4Run*)
+{ 
+//  G4cout << G4MPImanager::GetManager()->GetRank() << " : " << "RunActionMasterMPI::BeginOfRunAction()" << G4endl;
+  AnalysisMPI::GetAnalysis()->OpenFile();
+  //
+  runTimer.Start();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void ActionInitialization::Build() const
+void RunActionMasterMPI::EndOfRunAction(const G4Run*)
 {
+  const G4int rank = G4MPImanager::GetManager()-> GetRank();    
+ //save histograms
+  auto analysisManager = AnalysisMPI::GetAnalysis();
+  //if(rank==0) analysisManager->OpenFile();
+  analysisManager->Write();
+  analysisManager->CloseFile();
 
-  //complex primary that decays all the nuclides based on thier activities
-  PrimaryGeneratorAction* primary = new PrimaryGeneratorAction(fActivityFile);
-
-  SetUserAction(primary);
-    
-  //RunAction* runAction = new RunAction();
-  //RunActionMPI* runAction = new RunActionMPI();
-  RunActionMasterMPI* runAction = new RunActionMasterMPI();
-  SetUserAction(runAction);
-  
-  EventAction* eventAction = new EventAction();
-  SetUserAction(eventAction);
-  
-  TrackingAction* trackingAction = new TrackingAction(eventAction);
-  SetUserAction(trackingAction);
-  
-  SteppingAction* steppingAction = new SteppingAction();
-  SetUserAction(steppingAction);
-
-  MyStackingAction* stackingAction = new MyStackingAction(eventAction);
-  SetUserAction(stackingAction);
-}  
+  runTimer.Stop();
+  G4cout << G4MPImanager::GetManager()->GetRank() << " : " << "EndOfRunAction: total run time " << runTimer.GetRealElapsed() << " seconds" << G4endl;
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

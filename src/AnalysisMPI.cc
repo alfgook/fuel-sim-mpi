@@ -128,7 +128,8 @@ AnalysisMPI::OpenFile()
   G4int rank = 0;
   #endif
   filename += "_r" + std::to_string(rank);
-  if(rank==0) mgr->OpenFile(filename.c_str());
+  //if(rank==0) mgr->OpenFile(filename.c_str());
+  mgr->OpenFile(filename.c_str());
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -126,7 +126,7 @@ int main(int argc,char** argv) {
   // At first, G4MPImanager/G4MPIsession should be created.
   G4int nofExtraWorkers = 0;
 
-  nofExtraWorkers = 1;
+  //nofExtraWorkers = 1; // set to one for ntuple mergin, which is not working at the moment!!
 
   G4MPImanager* g4MPI = new G4MPImanager(argcMPI, argvMPI, nofExtraWorkers);
   g4MPI->SetVerbose(1);

@@ -55,11 +55,12 @@ RunActionMasterMPI::RunActionMasterMPI()
     // The merger must be created before creating G4AnalysisManager:
     // (= the first call to G4AnalysisManager::Instance())
     // and deleted only at the end of program
-    G4int nofReducedNtupleFiles = 0;  
+    G4int nofReducedNtupleFiles = 1;  
        // Multiple reduced ntuple files are not yet supported 
     G4bool rowWise = false;
     G4bool rowMode = true;
     fMPIntupleMerger = new G4MPIntupleMerger(nofReducedNtupleFiles, rowWise, rowMode);
+    G4cout << G4MPImanager::GetManager()->GetRank() << " creates fMPIntupleMerger" << G4endl;
   }
   #endif
 

@@ -54,8 +54,8 @@ ActionInitialization::~ActionInitialization()
 
 void ActionInitialization::BuildForMaster() const
 {
-  //RunAction* runAction = new RunAction();
-  RunActionMasterMPI* runAction = new RunActionMasterMPI();
+  RunActionMPI* runAction = new RunActionMPI();
+  //RunActionMasterMPI* runAction = new RunActionMasterMPI();
   SetUserAction(runAction);
 }
 
@@ -70,8 +70,8 @@ void ActionInitialization::Build() const
   SetUserAction(primary);
     
   //RunAction* runAction = new RunAction();
-  //RunActionMPI* runAction = new RunActionMPI();
-  RunActionMasterMPI* runAction = new RunActionMasterMPI();
+  RunActionMPI* runAction = new RunActionMPI();
+  //RunActionMasterMPI* runAction = new RunActionMasterMPI();
   SetUserAction(runAction);
   
   EventAction* eventAction = new EventAction();

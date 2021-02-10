@@ -9,7 +9,8 @@ message(STATUS
 # Check if we have a fortran compiler
 find_program(FORT NAMES $ENV{FC}
                         gfortran
-                        ifort)
+                        ifort
+                        ftn)
 if(NOT FORT)
   project(FuelPinSF C CXX)
   message(STATUS

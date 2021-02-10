@@ -45,6 +45,12 @@
 
 	CXX=`which g++` CC=`which gcc` cmake ../ -DUSE_FISSION_NEW:BOOL=ON -DUSE_FREYA:BOOL=ON -DFISSION_DIR:PATH='/home/alf/programs/fission_v2.0.5' -DG4mpi_DIR=/home/alf/programs/g4mpi/lib/G4mpi-10.6.1
 
+# build with static libs on Obelix
+
+	source /home/alf/programs/geant4.10.06.p01-install-static/bin/geant4.sh
+
+	CXX=`which g++` CC=`which gcc` cmake ../ -DUSE_FISSION_NEW:BOOL=ON -DUSE_FREYA:BOOL=ON -DFISSION_DIR:PATH='/home/alf/programs/fission_v2.0.5-static' -DG4mpi_DIR=/home/alf/programs/G4mpi-static/source/install/lib/G4mpi-10.6.1/ -DBUILD_STATIC_LIBS:BOOL=ON -DGeant4_DIR=/home/alf/programs/geant4.10.06.p01-install-static/lib/Geant4-10.6.1/
+
 # on Tegner
 
 	CXX=`which g++` CC=`which gcc` cmake ../ -DUSE_FISSION_NEW:BOOL=ON -DUSE_FREYA:BOOL=ON -DFISSION_DIR:PATH='/cfs/klemming/nobackup/g/gook/fission_v2.0.5/' -DG4mpi_DIR=/cfs/klemming/nobackup/g/gook/geant4.10.06.p02-install/share/Geant4-10.6.2/examples/extended/parallel/MPI/source/install/lib64/G4mpi-10.6.2 -DGeant4_DIR=/cfs/klemming/nobackup/g/gook/geant4.10.06.p02-install/lib64/Geant4-10.6.2

@@ -161,8 +161,8 @@ int main(int argc,char** argv) {
   //choose the Random engine
   //CLHEP::RanluxEngine defaultEngine( 1234567, 4 ); 
   //G4Random::setTheEngine( &defaultEngine ); 
-  G4int seed = time( NULL ); 
-  G4Random::setTheSeed( seed );
+  //G4int seed = time( NULL ); 
+  //G4Random::setTheSeed( seed );
 
 
   //construct the default run manager

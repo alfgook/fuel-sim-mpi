@@ -5,9 +5,9 @@
 
 #include "fissionEvent.h"
 #include "Randomize.hh"
-/*#ifdef G4MULTITHREADED
+#ifdef G4MULTITHREADED
 #include "G4AutoLock.hh"
-#endif*/
+#endif
 
 class FissionGenerator {
 

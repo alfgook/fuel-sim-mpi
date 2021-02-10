@@ -31,8 +31,6 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#undef G4MULTITHREADED
-
 #include "Config.h"
 
 #include "G4MPImanager.hh"
@@ -40,7 +38,11 @@
 #include "G4MPIextraWorker.hh"
 
 #include "G4Types.hh"
+#ifdef G4MULTITHREADED
+#include "G4MTRunManager.hh"
+#else
 #include "G4RunManager.hh"
+#endif
 
 #include "G4UImanager.hh"
 #include "Randomize.hh"
@@ -149,24 +151,18 @@ int main(int argc,char** argv) {
   G4cout << "GetCurrentDir : " << GetCurrentDir(cCurrentPath, sizeof(cCurrentPath)) << G4endl;
 
   G4cout << "G4PARTICLEHPDATA = " << std::getenv("G4PARTICLEHPDATA") << G4endl;
-  //G4cout << "G4ALPHAHPDATA = " << std::getenv("G4ALPHAHPDATA") << G4endl;
-
-  //detect interactive mode (if no arguments) and define UI session
-  /*G4UIExecutive* ui = 0;
-  if (!macro.size()) {
-    G4cout << "UI session = " << macro << G4endl;
-    ui = new G4UIExecutive(argc,argv);
-  }*/
-
-  //choose the Random engine
-  //CLHEP::RanluxEngine defaultEngine( 1234567, 4 ); 
-  //G4Random::setTheEngine( &defaultEngine ); 
-  //G4int seed = time( NULL ); 
-  //G4Random::setTheSeed( seed );
-
 
   //construct the default run manager
+#ifdef G4MULTITHREADED
+  G4int nThreads = 2; //default to 2 threads
+  G4MTRunManager* runManager = new G4MTRunManager;
+  nThreads = std::min(nThreads,G4Threading::G4GetNumberOfCores());
+  runManager->SetNumberOfThreads(nThreads);
+#else
+  //my Verbose output class
+  G4VSteppingVerbose::SetInstance(new SteppingVerbose);
   G4RunManager* runManager = new G4RunManager;
+#endif
 
   //code is 35-40 % faster if it is executed only with MPI threading (without transport)
 

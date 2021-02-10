@@ -1379,7 +1379,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumesBWR()
                         fCheckOverlaps); // checking overlaps
 
 	G4double maxTime = 10000.*ns;
-	InsertLV->SetUserLimit(new G4UserLimits(DBL_MAX,DBL_max,maxTime));
+	InsertLV->SetUserLimits(new G4UserLimits(DBL_MAX,DBL_MAX,maxTime));
 	// fuel modeled as a simple homogenous Volume
 /*
 	G4double HalfWidthBox = 214./2.;

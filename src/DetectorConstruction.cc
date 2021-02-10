@@ -877,7 +877,12 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 	DetectorRegion->AddRootLogicalVolume(logicVol);
 	
 	// Print materials
+
+	#ifndef NOT_USING_MPI
+	if(G4MPImanager::GetManager()->GetRank()==0) G4cout << *(G4Material::GetMaterialTable()) << G4endl;
+	#else
 	G4cout << *(G4Material::GetMaterialTable()) << G4endl;
+	#endif
 /*
 	// test 3x3 inch
 	G4AssemblyVolume* test = EJ309_3x3inch(0,"testDet");
@@ -1218,6 +1223,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumesBWR()
 	// Create a region
 	G4Region* FuelRegion = new G4Region("FuelRegion");
 	FuelRegion->AddRootLogicalVolume(InsertLV);
+
 	//FuelRegion->AddRootLogicalVolume(CaskBottomLV);
 	//FuelRegion->AddRootLogicalVolume(CaskTopLV);
 //******************FUEL***********************************************************
@@ -1372,6 +1378,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumesBWR()
                         1,               // copy number
                         fCheckOverlaps); // checking overlaps
 
+	G4double maxTime = 10000.*ns;
+	InsertLV->SetUserLimit(new G4UserLimits(DBL_MAX,DBL_max,maxTime));
 	// fuel modeled as a simple homogenous Volume
 /*
 	G4double HalfWidthBox = 214./2.;
@@ -1547,7 +1555,11 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumesBWR()
 	DetectorRegion->AddRootLogicalVolume(logicVol);
 	
 	// Print materials
+	#ifndef NOT_USING_MPI
+	if(G4MPImanager::GetManager()->GetRank()==0) G4cout << *(G4Material::GetMaterialTable()) << G4endl;
+	#else
 	G4cout << *(G4Material::GetMaterialTable()) << G4endl;
+	#endif
 /*
 	// test 3x3 inch
 	G4AssemblyVolume* test = EJ309_3x3inch(0,"testDet");
@@ -1747,7 +1759,7 @@ G4AssemblyVolume* DetectorConstruction::EJ309_5x5inch(G4int copyNbr, const char*
 
 G4AssemblyVolume* DetectorConstruction::EJ309_3x3inch(G4int copyNbr, const char* name)
 {
-	const G4bool CheckOverlaps = true;
+	const G4bool CheckOverlaps = false;
 	G4AssemblyVolume *detectorAssembly = new G4AssemblyVolume();
 	//-------------------Scintillator CuDimEnsions-------------------------------------------
 	G4double ScintRad = 76./2.*mm;

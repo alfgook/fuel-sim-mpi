@@ -112,10 +112,10 @@ PhysicsList::PhysicsList(G4bool np=true)
   //RegisterPhysics( new G4StoppingPhysics());
 
   // Ion Physics
-  //RegisterPhysics( new G4IonPhysicsPHP_new(verbose)); //this is the physics list from the SaG4n application-package from ciemat
+  RegisterPhysics( new G4IonPhysicsPHP_new(verbose)); //this is the physics list from the SaG4n application-package from ciemat
 
   // EM Physics
-  //RegisterPhysics( new G4EmStandardPhysics_option4(verbose) ); // photons, electrons et al
+  RegisterPhysics( new G4EmStandardPhysics_option4(verbose) ); // photons, electrons et al
   //RegisterPhysics( new G4EmExtraPhysics(verbose) ); // neutrinos et al
   //RegisterPhysics( new G4EmStandardPhysics() );
   //RegisterPhysics( new G4EmPenelopePhysics() );
@@ -168,7 +168,8 @@ void PhysicsList::SetCuts()
   regName = "FuelRegion";
   region = G4RegionStore::GetInstance()->GetRegion(regName);
   cuts = new G4ProductionCuts;
-  cuts->SetProductionCut(1.*cm); // same cuts for gamma, e- and e+ region->SetProductionCuts(cuts);
+  // the copper shell wall thicknes is 48 mm, so set it to half of this
+  cuts->SetProductionCut(0.4*48.*mm); // same cuts for gamma, e- and e+ region->SetProductionCuts(cuts);
   region->SetProductionCuts(cuts);
 
   G4ProductionCuts* cutsDetectors;

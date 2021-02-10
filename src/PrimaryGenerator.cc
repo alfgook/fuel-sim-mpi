@@ -49,6 +49,7 @@
 #include "G4Gamma.hh"
 #include "G4Neutron.hh"
 #include "G4Geantino.hh"
+#include "AnalysisMPI.hh"
 
 #include "G4AutoLock.hh"
 namespace {
@@ -60,8 +61,6 @@ namespace {
 PrimaryGenerator::PrimaryGenerator()
 : G4VPrimaryGenerator()
 {
-
-
   fPosDist = new G4SPSPosDistribution();
   fPosGenerator = new G4SPSRandomGenerator();
   fPosDist->SetBiasRndm(fPosGenerator);
@@ -134,14 +133,14 @@ void PrimaryGenerator::GenerateDecayPos()
   decayPos = fPosDist->GenerateOne();
   G4int rowNbr = G4int(10.*G4UniformRand()) - 4;
   G4int colNbr = G4int(10.*G4UniformRand()) - 4;
-  while((rowNbr==1 && colNbr==1) || (rowNbr==-1 && colNbr==-1)) {
+  while((rowNbr==1 && colNbr==1) || (rowNbr==0 && colNbr==0)) {
     rowNbr = G4int(10.*G4UniformRand()) - 4;
     colNbr = G4int(10.*G4UniformRand()) - 4;
   }
 
-  G4int assemblyNbr = 0;
-  //G4int assemblyNbr = nAssemblies*G4UniformRand();
-  //while(assemblyNbr>=nAssemblies || assemblyNbr<0) assemblyNbr = nAssemblies*G4UniformRand(); //just for safety
+  //G4int assemblyNbr = 0;
+  G4int assemblyNbr = nAssemblies*G4UniformRand();
+  while(assemblyNbr>=nAssemblies || assemblyNbr<0) assemblyNbr = nAssemblies*G4UniformRand(); //just for safety
 
   //G4cout << "rowNbr = " << rowNbr << G4endl;
   //G4cout << "colNbr = " << colNbr << G4endl;
@@ -149,6 +148,8 @@ void PrimaryGenerator::GenerateDecayPos()
 
   decayPos += G4ThreeVector(rowNbr*Pitch-0.5*Pitch,colNbr*Pitch-0.5*Pitch,0.);
   decayPos += assemblyPos[assemblyNbr];
+
+  AnalysisMPI::GetAnalysis()->SetInitial(decayPos.x(),decayPos.y(),decayPos.z());
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

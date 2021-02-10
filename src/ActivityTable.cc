@@ -217,11 +217,12 @@ void ActivityTable::RestrictTo(G4String KinematicsName)
     G4AutoLock lock(&ActivityTable::ActivityTableMutex); //lock the mutex while reading from the text-file
     #endif*/
   #ifndef NOT_USING_MPI
-    G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "====================================" << G4endl;
-    G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "==  Restricting decay to " << KinematicsName << G4endl;
-    G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "==  total activity = " << activityTotal << G4endl;
-
-    G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "   Z   A   rest-activity  total-activity" << G4endl;
+  if(G4MPImanager::GetManager()->GetRank()==0) {
+    G4cout<< "====================================" << G4endl;
+    G4cout<< "==  Restricting decay to " << KinematicsName << G4endl;
+    G4cout<< "==  total activity = " << activityTotal << G4endl;
+    G4cout<< "   Z   A   rest-activity  total-activity" << G4endl;
+  }
   #endif
 
   for(size_t bin=0;bin<activityCumulative.size();bin++) {
@@ -257,9 +258,13 @@ void ActivityTable::RestrictTo(G4String KinematicsName)
       G4double BR = table.GetBrsum();
       G4double newActivity = BR*activity.at(bin);
       activity[bin] = newActivity;
-      //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "   " << fZZ[bin] << "  " << fAA[bin] << "  " << newActivity <<  "  " << newActivity/BR << G4endl;
-      //for(size_t i=0;i<table.GetEntries();i++) G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "   " << table.GetEntry(i);
-      //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << G4endl;
+      #ifndef NOT_USING_MPI
+      if(G4MPImanager::GetManager()->GetRank()==0) {
+        G4cout<< "   " << fZZ[bin] << "  " << fAA[bin] << "  " << newActivity <<  "  " << newActivity/BR << G4endl;
+        for(size_t i=0;i<table.GetEntries();i++) G4cout << "   " << table.GetEntry(i);
+        G4cout<< G4endl;
+      }
+      #endif
     }
     fTables.push_back(table);
   }
@@ -271,8 +276,12 @@ void ActivityTable::RestrictTo(G4String KinematicsName)
   activityTotal = activityCumulative.back();
   for(unsigned int i=0;i<activity.size();i++) activityCumulative[i] /= activityTotal;
 
-  //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "== restricted activity = " << activityTotal << G4endl; 
-  //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "====================================" << G4endl;
+  #ifndef NOT_USING_MPI
+  if(G4MPImanager::GetManager()->GetRank()==0) {
+    G4cout << "== restricted activity = " << activityTotal << G4endl; 
+    G4cout << "====================================" << G4endl;
+  }
+  #endif
 
   CleanUpTable();
   /*#ifdef G4MULTITHREADED

@@ -55,6 +55,7 @@ public:
 
   void FillScintillatorHit(G4int eventID, G4int copyNbr, G4int PDGcode, G4double time, G4double light, G4double weight);
   void FillSplitEvent(G4int eventID, G4int PDGcode, G4double time, G4double KinE, G4double posX, G4double posY, G4double posZ, G4double dirX, G4double dirY, G4double dirZ, G4double weight);
+  void SetInitial(G4double x, G4double y, G4double z) { initX = x; initY = y; initZ = z;}
 
   void ClearIncidentFlag();
 
@@ -63,6 +64,8 @@ private:
   DISALLOW_COPY_AND_ASSIGN(AnalysisMPI);
 
   static G4ThreadLocal G4int fincidentFlag;
+
+  G4double initX, initY, initZ;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

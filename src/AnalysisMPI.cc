@@ -67,6 +67,7 @@ AnalysisMPI::Book()
   G4cout << "AnalysisMPI::Book start" << G4endl;
 
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+  analysisManager->SetFileName("fuel-sim");
 
 /*  #ifdef G4MULTITHREADED
   // MT ntuple merging
@@ -84,25 +85,28 @@ AnalysisMPI::Book()
   analysisManager->CreateNtuple("SplitPoints", "SplitPoints");
   analysisManager->CreateNtupleIColumn("eventID");
   analysisManager->CreateNtupleIColumn("PDGcode");
-  analysisManager->CreateNtupleDColumn("Time");
-  analysisManager->CreateNtupleDColumn("Energy");
-  analysisManager->CreateNtupleDColumn("posX");
-  analysisManager->CreateNtupleDColumn("posY");
-  analysisManager->CreateNtupleDColumn("posZ");
-  analysisManager->CreateNtupleDColumn("dirX");
-  analysisManager->CreateNtupleDColumn("dirY");
-  analysisManager->CreateNtupleDColumn("dirZ");
-  analysisManager->CreateNtupleDColumn("weight");
+  analysisManager->CreateNtupleFColumn("Time");
+  analysisManager->CreateNtupleFColumn("Energy");
+  analysisManager->CreateNtupleFColumn("posX");
+  analysisManager->CreateNtupleFColumn("posY");
+  analysisManager->CreateNtupleFColumn("posZ");
+  analysisManager->CreateNtupleFColumn("dirX");
+  analysisManager->CreateNtupleFColumn("dirY");
+  analysisManager->CreateNtupleFColumn("dirZ");
+  analysisManager->CreateNtupleFColumn("InitX");
+  analysisManager->CreateNtupleFColumn("InitY");
+  analysisManager->CreateNtupleFColumn("InitZ");
+  analysisManager->CreateNtupleFColumn("weight");
   analysisManager->FinishNtuple();
 
   analysisManager->CreateNtuple("FUEL-PIN", "ResponseNtuple");
   analysisManager->CreateNtupleIColumn("EventID");
   analysisManager->CreateNtupleIColumn("DetectorNbr");
   analysisManager->CreateNtupleIColumn("PDGcode");
-  analysisManager->CreateNtupleDColumn("TimeOfEvent");
-  analysisManager->CreateNtupleDColumn("TimeInEvent");
-  analysisManager->CreateNtupleDColumn("Light");
-  analysisManager->CreateNtupleDColumn("Weight");
+  analysisManager->CreateNtupleFColumn("TimeOfEvent");
+  analysisManager->CreateNtupleFColumn("TimeInEvent");
+  analysisManager->CreateNtupleFColumn("Light");
+  analysisManager->CreateNtupleFColumn("Weight");
   analysisManager->FinishNtuple();
 
   G4cout << "AnalysisMPI::Book finished " << G4endl;
@@ -124,10 +128,8 @@ AnalysisMPI::OpenFile()
   G4cout << "AnalysisMPI::filename " << filename << G4endl;
   #ifndef NOT_USING_MPI
   G4int rank = G4MPImanager::GetManager()->GetRank();
-  #else
-  G4int rank = 0;
-  #endif
   filename += "_r" + std::to_string(rank);
+  #endif
   //if(rank==0) mgr->OpenFile(filename.c_str());
   mgr->OpenFile(filename.c_str());
 }
@@ -157,10 +159,10 @@ AnalysisMPI::FillScintillatorHit(G4int eventID, G4int copyNbr, G4int PDGcode, G4
   analysisManager->FillNtupleIColumn(ntupleID, 0, eventID);
   analysisManager->FillNtupleIColumn(ntupleID, 1, copyNbr);
   analysisManager->FillNtupleIColumn(ntupleID, 2, PDGcode);
-  analysisManager->FillNtupleDColumn(ntupleID, 3, 0.);
-  analysisManager->FillNtupleDColumn(ntupleID, 4, time);
-  analysisManager->FillNtupleDColumn(ntupleID, 5, light);
-  analysisManager->FillNtupleDColumn(ntupleID, 6, weight);
+  analysisManager->FillNtupleFColumn(ntupleID, 3, 0.);
+  analysisManager->FillNtupleFColumn(ntupleID, 4, time);
+  analysisManager->FillNtupleFColumn(ntupleID, 5, light);
+  analysisManager->FillNtupleFColumn(ntupleID, 6, weight);
   analysisManager->AddNtupleRow(ntupleID);
 
 }
@@ -173,14 +175,17 @@ AnalysisMPI::FillSplitEvent(G4int eventID, G4int PDGcode, G4double time, G4doubl
   auto analysisManager = G4AnalysisManager::Instance();
   analysisManager->FillNtupleIColumn(ntupleID, 0, eventID);
   analysisManager->FillNtupleIColumn(ntupleID, 1, PDGcode);
-  analysisManager->FillNtupleDColumn(ntupleID, 2, time);
-  analysisManager->FillNtupleDColumn(ntupleID, 3, KinE);
-  analysisManager->FillNtupleDColumn(ntupleID, 4, posX);
-  analysisManager->FillNtupleDColumn(ntupleID, 5, posY);
-  analysisManager->FillNtupleDColumn(ntupleID, 6, posZ);
-  analysisManager->FillNtupleDColumn(ntupleID, 7, dirX);
-  analysisManager->FillNtupleDColumn(ntupleID, 8, dirY);
-  analysisManager->FillNtupleDColumn(ntupleID, 9, dirZ);
-  analysisManager->FillNtupleDColumn(ntupleID, 10, weight);
+  analysisManager->FillNtupleFColumn(ntupleID, 2, time);
+  analysisManager->FillNtupleFColumn(ntupleID, 3, KinE);
+  analysisManager->FillNtupleFColumn(ntupleID, 4, posX);
+  analysisManager->FillNtupleFColumn(ntupleID, 5, posY);
+  analysisManager->FillNtupleFColumn(ntupleID, 6, posZ);
+  analysisManager->FillNtupleFColumn(ntupleID, 7, dirX);
+  analysisManager->FillNtupleFColumn(ntupleID, 8, dirY);
+  analysisManager->FillNtupleFColumn(ntupleID, 9, dirZ);
+  analysisManager->FillNtupleFColumn(ntupleID, 10, initX);
+  analysisManager->FillNtupleFColumn(ntupleID, 11, initY);
+  analysisManager->FillNtupleFColumn(ntupleID, 12, initZ);
+  analysisManager->FillNtupleFColumn(ntupleID, 13, weight);
   analysisManager->AddNtupleRow(ntupleID);
 }

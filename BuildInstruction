@@ -60,7 +60,7 @@
 	cmake ../ -DUSE_FISSION_NEW:BOOL=ON -DUSE_FREYA:BOOL=ON -DFISSION_DIR:PATH='/cfs/klemming/nobackup/g/gook/fission_v2.0.5/' -DG4mpi_DIR=/cfs/klemming/nobackup/g/gook/G4mpi/install/lib64/G4mpi-10.6.2/ -DGeant4_DIR=/cfs/klemming/nobackup/g/gook/geant4.10.06.p02-install-beskow/lib64/Geant4-10.6.2/
 
 
-# flag to not build the MPI version
+# flag to not build the MPI version (if you don't have G4mpi installed or don't have mpi support)
 
 	-DNO_MPI_BUILD:BOOL=ON 
 	

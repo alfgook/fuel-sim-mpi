@@ -26,13 +26,19 @@ endif()
 # You can set WITH_GEANT4_UIVIS to OFF via the command line or ccmake/cmake-gui
 # to build a batch mode only executable
 #
-option(WITH_GEANT4_UIVIS "Build example with Geant4 UI and Vis drivers" ON)
-if(WITH_GEANT4_UIVIS)
-  find_package(Geant4 REQUIRED ui_all vis_all)
+#option(WITH_GEANT4_UIVIS "Build example with Geant4 UI and Vis drivers" ON)
+#if(WITH_GEANT4_UIVIS)
+#  find_package(Geant4 REQUIRED ui_all vis_all)
+#else()
+#  find_package(Geant4 REQUIRED)
+#endif()
+
+if(BUILD_STATIC_LIBS)
+  find_package(Geant4 REQUIRED static)
+  message("-- Building static libs")
 else()
   find_package(Geant4 REQUIRED)
 endif()
-
 #----------------------------------------------------------------------------
 # Setup Geant4 include directories and compile definitions
 #
@@ -40,6 +46,11 @@ include(${Geant4_USE_FILE})
 
 if(NOT NO_MPI_BUILD)
   find_package(G4mpi REQUIRED)
+  if(BUILD_STATIC_LIBS)
+    find_package(G4mpi REQUIRED static)
+  else()
+    find_package(G4mpi REQUIRED)
+  endif()
   add_definitions(-DTOOLS_USE_NATIVE_MPI) 
   add_definitions(-DIS_MPI_COMPILED)
 endif()
@@ -128,6 +139,12 @@ foreach(_script ${input_files})
 endforeach()
 
 #----------------------------------------------------------------------------
+add_executable(FuelPinSF FuelPinSF.cc ${sources} ${headers})
+#target_link_libraries(FuelPinSF ${Geant4_LIBRARIES} ${G4mpi_LIBRARIES})
+target_link_libraries(FuelPinSF ${Geant4_LIBRARIES})
+
+target_compile_definitions(FuelPinSF PUBLIC -DNOT_USING_MPI)
+#----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 if(NOT NO_MPI_BUILD)
@@ -135,17 +152,29 @@ install(TARGETS FuelPinSF-mpi DESTINATION bin)
 
 # Check if we override built-in version with new version (libFission.*) of the library
 if(USE_FISSION_NEW)
-  find_library(LFISSION Fission
+  if(BUILD_STATIC_LIBS)
+    find_library(LFISSION Fission
                PATHS ${CMAKE_SOURCE_DIR}/../lib ${FISSION_DIR}/lib
                DOC "fission library"
                NO_DEFAULT_PATH
               )
+  else()
+    find_library(LFISSION Fission
+               PATHS ${CMAKE_SOURCE_DIR}/../lib ${FISSION_DIR}/lib
+               DOC "fission library"
+               NO_DEFAULT_PATH
+              )
+  endif()
+  
   if(NOT LFISSION)
     message(FATAL_ERROR
             "fission library not found")
   else()
     target_link_libraries(FuelPinSF-mpi 
-                          ${LFISSION} 
+                          ${LFISSION} -lgfortran
+                         )
+    target_link_libraries(FuelPinSF 
+                          ${LFISSION} -lgfortran
                          )
     configure_file(${LFISSION} .
                   COPYONLY
@@ -178,52 +207,6 @@ ENDIF()
 endif()
 #------------------------------------------------------------------------------------------
 
-add_executable(FuelPinSF FuelPinSF.cc ${sources} ${headers})
-#target_link_libraries(FuelPinSF ${Geant4_LIBRARIES} ${G4mpi_LIBRARIES})
-target_link_libraries(FuelPinSF ${Geant4_LIBRARIES})
-
-target_compile_definitions(FuelPinSF PUBLIC -DNOT_USING_MPI)
 
 
 
-# Check if we override built-in version with new version (libFission.*) of the library
-if(USE_FISSION_NEW)
-  find_library(LFISSION Fission
-               PATHS ${CMAKE_SOURCE_DIR}/../lib ${FISSION_DIR}/lib
-               DOC "fission library"
-               NO_DEFAULT_PATH
-              )
-  if(NOT LFISSION)
-    message(FATAL_ERROR
-            "fission library not found")
-  else()
-    target_link_libraries(FuelPinSF 
-                          ${LFISSION} 
-                         )
-    configure_file(${LFISSION} .
-                  COPYONLY
-                  )
-    message(STATUS ${LFISSION})
-  endif()
-  message(STATUS
-          "Overriding fission library libFission.* with version in ${FISSION_DIR}")
-  include_directories(${CMAKE_SOURCE_DIR}/../include ${FISSION_DIR}/include)
-  add_definitions(-DFISSION_NEW)
-
-  # Check if we use FREYA 
-  if(USE_FREYA)
-    if(NOT FORT)
-      message(FATAL_ERROR
-              "No Fortran compiler found, so FREYA is not included")
-    endif()
-    message(STATUS
-            "Using FREYA")
-    add_definitions(-DUSEFREYA)
-  endif()
-endif()
-
-if(DEBUG_ALPHA_N)
-message(STATUS
-            "DEBUGING : Compiling in (alpha,n) mode only !!!!!")
-  add_definitions(-DDEBUG_ALPHA_N)
-ENDIF()

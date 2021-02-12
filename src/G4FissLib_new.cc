@@ -38,7 +38,6 @@ G4FissLib_new::G4FissLib_new()
   
 G4FissLib_new::~G4FissLib_new()
 {
-  G4cout << "G4FissLib_new::~G4FissLib_new() 1" << G4endl;
   //delete [] theFission;
 /*
   //G4cout << "theFission.size() = " << theFission.size() << G4endl;
@@ -52,7 +51,6 @@ G4FissLib_new::~G4FissLib_new()
   }
   theFission.clear();*/
  // G4cout << "theFission.size() = " << theFission.size() << G4endl;
-  G4cout << "G4FissLib_new::~G4FissLib_new() 2" << G4endl;
 }
   
 G4HadFinalState*

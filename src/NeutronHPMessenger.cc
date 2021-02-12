@@ -57,10 +57,8 @@ NeutronHPMessenger::NeutronHPMessenger(NeutronHPphysics* phys)
 
 NeutronHPMessenger::~NeutronHPMessenger()
 {
-   G4cout << "NeutronHPMessenger::~NeutronHPMessenger() 1" << G4endl;
   delete fThermalCmd;
   delete fPhysDir;
-   G4cout << "NeutronHPMessenger::~NeutronHPMessenger() 2" << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

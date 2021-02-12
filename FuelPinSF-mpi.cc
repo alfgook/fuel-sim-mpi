@@ -156,6 +156,7 @@ int main(int argc,char** argv) {
 #ifdef G4MULTITHREADED
   G4int nThreads = 2; //default to 2 threads
   G4MTRunManager* runManager = new G4MTRunManager;
+  G4cout << "G4Threading::G4GetNumberOfCores() = " << G4Threading::G4GetNumberOfCores() << G4endl;
   nThreads = std::min(nThreads,G4Threading::G4GetNumberOfCores());
   runManager->SetNumberOfThreads(nThreads);
 #else

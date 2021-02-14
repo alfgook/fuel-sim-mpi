@@ -71,7 +71,7 @@
 namespace {
     void PrintUsage() {
         G4cerr << " Usage: " << G4endl;
-        G4cerr << " FuelPinSF [-m macro ] [-af filename] [-mf filename]" << G4endl;
+        G4cerr << " FuelPinSF [-m macro ] [-af filename] [-mf filename] [-t nThreads]" << G4endl;
         G4cerr << "   option [-af filename]: file for the activity of the fuel material " << G4endl;
         G4cerr << "                          if not specified a simple G4ParticleGun will used " << G4endl;
         G4cerr << "   option [-mf filename]: file for the fuel material in MCNP format" << G4endl;
@@ -89,7 +89,9 @@ int main(int argc,char** argv) {
   G4String activityFile;
   G4String onOffBiasing = "on";
   G4bool RegisterNP = true;
-
+#ifdef G4MULTITHREADED
+  G4int nThreads = 2;
+#endif
   for ( G4int i=1; i<argc; i=i+2 ) {
       if      ( G4String(argv[i]) == "-m" ) {
         macro = argv[i+1];
@@ -101,6 +103,11 @@ int main(int argc,char** argv) {
       else if ( G4String(argv[i]) == "-np" ) {
         if(G4String(argv[i+1]) == "off") RegisterNP = false;
       }
+    #ifdef G4MULTITHREADED
+      else if ( G4String(argv[i]) == "-t" ) {
+          nThreads = G4UIcommand::ConvertToInt(argv[i+1]);
+      }
+    #endif
       else {
           PrintUsage();
           return 1;
@@ -148,17 +155,15 @@ int main(int argc,char** argv) {
   // --------------------------------------------------------------------
 
   char cCurrentPath[FILENAME_MAX];
-  G4cout << "GetCurrentDir : " << GetCurrentDir(cCurrentPath, sizeof(cCurrentPath)) << G4endl;
-
-  G4cout << "G4PARTICLEHPDATA = " << std::getenv("G4PARTICLEHPDATA") << G4endl;
 
   //construct the default run manager
 #ifdef G4MULTITHREADED
-  G4int nThreads = 2; //default to 2 threads
+  //G4int nThreads = 2; //default to 2 threads
   G4MTRunManager* runManager = new G4MTRunManager;
   G4cout << "G4Threading::G4GetNumberOfCores() = " << G4Threading::G4GetNumberOfCores() << G4endl;
   nThreads = std::min(nThreads,G4Threading::G4GetNumberOfCores());
   runManager->SetNumberOfThreads(nThreads);
+  G4cout << "Number of threads per rank = " << runManager->GetNumberOfThreads() << G4endl;
 #else
   //my Verbose output class
   G4VSteppingVerbose::SetInstance(new SteppingVerbose);

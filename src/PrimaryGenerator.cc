@@ -133,7 +133,7 @@ void PrimaryGenerator::GenerateDecayPos()
   decayPos = fPosDist->GenerateOne();
   G4int rowNbr = G4int(10.*G4UniformRand()) - 4;
   G4int colNbr = G4int(10.*G4UniformRand()) - 4;
-  while((rowNbr==1 && colNbr==1) || (rowNbr==0 && colNbr==0)) {
+  while((rowNbr==1 && colNbr==1) || (rowNbr==1 && colNbr==0)  || (rowNbr==0 && colNbr==0) || (rowNbr==0 && colNbr==1) ) {
     rowNbr = G4int(10.*G4UniformRand()) - 4;
     colNbr = G4int(10.*G4UniformRand()) - 4;
   }

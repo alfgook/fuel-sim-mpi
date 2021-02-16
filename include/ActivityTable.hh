@@ -101,10 +101,10 @@ class ActivityTable
 
     MyRadioactiveDecayBase *fRadDecay;
 
-    /*#ifdef G4MULTITHREADED
+    #ifdef G4MULTITHREADED
   public:
     static G4Mutex ActivityTableMutex;
-  #endif*/
+  #endif
 
 };
 

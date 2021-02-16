@@ -6,9 +6,9 @@
 #include "G4NeutronHPDataUsed.hh"
 #include "G4AutoLock.hh"
 
-/*#ifdef G4MULTITHREADED
+#ifdef G4MULTITHREADED
   G4Mutex G4FissionLibrary_new::FissionLibrary_newMutex = G4MUTEX_INITIALIZER;
-#endif*/
+#endif
 
 G4FissionLibrary_new::G4FissionLibrary_new()
   : G4ParticleHPFinalState(), theIsotope(0), theZ(0), theA(0), targetMass(0.0)
@@ -222,10 +222,10 @@ void G4FissionLibrary_new::SampleMult(const G4HadProjectile & theTrack, G4int* n
 
    G4double time = theTrack.GetGlobalTime()/second;
    G4double totalNeutronMulti = theFinalStateNeutrons.GetMean(eKinetic);
-   /*#ifdef G4MULTITHREADED
+   #ifdef G4MULTITHREADED
    G4cout << "G4FissionLibrary_new::SampleMult locking mutex" << G4endl;
    G4AutoLock lk(&G4FissionLibrary_new::FissionLibrary_newMutex);
-   #endif*/
+   #endif
    if(delayedNeutronMulti==0&&promptNeutronMulti==0) {
      // no data for prompt and delayed neutrons in Geant
      // but there is perhaps data for the total neutron multiplicity, in which case 
@@ -263,10 +263,10 @@ void G4FissionLibrary_new::SampleMult(const G4HadProjectile & theTrack, G4int* n
    }
 #endif
 
-  /*#ifdef G4MULTITHREADED
+  #ifdef G4MULTITHREADED
   lk.unlock(); //explicit unlock
   G4cout << "G4FissionLibrary_new::SampleMult locking mutex" << G4endl;
-  #endif*/
+  #endif
 
    *nPrompt = fe->getNeutronNu();
    if (*nPrompt == -1) *nPrompt = 0; // the fission library libFission.a has no data for neutrons

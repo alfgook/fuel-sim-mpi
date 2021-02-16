@@ -4,10 +4,10 @@
 #include "G4DecayTable.hh"
 #include "G4IonTable.hh"
 
-/*#ifdef G4MULTITHREADED
+#ifdef G4MULTITHREADED
 #include "G4AutoLock.hh"
 G4Mutex ActivityTable::ActivityTableMutex = G4MUTEX_INITIALIZER; //used for reading from the input text file
-#endif*/
+#endif
 
 #ifndef NOT_USING_MPI
 #include "G4MPImanager.hh"
@@ -17,9 +17,9 @@ ActivityTable::ActivityTable(G4String aFile, MyRadioactiveDecayBase *aRadDecay)
 {
   fBin = 0;
   fRadDecay = aRadDecay;
-  /*#ifdef G4MULTITHREADED
+  #ifdef G4MULTITHREADED
   G4AutoLock lock(&ActivityTable::ActivityTableMutex); //lock the mutex while reading from the text-file
-  #endif*/
+  #endif
 
   //fRadDecay->LoadAllDecayTables();
 
@@ -213,9 +213,9 @@ ActivityTable::~ActivityTable()
 
 void ActivityTable::RestrictTo(G4String KinematicsName)
 {
-    /*#ifdef G4MULTITHREADED
+    #ifdef G4MULTITHREADED
     G4AutoLock lock(&ActivityTable::ActivityTableMutex); //lock the mutex while reading from the text-file
-    #endif*/
+    #endif
   #ifndef NOT_USING_MPI
   if(G4MPImanager::GetManager()->GetRank()==0) {
     G4cout<< "====================================" << G4endl;
@@ -284,16 +284,16 @@ void ActivityTable::RestrictTo(G4String KinematicsName)
   #endif
 
   CleanUpTable();
-  /*#ifdef G4MULTITHREADED
+  #ifdef G4MULTITHREADED
   lock.unlock(); //explicit unlock
-  #endif*/
+  #endif
 }
 
 void ActivityTable::ExcludeAphaAndSF()
 {
-    /*#ifdef G4MULTITHREADED
+    #ifdef G4MULTITHREADED
     G4AutoLock lock(&ActivityTable::ActivityTableMutex); //lock the mutex while reading from the text-file
-    #endif*/
+    #endif
     //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "====================================" << G4endl;
     //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "==  Restricting decay to exclude (sf) and alpha decay" << G4endl;
     //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "==  total activity = " << activityTotal << G4endl;
@@ -367,9 +367,9 @@ void ActivityTable::ExcludeAphaAndSF()
   //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "== restricted activity = " << activityTotal << G4endl; 
   //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "====================================" << G4endl;
 
-  /*#ifdef G4MULTITHREADED
+  #ifdef G4MULTITHREADED
   lock.unlock(); //explicit unlock
-  #endif*/
+  #endif
 }
 
 void ActivityTable::CleanUpTable()

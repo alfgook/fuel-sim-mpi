@@ -77,6 +77,7 @@ void  ParticleSourceFromFile::OpenFile(G4String FileName)
   // set up the ntuple reader
   G4AnalysisReader* analysisReader = G4AnalysisReader::Instance();
   analysisReader->SetFileName(FileName);
+  G4cout << "input filename = " << FileName << G4endl;
   G4int ntupleId = analysisReader->GetNtuple("SplitPoints");
   if(ntupleId==G4Analysis::kInvalidId) {
     G4cout << "*************************************" << G4endl;
@@ -91,15 +92,15 @@ void  ParticleSourceFromFile::OpenFile(G4String FileName)
   if ( ntupleId >= 0 ) {
     analysisReader->SetNtupleIColumn("eventID", currentEntry.eventID);
     analysisReader->SetNtupleIColumn("PDGcode", currentEntry.PDGcode);
-    analysisReader->SetNtupleDColumn("Time", currentEntry.Time);
-    analysisReader->SetNtupleDColumn("Energy", currentEntry.Energy);
-    analysisReader->SetNtupleDColumn("posX", currentEntry.posX);
-    analysisReader->SetNtupleDColumn("posY", currentEntry.posY);
-    analysisReader->SetNtupleDColumn("posZ", currentEntry.posZ);
-    analysisReader->SetNtupleDColumn("dirX", currentEntry.dirX);
-    analysisReader->SetNtupleDColumn("dirY", currentEntry.dirY);
-    analysisReader->SetNtupleDColumn("dirZ", currentEntry.dirZ);
-    analysisReader->SetNtupleDColumn("weight", currentEntry.weight);
+    analysisReader->SetNtupleFColumn("Time", currentEntry.Time);
+    analysisReader->SetNtupleFColumn("Energy", currentEntry.Energy);
+    analysisReader->SetNtupleFColumn("posX", currentEntry.posX);
+    analysisReader->SetNtupleFColumn("posY", currentEntry.posY);
+    analysisReader->SetNtupleFColumn("posZ", currentEntry.posZ);
+    analysisReader->SetNtupleFColumn("dirX", currentEntry.dirX);
+    analysisReader->SetNtupleFColumn("dirY", currentEntry.dirY);
+    analysisReader->SetNtupleFColumn("dirZ", currentEntry.dirZ);
+    analysisReader->SetNtupleFColumn("weight", currentEntry.weight);
   }
 
   // read the first event

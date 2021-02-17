@@ -46,15 +46,15 @@ struct TreeEntry
 {
         G4int eventID;
         G4int PDGcode;
-        G4double Time;
-        G4double Energy;
-        G4double posX;
-        G4double posY;
-        G4double posZ;
-        G4double dirX;
-        G4double dirY;
-        G4double dirZ;
-        G4double weight;
+        G4float Time;
+        G4float Energy;
+        G4float posX;
+        G4float posY;
+        G4float posZ;
+        G4float dirX;
+        G4float dirY;
+        G4float dirZ;
+        G4float weight;
 };
 
 class ParticleSourceFromFile : public G4VPrimaryGenerator

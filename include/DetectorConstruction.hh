@@ -81,6 +81,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4VPhysicalVolume* DefineVolumesBWR();
     G4AssemblyVolume* EJ309_5x5inch(G4int copyNbr, const char* name);
     G4AssemblyVolume* EJ309_3x3inch(G4int copyNbr, const char* name);
+    G4AssemblyVolume* EJ309_1x2inch(G4int copyNbr, const char* name);
 	
     int ReadMCNPmatCard(const char *FileName);
   

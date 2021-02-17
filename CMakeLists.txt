@@ -37,7 +37,7 @@ if(BUILD_STATIC_LIBS)
   find_package(Geant4 REQUIRED static)
   message("-- Building static libs")
 else()
-  find_package(Geant4 REQUIRED)
+  find_package(Geant4 REQUIRED vis_all ui_all)
 endif()
 #----------------------------------------------------------------------------
 # Setup Geant4 include directories and compile definitions

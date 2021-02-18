@@ -22,9 +22,9 @@
 	const Double_t initialEvents = 4.08*1.e8; // number of initial events in Geant4
 	Double_t scalingFactor = totalActivity/initialEvents;
 
-	//TProof *p = TProof::Open("workers=10");
-	//p->SetParameter("pScalingFactor",(Double_t) scalingFactor);
-	//chain->SetProof();
+	TProof *p = TProof::Open("workers=1");
+	p->SetParameter("pScalingFactor",(Double_t) scalingFactor);
+	chain->SetProof();
 
 	chain->Add("../../build/test1_sorted.root"); // 4.e6 events
 

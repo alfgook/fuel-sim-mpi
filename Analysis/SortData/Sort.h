@@ -25,10 +25,10 @@ public :
    Int_t           EventID;
    Int_t           DetectorNbr;
    Int_t           PDGcode;
-   Double_t        TimeOfEvent;
-   Double_t        TimeInEvent;
-   Double_t        Light;
-   Double_t        Weight;
+   Float_t         TimeOfEvent;
+   Float_t         TimeInEvent;
+   Float_t         Light;
+   Float_t         Weight;
 
    // List of branches
    TBranch        *b_EventID;   //!

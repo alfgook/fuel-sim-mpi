@@ -102,22 +102,8 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
                                 postStepPoint->GetMomentumDirection().y(),
                                 postStepPoint->GetMomentumDirection().z(),
                                 postStepPoint->GetWeight());
-      /*const G4int ntupleID = 0;
-      auto analysisManager = G4AnalysisManager::Instance();
-      analysisManager->FillNtupleIColumn(ntupleID, 0, G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID());
-      analysisManager->FillNtupleIColumn(ntupleID, 1, aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding());
-      analysisManager->FillNtupleDColumn(ntupleID, 2, postStepPoint->GetGlobalTime());
-      analysisManager->FillNtupleDColumn(ntupleID, 3, postStepPoint->GetKineticEnergy());
-      analysisManager->FillNtupleDColumn(ntupleID, 4, postStepPoint->GetPosition().x() );
-      analysisManager->FillNtupleDColumn(ntupleID, 5, postStepPoint->GetPosition().y() );
-      analysisManager->FillNtupleDColumn(ntupleID, 6, postStepPoint->GetPosition().z() );
-      analysisManager->FillNtupleDColumn(ntupleID, 7, postStepPoint->GetMomentumDirection().x() );
-      analysisManager->FillNtupleDColumn(ntupleID, 8, postStepPoint->GetMomentumDirection().y() );
-      analysisManager->FillNtupleDColumn(ntupleID, 9, postStepPoint->GetMomentumDirection().z() );
-      analysisManager->FillNtupleDColumn(ntupleID, 10, postStepPoint->GetWeight() );
-      analysisManager->AddNtupleRow(ntupleID);*/
-
     }
+    
     G4Track *track = aStep->GetTrack();
     track->SetTrackStatus(fStopAndKill);
 

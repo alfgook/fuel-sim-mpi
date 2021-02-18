@@ -1,4 +1,4 @@
-{
+/*{
 	TChain *chain = new TChain("Sorted");
 
 	const Double_t totalActivity = 4.*3.89763e+07; // activity for the background runs; 7 assemblies a 4,3E15 Bq
@@ -11,6 +11,22 @@
 	chain->SetProof();
 
 	chain->Add("/Data1/alf/test/testSF/step2/PWR_CopperCan_SF_asterix_sorted.root"); // 4.e6 events
+
+	chain->Process("FuelAnalysis.C++");
+}*/
+
+{
+	TChain *chain = new TChain("Sorted");
+
+	const Double_t totalActivity = 10.*3.89763e+07; // activity for the background runs; 7 assemblies a 4,3E15 Bq
+	const Double_t initialEvents = 4.08*1.e8; // number of initial events in Geant4
+	Double_t scalingFactor = totalActivity/initialEvents;
+
+	//TProof *p = TProof::Open("workers=10");
+	//p->SetParameter("pScalingFactor",(Double_t) scalingFactor);
+	//chain->SetProof();
+
+	chain->Add("../../build/test1_sorted.root"); // 4.e6 events
 
 	chain->Process("FuelAnalysis.C++");
 }

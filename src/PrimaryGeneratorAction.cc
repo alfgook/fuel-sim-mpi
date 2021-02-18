@@ -64,12 +64,14 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(G4String aFile)
 
   if(aFile=="SimpleGun" || aFile=="simpleGun"  || aFile=="simplegun") {
     fUseSimpleGun = true;
-    aFile = "input/activities.txt";
+    //aFile = "input/activities.txt";
+    aFile = "input/activities-BWR.txt";
   }
 
   if(!aFile.size()) {
     //fUseSimpleGun = true;
-    aFile = "input/activities.txt";
+    //aFile = "input/activities.txt";
+    aFile = "input/activities-BWR.txt";
   }
 
   fParticleGun  = new PrimaryGenerator();

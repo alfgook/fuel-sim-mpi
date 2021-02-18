@@ -18,7 +18,7 @@
 {
 	TChain *chain = new TChain("Sorted");
 
-	const Double_t totalActivity = 10.*3.89763e+07; // activity for the background runs; 7 assemblies a 4,3E15 Bq
+	const Double_t totalActivity = 10.*6.64368E6; // activity for the background runs; 7 assemblies a 4,3E15 Bq
 	const Double_t initialEvents = 4.08*1.e8; // number of initial events in Geant4
 	Double_t scalingFactor = totalActivity/initialEvents;
 

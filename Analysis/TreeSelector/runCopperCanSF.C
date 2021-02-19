@@ -26,7 +26,7 @@
 	p->SetParameter("pScalingFactor",(Double_t) scalingFactor);
 	chain->SetProof();
 
-	chain->Add("../../build/test1_sorted.root"); // 4.e6 events
+	chain->Add("../../build/test2_sorted.root"); // 4.e6 events
 
 	chain->Process("FuelAnalysis.C++");
 }

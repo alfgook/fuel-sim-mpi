@@ -20,7 +20,7 @@
 #include <TH1D.h>
 #include <TH2D.h>
 
-#define NBR_DETECTORS 72
+#define NBR_DETECTORS 288
 
 
 class FuelAnalysis : public TSelector {

@@ -101,7 +101,7 @@ void Sort::Loop(const char *OutPutFileName)
       //cout << "NbrOfHits[" << DetectorNbr << "] = " << NbrOfHits[DetectorNbr] << endl;
 
      // if(jentry>100) break;
-      if(!(jentry%1000)) cout << jentry << endl;
+      if(!(jentry%10000)) cout << jentry << endl;
 
       FormerEventID = EventID;
    }

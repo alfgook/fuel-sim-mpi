@@ -116,9 +116,9 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 
 	for(size_t i=0;i<fHC->entries();++i) { //loop over the hits in the detector
 		G4int copyNbr = (*fHC)[i]->GetVolCopyNo();
-		if(copyNbr<1 || copyNbr>96) {
+		if(copyNbr<1) {
 			G4cout << "Error!! Found a hit in a detector that does not exist: copyNbr = " << copyNbr << G4endl;
-			//continue;
+			continue;
 		}
 		G4int PDGcode = (*fHC)[i]->GetPDGcode(); 
 		G4double light = (*fHC)[i]->GetLight(); 

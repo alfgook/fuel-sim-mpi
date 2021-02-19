@@ -1457,40 +1457,35 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumesBWR()
   	}*/
 
   	const G4double distance = 600.*mm;
-  	const G4int DetectorsPerRing = 36;
-  	const G4int nDetectors = DetectorsPerRing*2;
+  	const G4int nRings = 16;
+  	const G4int DetectorsPerRing = 18;
+  	const G4int nDetectors = DetectorsPerRing*nRings;
   	G4AssemblyVolume* neutronDetectors[nDetectors];
 	char DetName[32];
-	// first ring
-	G4double x_offset = twopi/DetectorsPerRing*distance;
-	for(G4int i=0;i<DetectorsPerRing;i++) {
-		snprintf(DetName,32,"EJ309_%d",i+1);
-		neutronDetectors[i] = EJ309_1x2inch(i+1, DetName);
 
-		G4double phiDet = (G4double(i)/G4double(DetectorsPerRing))*360.*degree;
+	G4double x_offset = twopi/DetectorsPerRing*distance - 2.*deltaZ;
+	G4double x_0 = -0.5*x_offset*nRings;
 
-		G4RotationMatrix *rotDet = new G4RotationMatrix();
-		rotDet->rotateY(90.*degree);
-		rotDet->rotateZ(phiDet);
+	for(G4int ring=0;ring<nRings;++ring) {
+		for(G4int i=ring*DetectorsPerRing;i<(ring+1)*DetectorsPerRing;i++) {
+			snprintf(DetName,32,"EJ309_%d",i+1);
+			neutronDetectors[i] = EJ309_1x2inch(i+1, DetName);
 
-		G4ThreeVector detPos(x_offset,0.,distance);
-		detPos *= *rotDet;
-		neutronDetectors[i]->MakeImprint(worldLV,detPos,rotDet);
-	}
+			G4double phiDet = (G4double(i-DetectorsPerRing)/G4double(DetectorsPerRing))*360.*degree;
 
-	for(G4int i=DetectorsPerRing;i<nDetectors;i++) {
-		snprintf(DetName,32,"EJ309_%d",i+1);
-		neutronDetectors[i] = EJ309_1x2inch(i+1, DetName);
+			G4RotationMatrix *rotDet = new G4RotationMatrix();
+			rotDet->rotateY(90.*degree);
+			rotDet->rotateZ(phiDet);
 
-		G4double phiDet = (G4double(i-DetectorsPerRing)/G4double(DetectorsPerRing))*360.*degree;
+			G4ThreeVector detPos(x_0 + ring*x_offset,0.,distance);
+			detPos *= *rotDet;
+			neutronDetectors[i]->MakeImprint(worldLV,detPos,rotDet);
 
-		G4RotationMatrix *rotDet = new G4RotationMatrix();
-		rotDet->rotateY(90.*degree);
-		rotDet->rotateZ(phiDet);
-
-		G4ThreeVector detPos(-x_offset,0.,distance);
-		detPos *= *rotDet;
-		neutronDetectors[i]->MakeImprint(worldLV,detPos,rotDet);
+			G4cout << "detectorPos[" << i << "] = TVector3("
+			       << detPos.x() << ","
+			       << detPos.y() << ","
+			       << detPos.z() << ");" << G4endl;
+		}
 	}
 
 	// Create a region
@@ -1848,7 +1843,7 @@ G4AssemblyVolume* DetectorConstruction::EJ309_3x3inch(G4int copyNbr, const char*
 G4AssemblyVolume* DetectorConstruction::EJ309_1x2inch(G4int copyNbr, const char* name)
 {
 	//for now this will just be a cylinder inside an aluminium casing
-	const G4bool CheckOverlaps = true;
+	const G4bool CheckOverlaps = false;
 	G4AssemblyVolume *detectorAssembly = new G4AssemblyVolume();
 	//-------------------Scintillator CuDimEnsions-------------------------------------------
 	G4double ScintRad = 25.4/2.*mm;
@@ -1883,7 +1878,7 @@ G4AssemblyVolume* DetectorConstruction::EJ309_1x2inch(G4int copyNbr, const char*
 	detectorAssembly->AddPlacedVolume(LogicScintDetector,pos0, &rot0);
 
   //---- Detector shielding------------------------------------------
-	G4double ThicknessPb = 8.*mm;
+	/*G4double ThicknessPb = 8.*mm;
 	G4double CylinderLength = ScintHeight + ScintHouseWall+0.2*mm;
 	G4double CylinderInnerRad = ScintRad+ScintHouseWall+0.1*mm;
 	G4double CylinderOuterRad = CylinderInnerRad+ThicknessPb+0.1*mm;
@@ -1905,7 +1900,7 @@ G4AssemblyVolume* DetectorConstruction::EJ309_1x2inch(G4int copyNbr, const char*
 	detectorAssembly->AddPlacedVolume(shieldOuterCylLV,posCyl,&rot0);
 	G4ThreeVector posLid(0.,0.,-0.5*(CylinderLength+ThicknessPb));
 	detectorAssembly->AddPlacedVolume(shieldLidLV,posLid,&rot0);
-    
+    */
 
   return detectorAssembly;
 }

@@ -368,6 +368,21 @@ void DetectorConstruction::DefineMaterials()
 	fEJ309->AddElement(fHydrogen,9.48*perCent);
 	fEJ309->AddElement(fCarbon,90.52*perCent);
 
+	// EJ-276
+	// the electron density is slightly wrong 3.8 % too low (33.982x10^22 vs 35.33x10^22)
+	// when using only hydrogen and carbon (this should lower the gamma-ray efficiency slightly)
+	// the reason for this is probably the solvent which is not included in the specs.
+	// I will assume the rest comes from Oxygen (Carbon oxides are mentioned in the Safety data sheet,
+	// allthough no numbers are given)
+	G4Element *fOxygen = nistManager->FindOrBuildElement("O");
+	fEJ276 = new G4Material("EJ299",1.096*g/cm3,3, kStateSolid);
+	G4double nC = 4.906; // No. of Carbon atoms per cm3 x10^22
+	G4double nH = 4.546; // No. of Hydrogen atoms per cm3 x10^22
+	G4double nO = 0.1685; // No. of Oxygen atoms per cm3 x10^22 (calculated from the missing electron density)
+	fEJ276->AddElement(fHydrogen,nH/(nH+nC+nO));
+	fEJ276->AddElement(fCarbon,nH/(nH+nC+nO));
+	fEJ276->AddElement(fOxygen,nO/(nH+nC+nO));
+
 	fCladingMat = nistManager->FindOrBuildMaterial("G4_Zr"); //assuming pure Zirkonium
 
 	fBoroSilicate = new G4Material("BoroSilicate",2.23*g/cm3,5);
@@ -1381,82 +1396,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumesBWR()
 	G4double maxTime = 10000.*ns;
 	InsertLV->SetUserLimits(new G4UserLimits(DBL_MAX,DBL_MAX,maxTime));
 	// fuel modeled as a simple homogenous Volume
-/*
-	G4double HalfWidthBox = 214./2.;
-	G4Box *DummyFuelBox = new G4Box("DummyFuelBox",HalfWidthBox,HalfWidthBox,4296./2.*mm);
-	G4LogicalVolume *DummyFuelBoxLV = new G4LogicalVolume(DummyFuelBox,fFuelMat,"DummyFuelBoxLV",0,0,0);
-	//place 1 assembly
-	new G4PVPlacement(
-                        0,               // no rotation
-                        G4ThreeVector(0,0,0), // at (0,0,0)
-                        DummyFuelBoxLV,         // its logical volume
-                        "Fuel",         // its name
-                        ChannelInLV,               // its mother  volume
-                        false,           // no boolean operations
-                        1,               // copy number
-                        fCheckOverlaps); // checking overlaps
-*/
-//****************Detectors********************************************************
-/*
-	const G4double PbWallThickness = 4.*cm;
-	const G4double BoronWallThickness = 2.*mm;
-	//const G4double CuWallThickness = 0.*mm;
-	const G4double DummyDetectionVolume = 1.*mm;
-	const G4double totWallThickness = PbWallThickness + BoronWallThickness + DummyDetectionVolume;
 
-	//const G4double ShieldingWallDistance = CuDimB/2. + totWallThickness/2. + 5.*cm;
-	//const G4double distance = CuDimB/2. + 16.3*cm; // lead wall at surface of canister
-
-	const G4double distance = CuDimB/2. + 47.5*cm; // 1 m from center
-	const G4double ShieldingWallDistance = distance - totWallThickness/2. - 5.*cm;
-	//const G4double ShieldingWallDistance = CuDimB/2. + 47.5*cm/2.;
-
-	G4double WallHalfY = InsertDimJ/2. + 90.*mm;
-	G4double WallHalfZ = WallHalfY;
-
-	G4Material *fPb = nistManager->FindOrBuildMaterial("G4_Pb");
-	//G4Material *fPb = nistManager->FindOrBuildMaterial("G4_AIR");
-	G4Box *ShieldingWallS = new G4Box("ShieldingWallS",totWallThickness/2.,WallHalfY,WallHalfZ);
-  	G4LogicalVolume *ShieldingWallLV = new G4LogicalVolume(ShieldingWallS,fPb,"ShieldingWallLV",0,0,0);
-
-	G4Box *B4CWallS = new G4Box("B4CWallS",BoronWallThickness/2.,WallHalfY,WallHalfZ);
-	G4Material *fB4C = nistManager->FindOrBuildMaterial("G4_BORON_CARBIDE");
-	//G4Material *fB4C = nistManager->FindOrBuildMaterial("G4_AIR");
-  	G4LogicalVolume *B4CWallLV = new G4LogicalVolume(B4CWallS,fB4C,"B4CWallLV",0,0,0);
-
-  	G4double PbBoxWallThicknes = 5.*cm;
-  	G4Box *ShieldingBoxWallS = new G4Box("ShieldingBoxWallS",WallHalfY+PbWallThickness/2.,WallHalfY+2.*PbBoxWallThicknes,WallHalfY+2.*PbBoxWallThicknes);
-  	G4Box *ShieldingBoxHoleS = new G4Box("ShieldingBoxHoleS",WallHalfY+PbWallThickness,WallHalfY,WallHalfY);
-  	G4SubtractionSolid *ShieldingBoxS = new G4SubtractionSolid("ShieldingBoxS",ShieldingBoxWallS,ShieldingBoxHoleS);
-  	G4LogicalVolume *ShieldingBoxLV = new G4LogicalVolume(ShieldingBoxS,fPb,"ShieldingBoxLV",0,0,0);
-
-  	new G4PVPlacement(
-                        0,               // no rotation
-                        G4ThreeVector(-totWallThickness/2.+BoronWallThickness/2.,0,0), // at (0,0,0)
-                        B4CWallLV,         // its logical volume
-                        "B4CWallPV",         // its name
-                        ShieldingWallLV,               // its mother  volume
-                        false,           // no boolean operations
-                        0,               // copy number
-                        fCheckOverlaps); // checking overlaps
-
-
-  	if(DummyDetectionVolume>1E-3*mm) {
-  		G4Box *DummyS = new G4Box("DummyS",DummyDetectionVolume/2.,WallHalfY,WallHalfZ);
-  		G4LogicalVolume *DummyLV = new G4LogicalVolume(DummyS,air,"DetectionVolume",0,0,0);
-
-  		new G4PVPlacement(
-                        0,               // no rotation
-                        G4ThreeVector(totWallThickness/2.-DummyDetectionVolume/2.,0,0), // at (0,0,0)
-                        DummyLV,         // its logical volume
-                        "DetectionVolumePV",         // its name
-                        ShieldingWallLV,               // its mother  volume
-                        false,           // no boolean operations
-                        0,               // copy number
-                        fCheckOverlaps); // checking overlaps
-  	}*/
-
-  	const G4double distance = 600.*mm;
+  	/*const G4double distance = 600.*mm;
   	const G4int nRings = 16;
   	const G4int DetectorsPerRing = 18;
   	const G4int nDetectors = DetectorsPerRing*nRings;
@@ -1492,6 +1433,85 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumesBWR()
 	G4LogicalVolume* logicVol = G4LogicalVolumeStore::GetInstance()->GetVolume("1inch-EJ309");
 	G4Region* DetectorRegion = new G4Region("DetectorRegion");
 	DetectorRegion->AddRootLogicalVolume(logicVol);
+	*/
+
+	const G4double PbWallThickness = 8.*mm;
+	const G4double BoronWallThickness = 2.*mm;
+	const G4double WallHalfX = 75.*mm;
+	G4Material *fPb = nistManager->FindOrBuildMaterial("G4_Pb");
+	//G4Box *ShieldingWallS = new G4Box("ShieldingWallS",PbWallThickness/2.,WallHalfX,WallHalfX);
+
+	G4Box *ShieldingWallS = new G4Box("ShieldingWallS",WallHalfX,WallHalfX,PbWallThickness/2.);
+  	G4LogicalVolume *ShieldingWallLV = new G4LogicalVolume(ShieldingWallS,fPb,"PbShieldingWallLV",0,0,0);
+
+	G4Box *B4CWallS = new G4Box("B4CWallS",WallHalfX,WallHalfX,BoronWallThickness/2.);
+	G4Material *fB4C = nistManager->FindOrBuildMaterial("G4_BORON_CARBIDE");
+  	G4LogicalVolume *B4CWallLV = new G4LogicalVolume(B4CWallS,fB4C,"B4CWallLV",0,0,0);
+
+  	const G4int nRings = 9;
+  	const G4double ring_dZ = 45.*cm;
+
+	const G4double distance = 600.*mm;
+	const G4int nDetectorClusters = 12;
+	const G4int nDetPerCluster = 4;
+	const G4int nDetectors = nDetectorClusters*nDetPerCluster*nRings;
+	G4AssemblyVolume* neutronDetectors[nDetectors];
+	char DetName[32];
+
+	for(G4int i=0;i<nDetectors;i++) {
+		snprintf(DetName,32,"EJ309_%d",i+1);
+		neutronDetectors[i] = EJ276_detector(i+1, DetName, 4*cm);
+	}
+
+	G4double phiCluster[] = {23.89,45.,66.11,90.+23.89,90.+45.,90.+66.11,180.+23.89,180.+45.,180.+66.11,270.+23.89,270.+45.,270.+66.11};
+	for(G4int ring=0;ring<nRings;++ring) {
+		G4double detZ0 = (ring-4)*ring_dZ;
+		for(G4int cluster=0;cluster<nDetectorClusters;cluster++) {
+			G4double dx = 32.*mm;
+
+			G4ThreeVector position[nDetPerCluster];
+			position[0] = G4ThreeVector(dx,dx,0.);
+			position[1] = G4ThreeVector(dx,-dx,0.);
+			position[2] = G4ThreeVector(-dx,dx,0.);
+			position[3] = G4ThreeVector(-dx,-dx,0.);
+
+			G4ThreeVector posPbWall(0.,0.,-(14.04+0.5*PbWallThickness));
+			G4ThreeVector posB4CWall(0.,0.,-(14.04+PbWallThickness+0.5*BoronWallThickness));
+
+			G4ThreeVector posCluster = G4ThreeVector(detZ0,0.,distance);
+			G4RotationMatrix *rotPos = new G4RotationMatrix();
+			rotPos->rotateY(90.*degree);
+			rotPos->rotateZ(phiCluster[cluster]*degree);
+
+			G4RotationMatrix *rotDet = new G4RotationMatrix();
+			rotDet->rotateY(90.*degree);
+			rotDet->rotateZ(phiCluster[cluster]*degree);
+
+			for(G4int i=0;i<nDetPerCluster;i++) {
+				position[i] += posCluster;
+				position[i] *= *rotPos;
+				G4int detNbr = ring*nDetectorClusters*nDetPerCluster + cluster*nDetPerCluster + i;
+				neutronDetectors[detNbr]->MakeImprint(worldLV,position[i],rotDet,detNbr + 1);
+			}
+
+			posPbWall += posCluster;
+			posPbWall *= *rotPos;
+			G4Transform3D transformPb(*rotPos,posPbWall);
+			new G4PVPlacement(transformPb, ShieldingWallLV, "ShieldingWallPV", worldLV, false, cluster, fCheckOverlaps);
+
+			posB4CWall += posCluster;
+			posB4CWall *= *rotPos;
+			G4Transform3D transformB4C(*rotPos,posB4CWall);
+			new G4PVPlacement(transformB4C, B4CWallLV, "B4CWallPV", worldLV, false, cluster, fCheckOverlaps);
+
+			 
+		}
+	}
+
+	// Create a region
+	G4LogicalVolume* logicVol = G4LogicalVolumeStore::GetInstance()->GetVolume("PlasticDetectorHouse");
+	G4Region* DetectorRegion = new G4Region("DetectorRegion");
+	DetectorRegion->AddRootLogicalVolume(logicVol);
 	
 	// Print materials
 	#ifndef NOT_USING_MPI
@@ -1510,24 +1530,25 @@ void DetectorConstruction::ConstructSDandField()
 
   G4String ScintillatorSDname = "ScintillatorSD";
   G4String ScintillatorHCname = "ScintillatorHC";
-  ScintilatorSD* sdEJ309 = new ScintilatorSD(ScintillatorSDname,ScintillatorHCname);
-  G4SDManager::GetSDMpointer()->AddNewDetector(sdEJ309);
-  //SetSensitiveDetector("5x5-EJ-309-LV", sdEJ309, true);
-  SetSensitiveDetector("1x2-EJ-309-LV", sdEJ309, true);
+  ScintilatorSD* sd = new ScintilatorSD(ScintillatorSDname,ScintillatorHCname);
+  G4SDManager::GetSDMpointer()->AddNewDetector(sd);
+  //SetSensitiveDetector("5x5-EJ-309-LV", sd, true);
+  //SetSensitiveDetector("1x2-EJ-309-LV", sd, true);
+  SetSensitiveDetector("EJ276_LV", sd, true);
 
   G4double parsLinear[] = {1.0,0.0,0.,0.};
-  sdEJ309->SetLightFunc(11,0,parsLinear); //electrons
-  sdEJ309->SetLightFunc(-11,0,parsLinear); //positrons
-  sdEJ309->SetLightFunc(22,0,parsLinear); //photons
+  sd->SetLightFunc(11,0,parsLinear); //electrons
+  sd->SetLightFunc(-11,0,parsLinear); //positrons
+  sd->SetLightFunc(22,0,parsLinear); //photons
   
   G4double parsProtons[] = {0.74787,2.4077,0.29866,1.0}; //parameters according to Enqvist et al. (DOI: 10.1016/j.nima.2013.03.032)
-  sdEJ309->SetLightFunc(2212,1,parsProtons);
+  sd->SetLightFunc(2212,1,parsProtons);
 
-/*
+
 //================== cross section biasing for (alpha,n)-reactions =========
-  GB01BOptrMultiParticleChangeCrossSection *aXSbias = new GB01BOptrMultiParticleChangeCrossSection("XSbias");
+/*  GB01BOptrMultiParticleChangeCrossSection *aXSbias = new GB01BOptrMultiParticleChangeCrossSection("XSbias");
 
-  G4double BiasFactor=1e+05;
+  G4double BiasFactor=1.0e+07;
   //G4double BiasFactor=1.0;
   G4String biasedParticleName="alpha";
   aXSbias->AddParticle(biasedParticleName,BiasFactor);
@@ -1903,4 +1924,40 @@ G4AssemblyVolume* DetectorConstruction::EJ309_1x2inch(G4int copyNbr, const char*
     */
 
   return detectorAssembly;
+}
+
+G4AssemblyVolume* DetectorConstruction::EJ276_detector(G4int copyNbr, const char* name, G4double size)
+{
+	//for now this will just be a cylinder inside an aluminium casing
+	const G4bool CheckOverlaps = true;
+	G4AssemblyVolume *detectorAssembly = new G4AssemblyVolume();
+	//-------------------Scintillator DimEnsions-------------------------------------------
+	G4double ScintHeight = 25.*mm;
+	G4double ScintHouseWall = 1.52*mm;
+
+	//Scintillator Housing
+	G4Box *SolidScintDetector = new G4Box("SolidScintDetector",0.5*size+ScintHouseWall,0.5*size+ScintHouseWall,0.5*(ScintHeight+ScintHouseWall));
+	G4LogicalVolume *LogicScintDetector = new G4LogicalVolume(SolidScintDetector, fAlu, "PlasticDetectorHouse",0,0,0);
+
+	//Inside Scintillator Housing
+  
+	G4Box *ScintillatorS = new G4Box("ScintillatorS",0.5*size,0.5*size,0.5*ScintHeight);
+	G4LogicalVolume* ScintillatorLV = new G4LogicalVolume(ScintillatorS, fEJ276, "EJ276_LV",0,0,0);
+	/*G4VPhysicalVolume* ScintillatorPV =*/ new G4PVPlacement(0,              // no rotation
+	                  G4ThreeVector(0,0,ScintHouseWall*0.5), // at (x,y,z) relative to the house
+	                  ScintillatorLV,   // its logical volume
+	                  name,       // its name
+	                  LogicScintDetector,        // its mother volume
+	                  false,          // no boolean operations
+	                  copyNbr,              // copy number
+	                  CheckOverlaps); // checking overlaps
+
+	G4VisAttributes *scintVisAtt = new G4VisAttributes(G4Colour(1.,0.,0.));
+	ScintillatorLV->SetVisAttributes(scintVisAtt); 
+
+	G4RotationMatrix rot0;
+	G4ThreeVector pos0(0.,0.,0.);
+	detectorAssembly->AddPlacedVolume(LogicScintDetector,pos0, &rot0);
+
+	return detectorAssembly;
 }

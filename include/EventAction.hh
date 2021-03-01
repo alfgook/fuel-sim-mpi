@@ -52,18 +52,12 @@ class EventAction : public G4UserEventAction
   public:
     virtual void BeginOfEventAction(const G4Event*);
     virtual void   EndOfEventAction(const G4Event*);
-
-    void AccumulateWeight(G4double weight) { fAccumulatedEventWeight *= weight; }
-    G4double GetAccumulatedWeight() { return fAccumulatedEventWeight; }
-    void SetPrimaryWeight(G4double weight) { fPrimaryWeight = weight;}
     
   private:    
     ScintilatorHitsCollection* GetHitsCollection(G4int hcID,
                                             const G4Event* event) const;
 
     G4int                   fScintillatorHCID;
-    G4double                fAccumulatedEventWeight;
-    G4double                fPrimaryWeight;
     G4Timer                 fTimer;
 };
 

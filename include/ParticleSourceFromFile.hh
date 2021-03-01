@@ -54,6 +54,9 @@ struct TreeEntry
         G4float dirX;
         G4float dirY;
         G4float dirZ;
+        G4float initX;
+        G4float initY;
+        G4float initZ;
         G4float weight;
 };
 

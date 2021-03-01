@@ -38,6 +38,7 @@
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4RunManager.hh"
+#include "AnalysisMPI.hh"
 
 #ifndef NOT_USING_MPI
 #include "G4MPImanager.hh"
@@ -100,6 +101,9 @@ void  ParticleSourceFromFile::OpenFile(G4String FileName)
     analysisReader->SetNtupleFColumn("dirX", currentEntry.dirX);
     analysisReader->SetNtupleFColumn("dirY", currentEntry.dirY);
     analysisReader->SetNtupleFColumn("dirZ", currentEntry.dirZ);
+    analysisReader->SetNtupleFColumn("InitX", currentEntry.initX);
+    analysisReader->SetNtupleFColumn("InitY", currentEntry.initY);
+    analysisReader->SetNtupleFColumn("InitZ", currentEntry.initZ);
     analysisReader->SetNtupleFColumn("weight", currentEntry.weight);
   }
 
@@ -164,6 +168,80 @@ G4bool ParticleSourceFromFile::GetNextEvent()
         break; //end of file reached?
       }
     } while (currentEntry.eventID==currentEventID);
+
+    G4int nonScatteredGamma = -1;
+    G4int nonScatteredNeutron = -1;
+    G4int ScatteredGamma = -1;
+    G4int ScatteredNeutron = -1;
+    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+    for(size_t i=0;i<TreeEntries.size()-1;i++) { // the last elements are from the next event
+      if(TreeEntries.at(i).PDGcode==22) {
+        G4ThreeVector v1( TreeEntries.at(i).posX-TreeEntries.at(i).initX,
+                          TreeEntries.at(i).posY-TreeEntries.at(i).initY,
+                          TreeEntries.at(i).posZ-TreeEntries.at(i).initZ);
+
+        G4ThreeVector v2( TreeEntries.at(i).dirX,
+                          TreeEntries.at(i).dirY,
+                          TreeEntries.at(i).dirZ);
+        //if(v1.angle(v2)<0.0027777778*CLHEP::twopi) { // smaller than one degree
+        if(v1.angle(v2)<1E-6) {
+          analysisManager->FillH1(8,TreeEntries.at(i).Energy); // non-scaterred gammas
+          nonScatteredGamma = i;
+        } else {
+          analysisManager->FillH1(7,TreeEntries.at(i).Energy); // scaterred gammas
+          ScatteredGamma = i;
+        }
+        
+      } else if(TreeEntries.at(i).PDGcode==2112) {
+        G4ThreeVector v1( TreeEntries.at(i).posX-TreeEntries.at(i).initX,
+                          TreeEntries.at(i).posY-TreeEntries.at(i).initY,
+                          TreeEntries.at(i).posZ-TreeEntries.at(i).initZ);
+
+        G4ThreeVector v2( TreeEntries.at(i).dirX,
+                          TreeEntries.at(i).dirY,
+                          TreeEntries.at(i).dirZ);
+        //if(v1.angle(v2)<0.0027777778*CLHEP::twopi) { // smaller than one degree
+        if(v1.angle(v2)<1E-6) {
+          analysisManager->FillH1(6,TreeEntries.at(i).Energy); // non-scattered neutrons
+          analysisManager->FillH2(0,TreeEntries.at(i).initX,TreeEntries.at(i).initY); // non-scattered neutrons
+          nonScatteredNeutron = i;
+        } else {
+          analysisManager->FillH1(5,TreeEntries.at(i).Energy); // scattered neutrons
+          ScatteredNeutron = i;
+        }
+      }
+    }
+
+    //Set intial position of decay
+    AnalysisMPI::GetAnalysis()->SetInitial(TreeEntries.at(0).initX,TreeEntries.at(0).initY,TreeEntries.at(0).initZ);
+
+    //Fill histograms
+    const G4double EnergyThNeutron = 2.;
+    const G4double EnergyThGamma = 2.;
+    if(nonScatteredGamma>=0 && nonScatteredNeutron>=0) { // neither neutron nor gamma has been scattered
+      G4double Eg =  TreeEntries.at(nonScatteredGamma).Energy;
+      G4double En =  TreeEntries.at(nonScatteredNeutron).Energy;
+      if(Eg>EnergyThGamma && En>EnergyThNeutron)
+        analysisManager->FillH1(9,TreeEntries.at(nonScatteredNeutron).Time-TreeEntries.at(nonScatteredGamma).Time);
+    }
+    if(ScatteredGamma>=0 && ScatteredNeutron>=0) { // both neutron and gamma has been scattered
+      G4double Eg =  TreeEntries.at(ScatteredGamma).Energy;
+      G4double En =  TreeEntries.at(ScatteredNeutron).Energy;
+      if(Eg>EnergyThGamma && En>EnergyThNeutron)
+        analysisManager->FillH1(10,TreeEntries.at(ScatteredNeutron).Time-TreeEntries.at(ScatteredGamma).Time);
+    }
+    if(ScatteredGamma>=0 && nonScatteredNeutron>=0) { // only gamma has been scattered
+      G4double Eg =  TreeEntries.at(ScatteredGamma).Energy;
+      G4double En =  TreeEntries.at(nonScatteredNeutron).Energy;
+      if(Eg>EnergyThGamma && En>EnergyThNeutron)
+        analysisManager->FillH1(10,TreeEntries.at(nonScatteredNeutron).Time-TreeEntries.at(ScatteredGamma).Time);
+    }
+    if(nonScatteredGamma>=0 && ScatteredNeutron>=0) { // only neutron has been scattered
+      G4double Eg =  TreeEntries.at(nonScatteredGamma).Energy;
+      G4double En =  TreeEntries.at(ScatteredNeutron).Energy;
+      if(Eg>EnergyThGamma && En>EnergyThNeutron)
+        analysisManager->FillH1(10,TreeEntries.at(ScatteredNeutron).Time-TreeEntries.at(nonScatteredGamma).Time);
+    }
   }
   ++fNbrGenerated;
 
@@ -242,7 +320,7 @@ void ParticleSourceFromFile::GeneratePrimaryVertex(G4Event* event)
       particle->SetWeight(fWeight*TreeEntries.at(i).weight);
 
       theVertex->SetPrimary(particle);
-      event->AddPrimaryVertex(theVertex);
+      event->AddPrimaryVertex(theVertex); 
     }
   }
   

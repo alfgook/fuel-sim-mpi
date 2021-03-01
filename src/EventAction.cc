@@ -83,24 +83,13 @@ EventAction::GetHitsCollection(G4int hcID,
 
 void EventAction::BeginOfEventAction(const G4Event* evt)
 {
-  //G4cout << "EventAction::BeginOfEventAction()" << G4endl;
-	fAccumulatedEventWeight = 1.;
 
-	/*G4int eventID = evt->GetEventID();
-	if((eventID%100000)==0) {
-		G4Random::saveEngineStatus();
-		G4Random::showEngineStatus();
-	}*/
-
-	//fTimer.Start();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void EventAction::EndOfEventAction(const G4Event* evt)
 {
-
-	//G4cout << "final weight of event = " << fAccumulatedEventWeight << G4endl;
 
 	G4int eventID = evt->GetEventID();
 	// Get hits collections IDs (only once)

@@ -81,6 +81,15 @@ AnalysisMPI::Book()
   
   analysisManager->CreateH1("sGammaOut","Gamma-rays exiting cask",2000,0,20); // 3
   analysisManager->CreateH1("sNeutronOut","Neutrons exiting cask",2000,0,20); // 4
+
+  analysisManager->CreateH1("hNeutronScattered","Spectrum of scattered neutrons",2000,0,20); // 5
+  analysisManager->CreateH1("hNeutronNoScattered","Spectrum of non-scattered neutrons",2000,0,20); // 6
+  analysisManager->CreateH1("hGammaScattered","Spectrum of scattered gammas",2000,0,20); // 7
+  analysisManager->CreateH1("hGammaNonScattered","Spectrum of non-scattered gammas",2000,0,20); // 8
+  analysisManager->CreateH1("hToFgn_NonScatter","tof Spectrum of non-scattered events",300,-10,290); // 9
+  analysisManager->CreateH1("hToFgn_Scatter","tof Spectrum of scattered events",300,-10,290); // 10
+
+  analysisManager->CreateH2("InitPosNonScattered","initial source positions for non-scattered neutrons",380,-380,380,380,-380,380); //0
 //----------------root tree / ntuple---------------------------------------
   analysisManager->CreateNtuple("SplitPoints", "SplitPoints");
   analysisManager->CreateNtupleIColumn("eventID");
@@ -107,6 +116,9 @@ AnalysisMPI::Book()
   analysisManager->CreateNtupleFColumn("TimeInEvent");
   analysisManager->CreateNtupleFColumn("Light");
   analysisManager->CreateNtupleFColumn("Weight");
+  analysisManager->CreateNtupleFColumn("InitX");
+  analysisManager->CreateNtupleFColumn("InitY");
+  analysisManager->CreateNtupleFColumn("InitZ");
   analysisManager->FinishNtuple();
 
   G4cout << "AnalysisMPI::Book finished " << G4endl;
@@ -163,6 +175,9 @@ AnalysisMPI::FillScintillatorHit(G4int eventID, G4int copyNbr, G4int PDGcode, G4
   analysisManager->FillNtupleFColumn(ntupleID, 4, time);
   analysisManager->FillNtupleFColumn(ntupleID, 5, light);
   analysisManager->FillNtupleFColumn(ntupleID, 6, weight);
+  analysisManager->FillNtupleFColumn(ntupleID, 7, initX);
+  analysisManager->FillNtupleFColumn(ntupleID, 8, initY);
+  analysisManager->FillNtupleFColumn(ntupleID, 9, initZ);
   analysisManager->AddNtupleRow(ntupleID);
 
 }

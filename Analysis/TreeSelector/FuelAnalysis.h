@@ -20,7 +20,9 @@
 #include <TH1D.h>
 #include <TH2D.h>
 
-#define NBR_DETECTORS 288
+const Int_t nDetClusters = 12;
+const Int_t nDetPerCluster = 4;
+const Int_t NBR_DETECTORS = nDetClusters*nDetPerCluster;
 
 
 class FuelAnalysis : public TSelector {
@@ -35,6 +37,9 @@ public :
    TTreeReaderArray<Int_t> PDGcodes = {fReader, "PDGcodes"};
    TTreeReaderArray<Double_t> Light = {fReader, "Light"};
    TTreeReaderArray<Double_t> Time = {fReader, "Time"};
+   TTreeReaderValue<Double_t> InitX = {fReader, "InitX"};
+   TTreeReaderValue<Double_t> InitY = {fReader, "InitY"};
+   TTreeReaderValue<Double_t> InitZ = {fReader, "InitZ"};
 
 
    FuelAnalysis(TTree * /*tree*/ =0) { }
@@ -61,10 +66,22 @@ private :
    TH1D *hLightAll_neutrons;
    TH1D *hLightAll_gammas;
    TH1D **hLight;
+   TH1D **hLight_neutrons;
+   TH1D **hLight_gammas;
    TH1D ***hToF;
    TH1D *hToFany;
    TH1D *hToFanyGN;
    TH1D *hToFanyNN;
+
+   TH1D *hSingleNeutrons;
+   TH1D *hSingleGammas;
+   TH2D *hGNcoincs;
+   TH2D *hNNcoincs;
+
+   TH2D *hInitPosSN[nDetClusters+1];
+   TH2D *hInitPosSG[nDetClusters+1];
+   TH2D *hInitPosGN[nDetClusters+1];
+   TH2D *hInitPosNN[nDetClusters+1];
 
    Double_t scalingFactor;
 

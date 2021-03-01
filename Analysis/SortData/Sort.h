@@ -29,6 +29,9 @@ public :
    Float_t         TimeInEvent;
    Float_t         Light;
    Float_t         Weight;
+   Float_t         InitX;
+   Float_t         InitY;
+   Float_t         InitZ;
 
    // List of branches
    TBranch        *b_EventID;   //!
@@ -38,6 +41,9 @@ public :
    TBranch        *b_TimeInEvent;   //!
    TBranch        *b_Light;   //!
    TBranch        *b_Weight;   //!
+   TBranch        *b_InitX;   //!
+   TBranch        *b_InitY;   //!
+   TBranch        *b_InitZ;   //!
 
    Sort(TTree *tree=0);
    virtual ~Sort();
@@ -116,6 +122,9 @@ void Sort::Init(TTree *tree)
    fChain->SetBranchAddress("TimeInEvent", &TimeInEvent, &b_TimeInEvent);
    fChain->SetBranchAddress("Light", &Light, &b_Light);
    fChain->SetBranchAddress("Weight", &Weight, &b_Weight);
+   fChain->SetBranchAddress("InitX", &InitX, &b_InitX);
+   fChain->SetBranchAddress("InitY", &InitY, &b_InitY);
+   fChain->SetBranchAddress("InitZ", &InitZ, &b_InitZ);
    Notify();
 }
 

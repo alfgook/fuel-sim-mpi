@@ -72,14 +72,18 @@ void FuelAnalysis::SlaveBegin(TTree * /*tree*/)
    hLightAll_gammas->Sumw2();
    GetOutputList()->Add(hLightAll_gammas);
 
-   hLight = new TH1D*[NBR_DETECTORS];
-   for(Int_t i=0;i<NBR_DETECTORS;i++) {
-      snprintf(name,64,"hLight%d",i);
-      snprintf(title,128,"Light;Light (MeVee);counts/sec");
-      hLight[i] = new TH1D(name,title,2000,0.,20.);
-      hLight[i]->Sumw2();
-      GetOutputList()->Add(hLight[i]);
-   }
+   hSingleNeutrons = new TH1D("hSingleNeutrons","hSingleNeutrons",NBR_DETECTORS,-0.5,NBR_DETECTORS-0.5);
+   hSingleNeutrons->Sumw2();
+   GetOutputList()->Add(hSingleNeutrons);
+   hSingleGammas = new TH1D("hSingleGammas","hSingleGammas",NBR_DETECTORS,-0.5,NBR_DETECTORS-0.5);
+   hSingleGammas->Sumw2();
+   GetOutputList()->Add(hSingleGammas);
+   hGNcoincs = new TH2D("hGNcoincs","hGNcoincs",NBR_DETECTORS,-0.5,NBR_DETECTORS-0.5,NBR_DETECTORS,-0.5,NBR_DETECTORS-0.5);
+   hGNcoincs->Sumw2();
+   GetOutputList()->Add(hGNcoincs);
+   hNNcoincs  = new TH2D("hNNcoincs","hNNcoincs",NBR_DETECTORS,-0.5,NBR_DETECTORS-0.5,NBR_DETECTORS,-0.5,NBR_DETECTORS-0.5);
+   hNNcoincs->Sumw2();
+   GetOutputList()->Add(hNNcoincs);
 
    hToFany= new TH1D("hToFany","time-of-flight any-coinc. (time(1)-time(2s));time (ns);counts/sec",500,0.,500.);
    hToFany->Sumw2();
@@ -92,11 +96,72 @@ void FuelAnalysis::SlaveBegin(TTree * /*tree*/)
    hToFanyNN = new TH1D("hToFanyNN","time-of-flight n-n-coinc. (time(n)-time(n));time (ns);counts/sec",500,0.,500.);
    hToFanyNN->Sumw2();
    GetOutputList()->Add(hToFanyNN);
+
+
+   for(Int_t i=0;i<nDetClusters+1;i++) {
+      snprintf(name,64,"hInitPosSN%d",i);
+      snprintf(title,128,"hInitPosSN");
+      hInitPosSN[i] = new TH2D(name,title,800,-400.,400.,800.,-400.,400.);
+      hInitPosSN[i]->Sumw2();
+      GetOutputList()->Add(hInitPosSN[i]);
+   }
+
+   for(Int_t i=0;i<nDetClusters+1;i++) {
+      snprintf(name,64,"hInitPosSG%d",i);
+      snprintf(title,128,"hInitPosSG");
+      hInitPosSG[i] = new TH2D(name,title,800,-400.,400.,800.,-400.,400.);
+      hInitPosSG[i]->Sumw2();
+      GetOutputList()->Add(hInitPosSG[i]);
+   }
+
+   for(Int_t i=0;i<nDetClusters+1;i++) {
+      snprintf(name,64,"hInitPosGN%d",i);
+      snprintf(title,128,"hInitPosGN");
+      hInitPosGN[i] = new TH2D(name,title,800,-400.,400.,800.,-400.,400.);
+      hInitPosGN[i]->Sumw2();
+      GetOutputList()->Add(hInitPosGN[i]);
+   }
+
+   for(Int_t i=0;i<nDetClusters+1;i++) {
+      snprintf(name,64,"hInitPosNN%d",i);
+      snprintf(title,128,"hInitPosNN");
+      hInitPosNN[i] = new TH2D(name,title,800,-400.,400.,800.,-400.,400.);
+      hInitPosNN[i]->Sumw2();
+      GetOutputList()->Add(hInitPosNN[i]);
+   }
+
+   hLight = new TH1D*[NBR_DETECTORS];
+   for(Int_t i=0;i<NBR_DETECTORS;i++) {
+      snprintf(name,64,"hLight%d",i);
+      snprintf(title,128,"Light;Light (MeVee);counts/sec");
+      hLight[i] = new TH1D(name,title,2000,0.,20.);
+      hLight[i]->Sumw2();
+      GetOutputList()->Add(hLight[i]);
+   }
+
+   hLight_neutrons = new TH1D*[NBR_DETECTORS];
+   for(Int_t i=0;i<NBR_DETECTORS;i++) {
+      snprintf(name,64,"hLight_neutrons%d",i);
+      snprintf(title,128,"Light_neutrons;Light (MeVee);counts/sec");
+      hLight_neutrons[i] = new TH1D(name,title,2000,0.,20.);
+      hLight_neutrons[i]->Sumw2();
+      GetOutputList()->Add(hLight_neutrons[i]);
+   }
+
+   hLight_gammas = new TH1D*[NBR_DETECTORS];
+   for(Int_t i=0;i<NBR_DETECTORS;i++) {
+      snprintf(name,64,"hLight_gammas%d",i);
+      snprintf(title,128,"Light_gammas;Light (MeVee);counts/sec");
+      hLight_gammas[i] = new TH1D(name,title,2000,0.,20.);
+      hLight_gammas[i]->Sumw2();
+      GetOutputList()->Add(hLight_gammas[i]);
+   }
    
    hToF = new TH1D**[NBR_DETECTORS];
    for(Int_t i=0;i<NBR_DETECTORS;i++) {
       hToF[i] = new TH1D*[NBR_DETECTORS];
       for(Int_t j=0;j<NBR_DETECTORS;j++) {
+         if(i==j) continue;
          snprintf(name,64,"hToF_%d_%d",i,j);
          snprintf(title,128,"time-of-flight #gamma-n-coinc. (time(det%d) - time(det%d));time (ns);counts/sec",i,j);
          hToF[i][j] = new TH1D(name,title,400,-100.,100.);
@@ -139,10 +204,11 @@ Bool_t FuelAnalysis::Process(Long64_t entry)
    const Double_t B2 = pow(0.102,2.);
    const Double_t C2 = pow(0.036,2.);
 
-   const Double_t Lmin = 0.01; // MeVee
+   const Double_t Lmin = 0.1; // MeVee
 
    for(UShort_t hit1=0;hit1<NbrOfHits;++hit1) {
       UShort_t det1 = DetectorNbr[hit1];
+      Int_t cluster = det1/nDetPerCluster + 1;
 
       Int_t gamma1 = 0; // 0 means it is a neutron
       if(PDGcodes[hit1]==22 || PDGcodes[hit1]==11 || PDGcodes[hit1]==-11) {
@@ -163,8 +229,18 @@ Bool_t FuelAnalysis::Process(Long64_t entry)
 
       if(gamma1) {
          hLightAll_gammas->Fill(Light[hit1],eventWeight*wL1);
+         hLight_gammas[DetectorNbr[hit1]]->Fill(Light[hit1],eventWeight*wL1);
+         hSingleGammas->Fill(DetectorNbr[hit1],eventWeight*wL1);
+
+         hInitPosSG[cluster]->Fill(*InitX,*InitY,eventWeight*wL1);
+         hInitPosSG[0]->Fill(*InitX,*InitY,eventWeight*wL1);
       } else {
          hLightAll_neutrons->Fill(Light[hit1],eventWeight*wL1);
+         hLight_neutrons[DetectorNbr[hit1]]->Fill(Light[hit1],eventWeight*wL1);
+         hSingleNeutrons->Fill(DetectorNbr[hit1],eventWeight*wL1);
+
+         hInitPosSN[cluster]->Fill(*InitX,*InitY,eventWeight*wL1);
+         hInitPosSN[0]->Fill(*InitX,*InitY,eventWeight*wL1);
       }
 
       if(NbrOfHits>1) {
@@ -194,30 +270,49 @@ Bool_t FuelAnalysis::Process(Long64_t entry)
                gamma2 = 1; // 1 means it is a gamma
             }
 
-            /*if(gamma1 && gamma2) {
-               Double_t tof = Time[hit2] - Time[hit1];
-               //hToF[det1][det2]->Fill(tof,eventWeight);
-               if(det1!=det2) hToFanyGN->Fill(tof,eventWeight);
-            }*/
-
-
-            if(gamma2 && !gamma1) {
+            // gamma-neutron coincidences
+            if((gamma2 && !gamma1) || (!gamma2 && gamma1)) {
                Double_t tof = Time[hit1] - Time[hit2];
+               Int_t detG = det2;
+               Int_t detN = det1;
+               if(!gamma2 && gamma1) {
+                  tof = Time[hit2] - Time[hit1];
+                  detG = det1;
+                  detN = det2;
+               }
                //hToF[det1][det2]->Fill(tof,eventWeight);
-               if(det1!=det2) hToFanyGN->Fill(tof,eventWeight*wL1*wL2);
-            } else if(!gamma2 && gamma1) {
-               Double_t tof = Time[hit2] - Time[hit1];
-               if(det1!=det2) hToFanyGN->Fill(tof,eventWeight*wL1*wL2);
+               if(det1!=det2) {
+                  hToFanyGN->Fill(tof,eventWeight*wL1*wL2);
+                  hToF[detG][detN]->Fill(tof,eventWeight*wL1*wL2);
+                  if(tof<100 && tof>=2.) hGNcoincs->Fill(det2,det1,eventWeight*wL1*wL2);
+               }
+
+               Int_t clusterG = detG/nDetPerCluster;
+               Int_t clusterN = detN/nDetPerCluster;
+               Int_t clusterGN = 0; // cluster 0 is if the coincidence comes from detectorsof different clusters
+               if(clusterG==clusterN) {
+                  clusterGN = clusterG + 1;
+               }
+
+               if(tof>0. && tof<200.) hInitPosGN[clusterGN]->Fill(*InitX,*InitY,eventWeight*wL1*wL2);
+
             }
 
+            // neutron-neutron coincidences
             if(!gamma1 && !gamma2) {
                Double_t tof = fabs(Time[hit2] - Time[hit1]);
                if(det1!=det2) {
+                  hToFanyNN->Fill(tof,eventWeight*wL1*wL2); //(d2-d1)>=4 if and only if the detectors dont belong to the same cluster_max
+                  if(tof<200) hNNcoincs->Fill(det2,det1,eventWeight*wL1*wL2);
 
-                  //if((d_max-d_min)>=4 && det1>=32 && det1 <64 && det2>=32 && det2 <64) {
-                     hToFanyNN->Fill(tof,eventWeight*wL1*wL2); //(d2-d1)>=4 if and only if the detectors dont belong to the same cluster_max
-                     hToF[det1][det2]->Fill(tof,eventWeight*wL1*wL2);
-                  //}
+                  Int_t cluster1 = det1/nDetPerCluster;
+                  Int_t cluster2 = det2/nDetPerCluster;
+                  Int_t clusterNN = 0; // cluster 0 is if the coincidence comes from detectorsof different clusters
+                  if(cluster1==cluster2) {
+                     clusterNN = cluster1 + 1;
+                  }
+
+                  if(tof<100.) hInitPosNN[clusterNN]->Fill(*InitX,*InitY,eventWeight*wL1*wL2);
                }
             }
 

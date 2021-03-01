@@ -84,38 +84,6 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track)
   //fTimer.Start();
   //G4cout << "initWeight = " << initWeight << G4endl;
 
-  if(!track->GetParentID() && track->GetTrackID()==1) {
-    // this is to account for the initial weight of the event,
-    // should be executed only once. The result of accumulated
-    // weight for this track will be w_0*accumulated weight of
-    // this track, where w_0 is the initial event weight
-    if(fEventAction->GetAccumulatedWeight()==1.) {
-      initWeight = 1.;
-      fEventAction->SetPrimaryWeight(track->GetWeight());
-    }
-  }/* else {
-    G4double Charge = track->GetDefinition()->GetPDGCharge();
-    if(Charge>2) {
-      G4cout << "parent track: " << track->GetParentID() << G4endl;
-      G4cout << " " << track->GetParticleDefinition()->GetParticleName() << G4endl;
-      //G4cout << "creator process: " << track->GetCreatorProcess() << G4endl;
-      //G4cout << "creator process type: " << track->GetCreatorProcess()->GetProcessType() << G4endl;
-      //G4cout << "creator process type of decay: " << G4ProcessType::fDecay << G4endl;
-      G4cout << "creator process name: " << track->GetCreatorProcess()->GetProcessName() << G4endl;
-      if(track->GetCreatorProcess()->GetProcessType()!=G4ProcessType::fDecay) {
-        // Do not decay nuclei that are not created in a decay chain
-        // Radio active nuclei may be knocked out by collision from a neutron
-        // And I don't want to decay these
-        G4cout << "Killing the secondary: " << track->GetParticleDefinition()->GetParticleName() << G4endl;
-        G4Track* tr = (G4Track*) track;
-        tr->SetTrackStatus(fStopAndKill); 
-      }
-      
-    }
-  }*/
-
-  
-
   G4int PDGcode = track->GetParticleDefinition()->GetPDGEncoding();
   if(PDGcode==2112 && track->GetKineticEnergy()>19.99*MeV) {
     G4Track *tr = (G4Track*) track;
@@ -153,8 +121,8 @@ void TrackingAction::PostUserTrackingAction(const G4Track* track)
   G4double finalWeight = track->GetWeight();
   //G4cout << "finalWeight = " << finalWeight << G4endl;
   //G4cout << "----------------------------" << G4endl;
-  if(initWeight) accumulatedWeight = finalWeight/initWeight;
-  fEventAction->AccumulateWeight(accumulatedWeight);
+  //if(initWeight) accumulatedWeight = finalWeight/initWeight;
+  //fEventAction->AccumulateWeight(accumulatedWeight);
 
   //fTimer.Stop();
   //G4cout << "Total tracking time (real): " << fTimer.GetRealElapsed() << G4endl;

@@ -82,6 +82,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4AssemblyVolume* EJ309_5x5inch(G4int copyNbr, const char* name);
     G4AssemblyVolume* EJ309_3x3inch(G4int copyNbr, const char* name);
     G4AssemblyVolume* EJ309_1x2inch(G4int copyNbr, const char* name);
+    G4AssemblyVolume* EJ276_detector(G4int copyNbr, const char* name, G4double size);
 	
     int ReadMCNPmatCard(const char *FileName);
   
@@ -96,6 +97,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     G4Material*        fScintilatorMat; //pointer to the Scintilator Material
     G4Material*        fAlu; // pointer to the Aluminium material
     G4Material*        fEJ309; // pointer to the LS301 material
+    G4Material*        fEJ276; // pointer to the EJ276 plastic scintillator material
     G4Material*        fBoroSilicate; //pointer to the Scintilators Light Guide Material
     //G4Material*        fPb; 
     G4Material*        fCladingMat;

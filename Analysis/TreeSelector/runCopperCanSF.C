@@ -26,7 +26,8 @@
 	p->SetParameter("pScalingFactor",(Double_t) scalingFactor);
 	chain->SetProof();
 
-	chain->Add("../../build/test2_sorted.root"); // 4.e6 events
+	chain->Add("../../build/DetectorsAtZ0_sorted.root");
+	//chain->Add("../../build/fuel-sim_sorted.root");
 
 	chain->Process("FuelAnalysis.C++");
 }

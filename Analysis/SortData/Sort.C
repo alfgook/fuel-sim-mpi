@@ -58,6 +58,9 @@ void Sort::Loop(const char *OutPutFileName)
    Int_t     fPDGcode[MAX_NBR_HITS];
    Double_t  fLight[MAX_NBR_HITS];
    Double_t  fTime[MAX_NBR_HITS];
+   Double_t  fInitX;
+   Double_t  fInitY;
+   Double_t  fInitZ;
 
    TFile *fOut = new TFile(OutPutFileName,"recreate");
    TTree *tree = new TTree("Sorted","Sorted");
@@ -68,6 +71,9 @@ void Sort::Loop(const char *OutPutFileName)
    tree->Branch("PDGcodes",fPDGcode,"PDGcodes[NbrOfHits]/I");
    tree->Branch("Light",fLight,"Light[NbrOfHits]/D");
    tree->Branch("Time",fTime,"Time[NbrOfHits]/D");
+   tree->Branch("InitX",&fInitX,"InitX/D");
+   tree->Branch("InitY",&fInitY,"InitY/D");
+   tree->Branch("InitZ",&fInitZ,"InitZ/D");
 
    Int_t FormerEventID = -1;
    Long64_t nbytes = 0, nb = 0;
@@ -93,6 +99,9 @@ void Sort::Loop(const char *OutPutFileName)
          fPDGcode[NbrOfHits]     = PDGcode;
          fTime[NbrOfHits]        = TimeInEvent;
          fLight[NbrOfHits]       = Light;
+         fInitX                  = InitX;
+         fInitY                  = InitY;
+         fInitZ                  = InitZ;
          ++NbrOfHits;
       } else {
          cout << "too many hits for event " << EventID << endl;

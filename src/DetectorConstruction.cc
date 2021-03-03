@@ -1435,6 +1435,20 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumesBWR()
 	DetectorRegion->AddRootLogicalVolume(logicVol);
 	*/
 
+	//BuildDetectors(worldLV);
+	
+	// Print materials
+	#ifndef NOT_USING_MPI
+	if(G4MPImanager::GetManager()->GetRank()==0) G4cout << *(G4Material::GetMaterialTable()) << G4endl;
+	#else
+	G4cout << *(G4Material::GetMaterialTable()) << G4endl;
+	#endif
+
+	return worldPV;
+}
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+void DetectorConstruction::BuildDetectors(G4LogicalVolume *worldLV)
+{
 	const G4double PbWallThickness = 8.*mm;
 	const G4double BoronWallThickness = 2.*mm;
 	const G4double WallHalfX = 106.*mm;
@@ -1512,17 +1526,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumesBWR()
 	G4LogicalVolume* logicVol = G4LogicalVolumeStore::GetInstance()->GetVolume("PlasticDetectorHouse");
 	G4Region* DetectorRegion = new G4Region("DetectorRegion");
 	DetectorRegion->AddRootLogicalVolume(logicVol);
-	
-	// Print materials
-	#ifndef NOT_USING_MPI
-	if(G4MPImanager::GetManager()->GetRank()==0) G4cout << *(G4Material::GetMaterialTable()) << G4endl;
-	#else
-	G4cout << *(G4Material::GetMaterialTable()) << G4endl;
-	#endif
-
-	return worldPV;
 }
-
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void DetectorConstruction::ConstructSDandField()
 {
@@ -1534,7 +1538,9 @@ void DetectorConstruction::ConstructSDandField()
   G4SDManager::GetSDMpointer()->AddNewDetector(sd);
   //SetSensitiveDetector("5x5-EJ-309-LV", sd, true);
   //SetSensitiveDetector("1x2-EJ-309-LV", sd, true);
-  SetSensitiveDetector("EJ276_LV", sd, true);
+  if(G4LogicalVolumeStore::GetInstance()->GetVolume("EJ276_LV")) {
+  	SetSensitiveDetector("EJ276_LV", sd, true);
+  }
 
   G4double parsLinear[] = {1.0,0.0,0.,0.};
   sd->SetLightFunc(11,0,parsLinear); //electrons

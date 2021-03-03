@@ -175,9 +175,11 @@ void PhysicsList::SetCuts()
   G4ProductionCuts* cutsDetectors;
   regName = "DetectorRegion";
   region = G4RegionStore::GetInstance()->GetRegion(regName);
-  cutsDetectors = new G4ProductionCuts;
-  cutsDetectors->SetProductionCut(0.01*mm); // same cuts for gamma, e- and e+ region->SetProductionCuts(cuts);
-  region->SetProductionCuts(cutsDetectors);
+  if(region) {
+    cutsDetectors = new G4ProductionCuts;
+    cutsDetectors->SetProductionCut(0.01*mm); // same cuts for gamma, e- and e+ region->SetProductionCuts(cuts);
+    region->SetProductionCuts(cutsDetectors);
+  }
   
 
   if (verboseLevel > 0) DumpCutValuesTable();

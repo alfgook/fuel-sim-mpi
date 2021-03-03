@@ -1552,7 +1552,7 @@ void DetectorConstruction::ConstructSDandField()
 
 
 //================== cross section biasing for (alpha,n)-reactions =========
-/*  GB01BOptrMultiParticleChangeCrossSection *aXSbias = new GB01BOptrMultiParticleChangeCrossSection("XSbias");
+  GB01BOptrMultiParticleChangeCrossSection *aXSbias = new GB01BOptrMultiParticleChangeCrossSection("XSbias");
 
   G4double BiasFactor=1.0e+07;
   //G4double BiasFactor=1.0;
@@ -1566,7 +1566,7 @@ void DetectorConstruction::ConstructSDandField()
   G4LogicalVolume* logicVol = G4LogicalVolumeStore::GetInstance()->GetVolume("CladdingRodLV");
   aXSbias->AttachTo(logicVol); 
   G4cout << " Attaching biasing operator to logical volume " << logicVol->GetName()<<" with biasFactor = "<<BiasFactor<<" for "<<biasedParticleName<<G4endl;
-*/
+
 }
 
 G4AssemblyVolume* DetectorConstruction::EJ309_5x5inch(G4int copyNbr, const char* name)

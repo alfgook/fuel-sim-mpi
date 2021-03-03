@@ -1437,7 +1437,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumesBWR()
 
 	const G4double PbWallThickness = 8.*mm;
 	const G4double BoronWallThickness = 2.*mm;
-	const G4double WallHalfX = 75.*mm;
+	const G4double WallHalfX = 106.*mm;
 	G4Material *fPb = nistManager->FindOrBuildMaterial("G4_Pb");
 	//G4Box *ShieldingWallS = new G4Box("ShieldingWallS",PbWallThickness/2.,WallHalfX,WallHalfX);
 
@@ -1459,15 +1459,15 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumesBWR()
 	char DetName[32];
 
 	for(G4int i=0;i<nDetectors;i++) {
-		snprintf(DetName,32,"EJ309_%d",i+1);
-		neutronDetectors[i] = EJ276_detector(i+1, DetName, 4*cm);
+		snprintf(DetName,32,"EJ276_%d",i+1);
+		neutronDetectors[i] = EJ276_detector(i+1, DetName, 10.*cm);
 	}
 
 	G4double phiCluster[] = {23.89,45.,66.11,90.+23.89,90.+45.,90.+66.11,180.+23.89,180.+45.,180.+66.11,270.+23.89,270.+45.,270.+66.11};
 	for(G4int ring=0;ring<nRings;++ring) {
 		G4double detZ0 = (ring-4)*ring_dZ;
 		for(G4int cluster=0;cluster<nDetectorClusters;cluster++) {
-			G4double dx = 32.*mm;
+			G4double dx = 53.*mm; // 3 mm gap between detectors
 
 			G4ThreeVector position[nDetPerCluster];
 			position[0] = G4ThreeVector(dx,dx,0.);

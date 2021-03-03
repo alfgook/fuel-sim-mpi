@@ -204,7 +204,7 @@ Bool_t FuelAnalysis::Process(Long64_t entry)
    const Double_t B2 = pow(0.102,2.);
    const Double_t C2 = pow(0.036,2.);
 
-   const Double_t Lmin = 0.1; // MeVee
+   const Double_t Lmin = 0.0; // MeVee
 
    for(UShort_t hit1=0;hit1<NbrOfHits;++hit1) {
       UShort_t det1 = DetectorNbr[hit1];
@@ -341,7 +341,10 @@ void FuelAnalysis::Terminate()
    // a query. It always runs on the client, it can be used to present
    // the results graphically or save the results to file.
 
-   TFile fOut("out.root","recreate");
+   TString option = GetOption();
+   if(!option.Length()) option = "out.root";
+
+   TFile fOut(option.Data(),"recreate");
    GetOutputList()->Write();
    fOut.Close();
 }

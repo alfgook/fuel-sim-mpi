@@ -158,6 +158,7 @@ int main(int argc,char** argv) {
 
   //construct the default run manager
 #ifdef G4MULTITHREADED
+  if(!nThreads) nThreads = G4Threading::G4GetNumberOfCores();
   //G4int nThreads = 2; //default to 2 threads
   G4MTRunManager* runManager = new G4MTRunManager;
   G4cout << "G4Threading::G4GetNumberOfCores() = " << G4Threading::G4GetNumberOfCores() << G4endl;

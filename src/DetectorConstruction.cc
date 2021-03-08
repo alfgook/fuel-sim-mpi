@@ -375,12 +375,12 @@ void DetectorConstruction::DefineMaterials()
 	// I will assume the rest comes from Oxygen (Carbon oxides are mentioned in the Safety data sheet,
 	// allthough no numbers are given)
 	G4Element *fOxygen = nistManager->FindOrBuildElement("O");
-	fEJ276 = new G4Material("EJ299",1.096*g/cm3,3, kStateSolid);
+	fEJ276 = new G4Material("EJ276",1.096*g/cm3,3, kStateSolid);
 	G4double nC = 4.906; // No. of Carbon atoms per cm3 x10^22
 	G4double nH = 4.546; // No. of Hydrogen atoms per cm3 x10^22
 	G4double nO = 0.1685; // No. of Oxygen atoms per cm3 x10^22 (calculated from the missing electron density)
 	fEJ276->AddElement(fHydrogen,nH/(nH+nC+nO));
-	fEJ276->AddElement(fCarbon,nH/(nH+nC+nO));
+	fEJ276->AddElement(fCarbon,nC/(nH+nC+nO));
 	fEJ276->AddElement(fOxygen,nO/(nH+nC+nO));
 
 	fCladingMat = nistManager->FindOrBuildMaterial("G4_Zr"); //assuming pure Zirkonium
@@ -1552,7 +1552,7 @@ void DetectorConstruction::ConstructSDandField()
 
 
 //================== cross section biasing for (alpha,n)-reactions =========
-  GB01BOptrMultiParticleChangeCrossSection *aXSbias = new GB01BOptrMultiParticleChangeCrossSection("XSbias");
+  /*GB01BOptrMultiParticleChangeCrossSection *aXSbias = new GB01BOptrMultiParticleChangeCrossSection("XSbias");
 
   G4double BiasFactor=1.0e+07;
   //G4double BiasFactor=1.0;
@@ -1566,7 +1566,7 @@ void DetectorConstruction::ConstructSDandField()
   G4LogicalVolume* logicVol = G4LogicalVolumeStore::GetInstance()->GetVolume("CladdingRodLV");
   aXSbias->AttachTo(logicVol); 
   G4cout << " Attaching biasing operator to logical volume " << logicVol->GetName()<<" with biasFactor = "<<BiasFactor<<" for "<<biasedParticleName<<G4endl;
-
+*/
 }
 
 G4AssemblyVolume* DetectorConstruction::EJ309_5x5inch(G4int copyNbr, const char* name)

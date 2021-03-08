@@ -89,11 +89,11 @@ void FuelAnalysis::SlaveBegin(TTree * /*tree*/)
    hToFany->Sumw2();
    GetOutputList()->Add(hToFany);
 
-   hToFanyGN = new TH1D("hToFanyGN","time-of-flight #gamma-n-coinc. (time(n)-time(#gamma));time (ns);counts/sec",300,-100.,500.);
+   hToFanyGN = new TH1D("hToFanyGN","time-of-flight #gamma-n-coinc. (time(n)-time(#gamma));time (ns);counts/sec",1200,-100.,500.);
    hToFanyGN->Sumw2();
    GetOutputList()->Add(hToFanyGN);
 
-   hToFanyNN = new TH1D("hToFanyNN","time-of-flight n-n-coinc. (time(n)-time(n));time (ns);counts/sec",500,0.,500.);
+   hToFanyNN = new TH1D("hToFanyNN","time-of-flight n-n-coinc. (time(n)-time(n));time (ns);counts/sec",1000,0.,500.);
    hToFanyNN->Sumw2();
    GetOutputList()->Add(hToFanyNN);
 
@@ -194,17 +194,26 @@ Bool_t FuelAnalysis::Process(Long64_t entry)
    eventWeight *= scalingFactor; // to get the histograms in counts/sec
    UShort_t NbrOfHits = *rv_NbrOfHits;
 
+   //cout << "event weigt =" << eventWeight << endl;
+   //cout << "scalingFactor =" << scalingFactor << endl;
    /*if(eventWeight==0.) {
       cout << "aaa" << endl;
    } else {
       cout << "bbb" << endl;
    }*/
 
+   const Double_t t_min_GN = 4.;
+   const Double_t t_max_GN = 120.;
+
+   // is the main peak due to cross-talk? most probably
+   const Double_t t_min_NN = 5.;
+   const Double_t t_max_NN = 150.;
+
    const Double_t A2 = pow(0.102,2.);
    const Double_t B2 = pow(0.102,2.);
    const Double_t C2 = pow(0.036,2.);
 
-   const Double_t Lmin = 0.0; // MeVee
+   const Double_t Lmin = 0.05; // MeVee
 
    for(UShort_t hit1=0;hit1<NbrOfHits;++hit1) {
       UShort_t det1 = DetectorNbr[hit1];
@@ -284,7 +293,7 @@ Bool_t FuelAnalysis::Process(Long64_t entry)
                if(det1!=det2) {
                   hToFanyGN->Fill(tof,eventWeight*wL1*wL2);
                   hToF[detG][detN]->Fill(tof,eventWeight*wL1*wL2);
-                  if(tof<100 && tof>=2.) hGNcoincs->Fill(det2,det1,eventWeight*wL1*wL2);
+                  if(tof<t_max_GN && tof>=t_min_GN) hGNcoincs->Fill(det2,det1,eventWeight*wL1*wL2);
                }
 
                Int_t clusterG = detG/nDetPerCluster;
@@ -294,7 +303,7 @@ Bool_t FuelAnalysis::Process(Long64_t entry)
                   clusterGN = clusterG + 1;
                }
 
-               if(tof>0. && tof<200.) hInitPosGN[clusterGN]->Fill(*InitX,*InitY,eventWeight*wL1*wL2);
+               if(tof<t_max_GN && tof>=t_min_GN) hInitPosGN[clusterGN]->Fill(*InitX,*InitY,eventWeight*wL1*wL2);
 
             }
 
@@ -303,7 +312,7 @@ Bool_t FuelAnalysis::Process(Long64_t entry)
                Double_t tof = fabs(Time[hit2] - Time[hit1]);
                if(det1!=det2) {
                   hToFanyNN->Fill(tof,eventWeight*wL1*wL2); //(d2-d1)>=4 if and only if the detectors dont belong to the same cluster_max
-                  if(tof<200) hNNcoincs->Fill(det2,det1,eventWeight*wL1*wL2);
+                  if(tof<t_max_NN && tof>=t_min_NN) hNNcoincs->Fill(det2,det1,eventWeight*wL1*wL2);
 
                   Int_t cluster1 = det1/nDetPerCluster;
                   Int_t cluster2 = det2/nDetPerCluster;
@@ -312,7 +321,7 @@ Bool_t FuelAnalysis::Process(Long64_t entry)
                      clusterNN = cluster1 + 1;
                   }
 
-                  if(tof<100.) hInitPosNN[clusterNN]->Fill(*InitX,*InitY,eventWeight*wL1*wL2);
+                  if(tof<t_max_NN && tof>=t_min_NN) hInitPosNN[clusterNN]->Fill(*InitX,*InitY,eventWeight*wL1*wL2);
                }
             }
 

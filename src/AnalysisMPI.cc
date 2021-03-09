@@ -62,7 +62,7 @@ AnalysisMPI::AnalysisMPI()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void
-AnalysisMPI::Book()
+AnalysisMPI::Book(G4bool aMergeNtuple)
 {
   G4cout << "AnalysisMPI::Book start" << G4endl;
 
@@ -71,7 +71,7 @@ AnalysisMPI::Book()
 
   #ifdef G4MULTITHREADED
   // MT ntuple merging
-  analysisManager->SetNtupleMerging(true);
+  if(aMergeNtuple) analysisManager->SetNtupleMerging(true);
   #endif
 
 //----------------histograms---------------------------------------------------

@@ -43,6 +43,7 @@ class ActionInitialization : public G4VUserActionInitialization
 {
   public:
     ActionInitialization(G4String);
+    ActionInitialization(G4String,G4bool);
     virtual ~ActionInitialization();
 
     virtual void BuildForMaster() const;
@@ -50,6 +51,7 @@ class ActionInitialization : public G4VUserActionInitialization
     
   private:
   	G4String fActivityFile;
+  	G4bool fMergeNtuple;
 };
 
 #endif

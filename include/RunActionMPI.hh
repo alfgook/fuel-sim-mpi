@@ -45,7 +45,7 @@ class PrimaryGeneratorAction;
 class RunActionMPI : public G4UserRunAction
 {
   public:
-    RunActionMPI();
+    RunActionMPI(G4bool);
    ~RunActionMPI();
   
     virtual void BeginOfRunAction(const G4Run*);

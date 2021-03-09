@@ -45,11 +45,11 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-RunActionMPI::RunActionMPI()
+RunActionMPI::RunActionMPI(G4bool aMergeNtuple)
 :G4UserRunAction()
 {
 //  G4cout << G4MPImanager::GetManager()->GetRank() << " : " <<"RunActionMPI::RunActionMPI()" << G4endl;
-  AnalysisMPI::GetAnalysis()->Book();
+  AnalysisMPI::GetAnalysis()->Book(aMergeNtuple);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

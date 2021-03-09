@@ -43,6 +43,16 @@ ActionInitialization::ActionInitialization(G4String aFile)
  : G4VUserActionInitialization()
 {
   fActivityFile = aFile;
+  fMergeNtuple = true;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+ActionInitialization::ActionInitialization(G4String aFile, G4bool aMergeNtuple)
+ : G4VUserActionInitialization()
+{
+  fActivityFile = aFile;
+  fMergeNtuple = aMergeNtuple;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -54,7 +64,7 @@ ActionInitialization::~ActionInitialization()
 
 void ActionInitialization::BuildForMaster() const
 {
-  RunActionMPI* runAction = new RunActionMPI();
+  RunActionMPI* runAction = new RunActionMPI(fMergeNtuple);
   //RunActionMasterMPI* runAction = new RunActionMasterMPI();
   SetUserAction(runAction);
 }
@@ -70,7 +80,7 @@ void ActionInitialization::Build() const
   SetUserAction(primary);
     
   //RunAction* runAction = new RunAction();
-  RunActionMPI* runAction = new RunActionMPI();
+  RunActionMPI* runAction = new RunActionMPI(fMergeNtuple);
   //RunActionMasterMPI* runAction = new RunActionMasterMPI();
   SetUserAction(runAction);
   

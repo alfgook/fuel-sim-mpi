@@ -45,7 +45,7 @@ public:
 
   static AnalysisMPI* GetAnalysis();
 
-  void Book();
+  void Book(G4bool MergeNtuple = true);
   void EndOfRun();
 
   //void OpenFile(const G4String& fname);

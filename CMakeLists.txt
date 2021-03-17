@@ -114,6 +114,7 @@ configure_file(Config.h.in Config.h)
 set(input_files
     input/actinides.txt
     input/activities-BWR.txt
+    input/activities-BWR-low.txt
     input/activities.txt
     input/activity-nat-Pu.txt
     input/atomic-mass-eval-2016.txt
@@ -128,6 +129,7 @@ set(input_files
     input/SKB-TR-10-13-PWR_neutron_spectrum.txt
     input/test_mat.plt
     input/SKB-TR-10-13-BWR-CRAM-37years-nuclide-vector.plt
+    input/BWR-low-nuclide-vector.plt
   )
 
 foreach(_script ${input_files})

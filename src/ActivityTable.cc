@@ -294,11 +294,15 @@ void ActivityTable::ExcludeAphaAndSF()
     #ifdef G4MULTITHREADED
     G4AutoLock lock(&ActivityTable::ActivityTableMutex); //lock the mutex while reading from the text-file
     #endif
-    //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "====================================" << G4endl;
-    //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "==  Restricting decay to exclude (sf) and alpha decay" << G4endl;
-    //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "==  total activity = " << activityTotal << G4endl;
+    #ifndef NOT_USING_MPI
+    if(G4MPImanager::GetManager()->GetRank()==0) {
+      G4cout << "====================================" << G4endl;
+      G4cout << "==  Restricting decay to exclude (sf) and alpha decay" << G4endl;
+      G4cout << "==  total activity = " << activityTotal << G4endl;
+      G4cout << "   Z   A   rest-activity  total-activity  main-branch" << G4endl;
 
-    //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "   Z   A   rest-activity  total-activity  main-branch" << G4endl;
+    }
+    #endif
 
   for(size_t bin=0;bin<activityCumulative.size();bin++) {
     G4int Z = fZZ.at(bin);
@@ -348,9 +352,14 @@ void ActivityTable::ExcludeAphaAndSF()
       G4double BR = table.GetBrsum();
       G4double newActivity = BR*activity.at(bin);
       activity[bin] = newActivity;
-      //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "   "<< fZZ[bin] << "  " << fAA[bin] << "  " << newActivity <<  "  " << newActivity/BR << "  " << MainBranchName << G4endl;
-      //for(size_t i=0;i<table.GetEntries();i++) G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "   " << table.GetEntry(i);
-      //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << G4endl;
+      #ifndef NOT_USING_MPI
+      if(G4MPImanager::GetManager()->GetRank()==0) {
+        G4cout << "   "<< fZZ[bin] << "  " << fAA[bin] << "  " << newActivity <<  "  " << newActivity/BR << "  " << MainBranchName << G4endl;
+        //for(size_t i=0;i<table.GetEntries();i++) G4cout << "   " << table.GetEntry(i);
+        //G4cout << G4endl;
+      }
+      #endif
+      
     }
     fTables.push_back(table);
   }
@@ -364,8 +373,13 @@ void ActivityTable::ExcludeAphaAndSF()
   activityTotal = activityCumulative.back();
   for(unsigned int i=0;i<activity.size();i++) activityCumulative[i] /= activityTotal;
 
-  //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "== restricted activity = " << activityTotal << G4endl; 
-  //G4cout<<"MPIrank"<<G4MPImanager::GetManager()->GetRank()<<" : " << "====================================" << G4endl;
+    #ifndef NOT_USING_MPI
+    if(G4MPImanager::GetManager()->GetRank()==0) {
+      G4cout << "== restricted activity = " << activityTotal << G4endl; 
+      G4cout << "====================================" << G4endl;
+    }
+    #endif
+  
 
   #ifdef G4MULTITHREADED
   lock.unlock(); //explicit unlock

@@ -27,6 +27,15 @@ ActivityTable::ActivityTable(G4String aFile, MyRadioactiveDecayBase *aRadDecay)
   if(!aFile.size()) aFile = dir + "/activities-BWR.txt";
   fInit = true;
 
+
+  #ifndef NOT_USING_MPI
+  if(G4MPImanager::GetManager()->GetRank()==0) {
+    G4cout << "name of activity file: " << aFile << G4endl;
+  }
+  #else
+    G4cout << "name of activity file: " << aFile << G4endl;
+  #endif
+
   nPrimaries = 0;
   //---read the file-----------------------------------
   std::string str;
@@ -223,6 +232,11 @@ void ActivityTable::RestrictTo(G4String KinematicsName)
     G4cout<< "==  total activity = " << activityTotal << G4endl;
     G4cout<< "   Z   A   rest-activity  total-activity" << G4endl;
   }
+  #else
+    G4cout<< "====================================" << G4endl;
+    G4cout<< "==  Restricting decay to " << KinematicsName << G4endl;
+    G4cout<< "==  total activity = " << activityTotal << G4endl;
+    G4cout<< "   Z   A   rest-activity  total-activity" << G4endl;
   #endif
 
   for(size_t bin=0;bin<activityCumulative.size();bin++) {
@@ -264,6 +278,10 @@ void ActivityTable::RestrictTo(G4String KinematicsName)
         for(size_t i=0;i<table.GetEntries();i++) G4cout << "   " << table.GetEntry(i);
         G4cout<< G4endl;
       }
+      #else
+        G4cout<< "   " << fZZ[bin] << "  " << fAA[bin] << "  " << newActivity <<  "  " << newActivity/BR << G4endl;
+        for(size_t i=0;i<table.GetEntries();i++) G4cout << "   " << table.GetEntry(i);
+        G4cout<< G4endl;
       #endif
     }
     fTables.push_back(table);
@@ -281,6 +299,9 @@ void ActivityTable::RestrictTo(G4String KinematicsName)
     G4cout << "== restricted activity = " << activityTotal << G4endl; 
     G4cout << "====================================" << G4endl;
   }
+  #else 
+  G4cout << "== restricted activity = " << activityTotal << G4endl; 
+  G4cout << "====================================" << G4endl;
   #endif
 
   CleanUpTable();
@@ -300,8 +321,12 @@ void ActivityTable::ExcludeAphaAndSF()
       G4cout << "==  Restricting decay to exclude (sf) and alpha decay" << G4endl;
       G4cout << "==  total activity = " << activityTotal << G4endl;
       G4cout << "   Z   A   rest-activity  total-activity  main-branch" << G4endl;
-
     }
+    #else
+    G4cout << "====================================" << G4endl;
+    G4cout << "==  Restricting decay to exclude (sf) and alpha decay" << G4endl;
+    G4cout << "==  total activity = " << activityTotal << G4endl;
+    G4cout << "   Z   A   rest-activity  total-activity  main-branch" << G4endl;
     #endif
 
   for(size_t bin=0;bin<activityCumulative.size();bin++) {
@@ -358,6 +383,8 @@ void ActivityTable::ExcludeAphaAndSF()
         //for(size_t i=0;i<table.GetEntries();i++) G4cout << "   " << table.GetEntry(i);
         //G4cout << G4endl;
       }
+      #else
+      G4cout << "   "<< fZZ[bin] << "  " << fAA[bin] << "  " << newActivity <<  "  " << newActivity/BR << "  " << MainBranchName << G4endl;
       #endif
       
     }
@@ -378,6 +405,9 @@ void ActivityTable::ExcludeAphaAndSF()
       G4cout << "== restricted activity = " << activityTotal << G4endl; 
       G4cout << "====================================" << G4endl;
     }
+    #else
+    G4cout << "== restricted activity = " << activityTotal << G4endl; 
+    G4cout << "====================================" << G4endl;
     #endif
   
 

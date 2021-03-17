@@ -10,6 +10,10 @@
 #include "G4Element.hh"
 #include "G4SystemOfUnits.hh"
 
+#ifndef NOT_USING_MPI
+#include "G4MPImanager.hh"
+#endif
+
 struct MaterialFileEntry {
 	G4int A;
 	G4int Z;
@@ -96,6 +100,13 @@ MaterialFile::MaterialFile(const char *FileName, G4String matName, G4double Volu
 	textfile.close();
 
 	//read the plt concentration file
+	#ifndef NOT_USING_MPI
+	if(G4MPImanager::GetManager()->GetRank()==0) {
+		G4cout << "name of material file: " << FileName << G4endl;
+	}
+	#else
+	G4cout << "name of material file: " << FileName << G4endl;
+	#endif
 
 	textfile.open(FileName);
 	if(!textfile.is_open()) {

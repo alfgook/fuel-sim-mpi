@@ -86,7 +86,7 @@ DetectorConstruction::DetectorConstruction(G4String aMaterialFile)
 	fMaterialFile = aMaterialFile;
 	if(!fMaterialFile.size()) {
 		G4String dir(INPUT_DIR);
-		fMaterialFile = dir + "/SKB-TR-10-13-PWR_MCNP_matls.inp";
+		fMaterialFile = dir + "/SKB-TR-10-13-BWR-CRAM-37years-nuclide-vector.plt";
 	}
 
 	fMessenger = new G4GenericMessenger(this,"/Detector/XSbias/", "control the biasing of cross section");
@@ -334,7 +334,8 @@ void DetectorConstruction::DefineMaterials()
 
 	G4double FuelVolume = 96.*PinLenght*pow(PinRad,2.)*3.141592654;
 
-	MaterialFile *mFile = new MaterialFile("./input/SKB-TR-10-13-BWR-CRAM-37years-nuclide-vector.plt","fuel-material",FuelVolume);
+	//MaterialFile *mFile = new MaterialFile("./input/SKB-TR-10-13-BWR-CRAM-37years-nuclide-vector.plt","fuel-material",FuelVolume);
+	MaterialFile *mFile = new MaterialFile(fMaterialFile,"fuel-material",FuelVolume);
 	fFuelMat = mFile->GetMaterial();
 	#ifndef NOT_USING_MPI
 	if(G4MPImanager::GetManager()->GetRank()==0) mFile->Print();

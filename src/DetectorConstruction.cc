@@ -1452,7 +1452,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumesBWR()
                     fCheckOverlaps); // checking overlaps
 	*/
 
-	//BuildDetectors(worldLV);
+	BuildDetectors(worldLV);
+	//BuildDetectorsTop(worldLV);
 	
 	// Print materials
 	#ifndef NOT_USING_MPI
@@ -1570,6 +1571,75 @@ void DetectorConstruction::BuildDetectors(G4LogicalVolume *worldLV)
 
 			 
 		}
+	}
+
+	// Create a region
+	G4LogicalVolume* logicVol = G4LogicalVolumeStore::GetInstance()->GetVolume("PlasticDetectorHouse");
+	G4Region* DetectorRegion = new G4Region("DetectorRegion");
+	DetectorRegion->AddRootLogicalVolume(logicVol);
+}
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+void DetectorConstruction::BuildDetectorsTop(G4LogicalVolume *worldLV)
+{
+
+	const G4double distance = 2420.*mm + 0.5*25*mm + 1.52*mm;
+	const G4int nDetectorClusters = 12;
+	const G4int nDetPerCluster = 9;
+	const G4int nDetectors = nDetectorClusters*nDetPerCluster;
+	G4AssemblyVolume* neutronDetectors[nDetectors];
+	char DetName[32];
+
+	for(G4int i=0;i<nDetectors;i++) {
+		snprintf(DetName,32,"EJ276_%d",i+1);
+		neutronDetectors[i] = EJ276_detector(i+1, DetName, 4.*cm);
+	}
+
+	G4ThreeVector posCluster[12];
+	G4double dxCluster = 0.5*210.*mm;
+
+	posCluster[0] = G4ThreeVector(-dxCluster,dxCluster*3.,distance);
+	posCluster[1] = G4ThreeVector(dxCluster,dxCluster*3.,distance);
+
+	posCluster[2] = G4ThreeVector(-3.*dxCluster,dxCluster,distance);
+	posCluster[3] = G4ThreeVector(-dxCluster,dxCluster,distance);
+	posCluster[4] = G4ThreeVector(dxCluster,dxCluster,distance);
+	posCluster[5] = G4ThreeVector(3.*dxCluster,dxCluster,distance);
+
+	posCluster[6] = G4ThreeVector(-3.*dxCluster,-dxCluster,distance);
+	posCluster[7] = G4ThreeVector(-dxCluster,-dxCluster,distance);
+	posCluster[8] = G4ThreeVector(dxCluster,-dxCluster,distance);
+	posCluster[9] = G4ThreeVector(3.*dxCluster,-dxCluster,distance);
+
+	posCluster[10] = G4ThreeVector(-dxCluster,-dxCluster*3.,distance);
+	posCluster[11] = G4ThreeVector(dxCluster,-dxCluster*3.,distance);
+
+	for(G4int cluster=0;cluster<nDetectorClusters;cluster++) {
+		G4double dx = 47.*mm; // 3 mm gap between detectors
+
+		G4ThreeVector position[nDetPerCluster];
+		position[0] = G4ThreeVector(-dx,dx,0.);
+		position[1] = G4ThreeVector(0.,dx,0.);
+		position[2] = G4ThreeVector(dx,dx,0.);
+		position[3] = G4ThreeVector(-dx,0.,0.);
+		position[4] = G4ThreeVector(0.,0.,0.);
+		position[5] = G4ThreeVector(dx,0.,0.);
+		position[6] = G4ThreeVector(-dx,-dx,0.);
+		position[7] = G4ThreeVector(0.,-dx,0.);
+		position[8] = G4ThreeVector(dx,-dx,0.);
+
+		
+		G4RotationMatrix *rotPos = new G4RotationMatrix();
+		//rotPos->rotateY(90.*degree);
+
+		G4RotationMatrix *rotDet = new G4RotationMatrix();
+		//rotDet->rotateY(90.*degree);
+
+		for(G4int i=0;i<nDetPerCluster;i++) {
+			position[i] += posCluster[cluster];
+			//position[i] *= *rotPos;
+			G4int detNbr = cluster*nDetPerCluster + i;
+			neutronDetectors[detNbr]->MakeImprint(worldLV,position[i],rotDet,detNbr + 1);
+		}		 
 	}
 
 	// Create a region

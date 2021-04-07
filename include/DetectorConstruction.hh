@@ -79,6 +79,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     void DefineMaterials();
     G4VPhysicalVolume* DefineVolumes();
     G4VPhysicalVolume* DefineVolumesBWR();
+    G4VPhysicalVolume* DefineVolumesBWR_alt();
     void BuildDetectors(G4LogicalVolume *worldLV);
     void BuildDetectorsTop(G4LogicalVolume *worldLV);
     G4AssemblyVolume* EJ309_5x5inch(G4int copyNbr, const char* name);

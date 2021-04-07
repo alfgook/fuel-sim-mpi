@@ -194,6 +194,10 @@ Bool_t FuelAnalysis::Process(Long64_t entry)
    eventWeight *= scalingFactor; // to get the histograms in counts/sec
    UShort_t NbrOfHits = *rv_NbrOfHits;
 
+   //remove a single assembly from one of the central ones
+   //if(*InitX<200 && *InitX>0 && *InitY<200 && *InitY>0) return kFALSE;
+   if(*InitX<142 && *InitX>68 && *InitY<142 && *InitY>68) return kFALSE;
+
    //cout << "event weigt =" << eventWeight << endl;
    //cout << "scalingFactor =" << scalingFactor << endl;
    /*if(eventWeight==0.) {
@@ -214,6 +218,7 @@ Bool_t FuelAnalysis::Process(Long64_t entry)
    const Double_t C2 = pow(0.036,2.);
 
    const Double_t Lmin = 0.05; // MeVee
+   //const Double_t Lmin = 1.0; // MeVee
 
    for(UShort_t hit1=0;hit1<NbrOfHits;++hit1) {
       UShort_t det1 = DetectorNbr[hit1];

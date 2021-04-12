@@ -1454,7 +1454,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumesBWR()
 	*/
 
 	//BuildDetectors(worldLV);
-	BuildDetectorsTop(worldLV);
+	//BuildDetectorsTop(worldLV);
 	
 	// Print materials
 	#ifndef NOT_USING_MPI
@@ -2013,7 +2013,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumesBWR_alt()
 	*/
 
 	//BuildDetectors(worldLV);
-	BuildDetectorsTop(worldLV);
+	//BuildDetectorsTop(worldLV);
 	
 	// Print materials
 	#ifndef NOT_USING_MPI

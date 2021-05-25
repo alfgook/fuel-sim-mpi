@@ -93,7 +93,7 @@ void FuelAnalysis::SlaveBegin(TTree * /*tree*/)
    hToFanyGN->Sumw2();
    GetOutputList()->Add(hToFanyGN);
 
-   hToFanyNN = new TH1D("hToFanyNN","time-of-flight n-n-coinc. (time(n)-time(n));time (ns);counts/sec",1000,0.,500.);
+   hToFanyNN = new TH1D("hToFanyNN","time-of-flight n-n-coinc. (time(n)-time(n));time (ns);counts/sec",5000,0.,5000.);
    hToFanyNN->Sumw2();
    GetOutputList()->Add(hToFanyNN);
 

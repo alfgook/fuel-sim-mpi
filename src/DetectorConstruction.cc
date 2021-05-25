@@ -2014,6 +2014,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumesBWR_alt()
 
 	//BuildDetectors(worldLV);
 	//BuildDetectorsTop(worldLV);
+	BuildDetectorsFar(worldLV);
 	
 	// Print materials
 	#ifndef NOT_USING_MPI
@@ -2052,6 +2053,120 @@ void DetectorConstruction::BuildDetectors(G4LogicalVolume *worldLV)
   	const G4double ring_dZ = 45.*cm;
 
 	const G4double distance = 630.*mm;
+	const G4int nDetectorClusters = 12;
+	const G4int nDetPerCluster = 4;
+	const G4int nDetectors = nDetectorClusters*nDetPerCluster*nRings;
+	G4AssemblyVolume* neutronDetectors[nDetectors];
+	char DetName[32];
+
+	for(G4int i=0;i<nDetectors;i++) {
+		snprintf(DetName,32,"EJ276_%d",i+1);
+		neutronDetectors[i] = EJ276_detector(i+1, DetName, 6.*cm);
+	}
+
+	G4double phiCluster[] = {23.89,45.,66.11,90.+23.89,90.+45.,90.+66.11,180.+23.89,180.+45.,180.+66.11,270.+23.89,270.+45.,270.+66.11};
+	for(G4int ring=0;ring<nRings;++ring) {
+		G4double detZ0 = (ring-4)*ring_dZ;
+		for(G4int cluster=0;cluster<nDetectorClusters;cluster++) {
+			G4double dx = 33.*mm; // 3 mm gap between detectors
+
+			G4ThreeVector position[nDetPerCluster];
+			position[0] = G4ThreeVector(dx,dx,0.);
+			position[1] = G4ThreeVector(dx,-dx,0.);
+			position[2] = G4ThreeVector(-dx,dx,0.);
+			position[3] = G4ThreeVector(-dx,-dx,0.);
+
+			G4ThreeVector posPbWall(0.,0.,-(14.04+0.5*PbWallThickness));
+			G4ThreeVector posB4CWall(0.,0.,-(14.04+PbWallThickness+0.5*BoronWallThickness));
+
+			G4ThreeVector posCluster = G4ThreeVector(detZ0,0.,distance);
+			G4RotationMatrix *rotPos = new G4RotationMatrix();
+			rotPos->rotateY(90.*degree);
+			rotPos->rotateZ(phiCluster[cluster]*degree);
+
+			G4RotationMatrix *rotDet = new G4RotationMatrix();
+			rotDet->rotateY(90.*degree);
+			rotDet->rotateZ(phiCluster[cluster]*degree);
+
+			for(G4int i=0;i<nDetPerCluster;i++) {
+				position[i] += posCluster;
+				position[i] *= *rotPos;
+				G4int detNbr = ring*nDetectorClusters*nDetPerCluster + cluster*nDetPerCluster + i;
+				neutronDetectors[detNbr]->MakeImprint(worldLV,position[i],rotDet,detNbr + 1);
+			}
+
+			posPbWall += posCluster;
+
+
+			G4ThreeVector sideWallPos[4];
+			sideWallPos[0] = posPbWall + G4ThreeVector((WallHalfX-sideWallThickn),0,PbWallThickness);
+			sideWallPos[1] = posPbWall + G4ThreeVector(-(WallHalfX-sideWallThickn),0,PbWallThickness);
+			sideWallPos[2] = posPbWall + G4ThreeVector(0,(WallHalfX-sideWallThickn),PbWallThickness);
+			sideWallPos[3] = posPbWall + G4ThreeVector(0,-(WallHalfX-sideWallThickn),PbWallThickness);
+
+			posPbWall *= *rotPos;
+			G4Transform3D transformPb(*rotPos,posPbWall);
+			new G4PVPlacement(transformPb, ShieldingWallLV, "ShieldingWallPV", worldLV, false, cluster, fCheckOverlaps);
+
+			for(G4int i=0;i<4;i++) sideWallPos[i] *= *rotPos;
+			G4RotationMatrix *rotSideWall = new G4RotationMatrix();
+			rotSideWall->rotateY(90.*degree);
+			rotSideWall->rotateZ(phiCluster[cluster]*degree);
+
+			G4Transform3D transformSideWall1(*rotSideWall,sideWallPos[0]);
+			new G4PVPlacement(transformSideWall1, SideWallLV1, "SideWallPV1", worldLV, false, cluster, fCheckOverlaps);
+
+			G4Transform3D transformSideWall2(*rotSideWall,sideWallPos[1]);
+			new G4PVPlacement(transformSideWall2, SideWallLV1, "SideWallPV2", worldLV, false, cluster, fCheckOverlaps);
+
+			G4Transform3D transformSideWall3(*rotSideWall,sideWallPos[2]);
+			new G4PVPlacement(transformSideWall3, SideWallLV2, "SideWallPV3", worldLV, false, cluster, fCheckOverlaps);
+
+			G4Transform3D transformSideWall4(*rotSideWall,sideWallPos[3]);
+			new G4PVPlacement(transformSideWall4, SideWallLV2, "SideWallPV4", worldLV, false, cluster, fCheckOverlaps);
+
+			posB4CWall += posCluster;
+			posB4CWall *= *rotPos;
+			G4Transform3D transformB4C(*rotPos,posB4CWall);
+			//new G4PVPlacement(transformB4C, B4CWallLV, "B4CWallPV", worldLV, false, cluster, fCheckOverlaps);
+
+			 
+		}
+	}
+
+	// Create a region
+	G4LogicalVolume* logicVol = G4LogicalVolumeStore::GetInstance()->GetVolume("PlasticDetectorHouse");
+	G4Region* DetectorRegion = new G4Region("DetectorRegion");
+	DetectorRegion->AddRootLogicalVolume(logicVol);
+}
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+void DetectorConstruction::BuildDetectorsFar(G4LogicalVolume *worldLV)
+{
+	const G4double PbWallThickness = 8.*cm;
+	const G4double BoronWallThickness = 2.*mm;
+	const G4double WallHalfX = 110.*mm;
+	G4Material *fPb = nistManager->FindOrBuildMaterial("G4_Pb");
+	//G4Box *ShieldingWallS = new G4Box("ShieldingWallS",PbWallThickness/2.,WallHalfX,WallHalfX);
+
+	//G4Box *ShieldingWallS = new G4Box("ShieldingWallS",WallHalfX,WallHalfX,PbWallThickness/2.);
+	G4Trd *ShieldingWallS = new G4Trd("ShieldingWallS",WallHalfX*0.9,WallHalfX,WallHalfX*0.9,WallHalfX,PbWallThickness/2.);
+  	G4LogicalVolume *ShieldingWallLV = new G4LogicalVolume(ShieldingWallS,fPb,"PbShieldingWallLV",0,0,0);
+
+  	G4double sideWallThickn = 2.*cm;
+  	G4Box *SideWallS1 = new G4Box("ShieldingWallS1",sideWallThickn,WallHalfX,PbWallThickness/2.);
+  	G4LogicalVolume *SideWallLV1 = new G4LogicalVolume(SideWallS1,fPb,"SideWallLV1",0,0,0);
+
+  	G4Box *SideWallS2 = new G4Box("ShieldingWallS2",WallHalfX-2.*sideWallThickn,sideWallThickn,PbWallThickness/2.);
+  	G4LogicalVolume *SideWallLV2 = new G4LogicalVolume(SideWallS2,fPb,"SideWallLV2",0,0,0);
+
+	G4Box *B4CWallS = new G4Box("B4CWallS",WallHalfX,WallHalfX,BoronWallThickness/2.);
+	G4Material *fB4C = nistManager->FindOrBuildMaterial("G4_BORON_CARBIDE");
+  	G4LogicalVolume *B4CWallLV = new G4LogicalVolume(B4CWallS,fB4C,"B4CWallLV",0,0,0);
+
+  	const G4int nRings = 9;
+  	const G4double ring_dZ = 45.*cm;
+
+	const G4double distance = 910.*mm; //made to be a minimum of 50 cm from a fuel pin (located 409mm from the center of canister)
 	const G4int nDetectorClusters = 12;
 	const G4int nDetPerCluster = 4;
 	const G4int nDetectors = nDetectorClusters*nDetPerCluster*nRings;

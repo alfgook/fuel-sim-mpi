@@ -1396,8 +1396,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumesBWR()
                         1,               // copy number
                         fCheckOverlaps); // checking overlaps
 
-	G4double maxTime = 10000.*ns;
-	InsertLV->SetUserLimits(new G4UserLimits(DBL_MAX,DBL_MAX,maxTime));
+	//G4double maxTime = 10000.*ns;
+	//InsertLV->SetUserLimits(new G4UserLimits(DBL_MAX,DBL_MAX,maxTime));
 	// fuel modeled as a simple homogenous Volume
 
   	/*const G4double distance = 600.*mm;
@@ -1955,8 +1955,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumesBWR_alt()
                         1,               // copy number
                         fCheckOverlaps); // checking overlaps
 
-	G4double maxTime = 10000.*ns;
-	InsertLV->SetUserLimits(new G4UserLimits(DBL_MAX,DBL_MAX,maxTime));
+	//G4double maxTime = 10000.*ns;
+	//InsertLV->SetUserLimits(new G4UserLimits(DBL_MAX,DBL_MAX,maxTime));
 	// fuel modeled as a simple homogenous Volume
 
   	/*const G4double distance = 600.*mm;
@@ -2012,9 +2012,9 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumesBWR_alt()
                     fCheckOverlaps); // checking overlaps
 	*/
 
-	//BuildDetectors(worldLV);
+	BuildDetectors(worldLV);
 	//BuildDetectorsTop(worldLV);
-	BuildDetectorsFar(worldLV);
+	//BuildDetectorsFar(worldLV);
 	
 	// Print materials
 	#ifndef NOT_USING_MPI

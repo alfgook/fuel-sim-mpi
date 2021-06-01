@@ -80,20 +80,27 @@ void TrackingAction::SetTimeWindow(G4double t1, G4double dt)
 void TrackingAction::PreUserTrackingAction(const G4Track* track)
 {
   initWeight = track->GetWeight();
+  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+
+  G4double initialEnergy = track->GetVertexKineticEnergy();
+  G4double Weight = track->GetWeight();
   //G4cout << track->GetParticleDefinition()->GetParticleName() << G4endl;
   //fTimer.Start();
   //G4cout << "initWeight = " << initWeight << G4endl;
 
   G4int PDGcode = track->GetParticleDefinition()->GetPDGEncoding();
-  if(PDGcode==2112 && track->GetKineticEnergy()>19.99*MeV) {
-    G4Track *tr = (G4Track*) track;
-    tr->SetTrackStatus(fStopAndKill); //kill neutron above 19.99 MeV otherwise the code crashes because I have no other model than neutronHP
+  if(PDGcode==2112) {
+    if(initialEnergy>19.99*MeV) {
+      G4Track *tr = (G4Track*) track;
+      tr->SetTrackStatus(fStopAndKill); //kill neutron above 19.99 MeV otherwise the code crashes because I have no other model than neutronHP
+    }
+    if(!track->GetParentID()) {
+      analysisManager->FillH1(11,0,Weight);
+    } else if(track->GetCreatorProcess()->GetProcessName()=="nFission") {
+      analysisManager->FillH1(11,1,Weight); //count number of induced fission neutorns
+    }
   }
 
-  G4double initialEnergy = track->GetVertexKineticEnergy();
-  G4double Weight = track->GetWeight();
-
-  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
   if(PDGcode==22) analysisManager->FillH1(0,initialEnergy,Weight);          //gammas
   if(PDGcode==2112) analysisManager->FillH1(1,initialEnergy,Weight);        //neutrons
   if(PDGcode==1000020040) analysisManager->FillH1(2,initialEnergy,Weight);  //alphas

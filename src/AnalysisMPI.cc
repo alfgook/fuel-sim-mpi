@@ -88,6 +88,7 @@ AnalysisMPI::Book(G4bool aMergeNtuple)
   analysisManager->CreateH1("hGammaNonScattered","Spectrum of non-scattered gammas",2000,0,20); // 8
   analysisManager->CreateH1("hToFgn_NonScatter","tof Spectrum of non-scattered events",300,-10,290); // 9
   analysisManager->CreateH1("hToFgn_Scatter","tof Spectrum of scattered events",300,-10,290); // 10
+  analysisManager->CreateH1("hNeutronMultiplication","hNeutronMultiplication",2,-0.5,1.5); // 11
 
   analysisManager->CreateH2("InitPosNonScattered","initial source positions for non-scattered neutrons",380,-380,380,380,-380,380); //0
 //----------------root tree / ntuple---------------------------------------
